@@ -27,6 +27,7 @@ class PipelineStack(cdk.Stack):
             "region": scope.node.try_get_context("region"),
         }, **kwargs)
 
+        self.factory = factory
         self.prefix = self.node.try_get_context("resource_prefix")
 
         # Load infrastructure stack outputs as value parameters (resolved at cdk deploy time)

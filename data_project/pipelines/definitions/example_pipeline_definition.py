@@ -40,24 +40,29 @@ class LeadConversionFactory(SagemakerPipelineFactory):
             sagemaker_session=sm_session,
         )
 
+        # Step 1: Processing example step
         processing_step = ProcessingStep(
             name="processing-example",
             step_args=processor.run(
                 code="pipelines/sources/example_pipeline/evaluate.py",
-
             ),
-            
             job_arguments=[
                 "--config-parameter", self.pipeline_config_parameter,
                 "--name", "santiago"
             ],
         )
-        
+
+        # Step 2: Local processing step without S3
         processing_step_2 = ProcessingStep(
-            name="inference",
-            
+            name="local-processing-step",
+            step_args=processor.run(
+                code="pipelines/sources/example_pipeline/simple_step.py",
+                inputs=[],  # No inputs
+                outputs=[],  # No outputs
+            ),
         )
 
+        # Define the pipeline
         return Pipeline(
             name=pipeline_name,
             steps=[processing_step, processing_step_2],
@@ -66,9 +71,8 @@ class LeadConversionFactory(SagemakerPipelineFactory):
         )
 
 
-
-
+"""This error is thrown because in SageMaker's ProcessingStep, either step_args or processor is required, but not both at the same time.In your example_pipeline_definition.py, you're defining processing_step_2 without the required arguments:"""
 """The ExamplePipeline class implements a specific SageMaker pipeline, inheriting from SagemakerPipelineFactory.
-It defines an instance type parameter that can be configured at runtime, depending on whether the session is local or cloud-based.
+""It defines an instance type parameter that can be configured at runtime, depending on whether the session is local or cloud-based.
 The pipeline uses the scikit-learn image provided by AWS to run a Python script (evaluate.py) in a ScriptProcessor.
 A processing step is created using the ScriptProcessor, and the custom configuration parameter (pipeline_config_parameter) is passed as an argument to the script."""
