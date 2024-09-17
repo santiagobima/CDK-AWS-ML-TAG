@@ -1,5 +1,4 @@
-## Deploying SageMaker Pipelines Using CDK
-
+## Deploying SageMaker Pipelines Using CDK --> Develop <<>>
 ## Structure
 
 The project consists of two CDK projects:
