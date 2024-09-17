@@ -2,7 +2,7 @@
 name = "infrastructure-project"
 version = "0.1.0"
 description = ""
-authors = ["Egor Dmitriev <egor.dmitriev@luminis.eu>"]
+authors = ["Edoardo Polito - Santiago Bima"]
 
 [tool.poetry.dependencies]
 python = "^3.11"
