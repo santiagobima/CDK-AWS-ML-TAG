@@ -11,5 +11,5 @@ execution=pipeline.start()
 
 execution.wait()
 
-print("Pipeline execution completes o yes !!")
+print("Pipeline execution completed")
 

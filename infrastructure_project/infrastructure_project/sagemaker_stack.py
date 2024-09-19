@@ -17,7 +17,7 @@ class SagemakerStack(cdk.Stack):
         vpc: ec2.Vpc,  # Pass the VPC as an argument
         **kwargs
     ) -> None:
-        super().__init__(scope, id, **kwargs)  # Removed the explicit env argument
+        super().__init__(scope, id, **kwargs)  
 
         self.prefix = self.node.try_get_context("resource_prefix")
 

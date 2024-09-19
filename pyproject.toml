@@ -2,7 +2,7 @@
 name = "blog-deploying-sagemaker-pipelines"
 version = "0.1.0"
 description = ""
-authors = ["Egor Dmitriev <egor.dmitriev@luminis.eu>"]
+authors = ["Edoardo Polito and Santiago Bima"]
 
 [tool.poetry.dependencies]
 python = "^3.11"

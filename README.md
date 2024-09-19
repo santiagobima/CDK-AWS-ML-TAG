@@ -52,3 +52,5 @@ cdk deploy --profile sandbox
 Follow the instructions to run the pipeline:
 
 python trigger_sagemaker_sdk.py
+
+
