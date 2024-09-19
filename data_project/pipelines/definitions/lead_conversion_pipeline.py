@@ -1,15 +1,16 @@
+# lead_conversion_pipeline.py
+
 import sagemaker
-import sagemaker.image_uris
-from sagemaker import LocalSession, ScriptProcessor
+from sagemaker import ScriptProcessor
 from sagemaker.workflow import parameters
 from sagemaker.workflow.pipeline import Pipeline
 from sagemaker.workflow.steps import ProcessingStep
+from sagemaker.workflow.pipeline import Pipeline
 
-from pipelines.definitions.base import SagemakerPipelineFactory
 
-
-class LeadConversionFactory(SagemakerPipelineFactory):
-    pipeline_config_parameter: str
+class LeadConversionFactory:
+    def __init__(self, pipeline_config_parameter: str):
+        self.pipeline_config_parameter = pipeline_config_parameter
 
     def create(
         self,
@@ -17,52 +18,56 @@ class LeadConversionFactory(SagemakerPipelineFactory):
         pipeline_name: str,
         sm_session: sagemaker.Session,
     ) -> Pipeline:
-        # Define a parameter for configuring the instance type
+        # Definir un parámetro para configurar el tipo de instancia
         instance_type_var = parameters.ParameterString(
             name="InstanceType",
-            default_value="local" if isinstance(sm_session, LocalSession) else "ml.m5.large"
+            default_value="local" if sm_session.local_mode else "ml.m5.large"
         )
 
-        # Use the SKLearn image provided by AWS SageMaker
-        image_uri = sagemaker.image_uris.retrieve(
-            framework="sklearn",
-            region=sm_session.boto_region_name,
-            version="0.23-1",
-        )
+        # Determinar el tipo de instancia y la imagen según el entorno
+        if sm_session.local_mode:
+            # Modo local
+            image_uri = 'local-scikit-learn:1.3.0'
+            actual_instance_type = 'local'
+        else:
+            # Modo en la nube
+            image_uri = sagemaker.image_uris.retrieve(
+                framework="sklearn",
+                region=sm_session.boto_region_name,
+                version="1.3-1",
+                instance_type=instance_type_var,
+            )
+            actual_instance_type = instance_type_var
 
-        # Create a ScriptProcessor and add code / run parameters
+        # Crear un ScriptProcessor
         processor = ScriptProcessor(
             image_uri=image_uri,
             command=["python3"],
-            instance_type=instance_type_var,
+            instance_type=actual_instance_type,
             instance_count=1,
             role=role,
             sagemaker_session=sm_session,
         )
 
-        # Step 1: Processing example step
+        # Paso 1: Paso de procesamiento de ejemplo
         processing_step = ProcessingStep(
             name="processing-example",
-            step_args=processor.run(
-                code="pipelines/sources/lead_conversion/evaluate.py",
-            ),
+            processor=processor,
+            code="pipelines/sources/lead_conversion/evaluate.py",
             job_arguments=[
-                "--config-parameter", self.pipeline_config_parameter,
+                "--config_parameter", self.pipeline_config_parameter,
                 "--name", "santiago"
             ],
         )
 
-        # Step 2: Local processing step without S3
+        # Paso 2: Paso de procesamiento local sin S3
         processing_step_2 = ProcessingStep(
             name="local-processing-step",
-            step_args=processor.run(
-                code="pipelines/sources/lead_conversion/simple_step.py",
-                inputs=[],  # No inputs
-                outputs=[],  # No outputs
-            ),
+            processor=processor,
+            code="pipelines/sources/lead_conversion/simple_step.py",
         )
 
-        # Define the pipeline
+        # Definir el pipeline
         return Pipeline(
             name=pipeline_name,
             steps=[processing_step, processing_step_2],
