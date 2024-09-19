@@ -37,7 +37,7 @@ class PipelineStack(cdk.Stack):
             self, f"/{self.prefix}/SagemakerExecutionRoleArn")
 
         # Create a configured pipeline
-        self.example_pipeline, self.example_pipeline_arn = self.create_pipeline(
+        self.lead_conversion, self.lead_conversion_arn = self.create_pipeline(
             pipeline_name='example-pipeline',
             pipeline_factory=self.factory,
             sources_bucket_name=sources_bucket_name,

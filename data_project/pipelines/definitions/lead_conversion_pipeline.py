@@ -44,7 +44,7 @@ class LeadConversionFactory(SagemakerPipelineFactory):
         processing_step = ProcessingStep(
             name="processing-example",
             step_args=processor.run(
-                code="pipelines/sources/example_pipeline/evaluate.py",
+                code="pipelines/sources/lead_conversion/evaluate.py",
             ),
             job_arguments=[
                 "--config-parameter", self.pipeline_config_parameter,
@@ -56,7 +56,7 @@ class LeadConversionFactory(SagemakerPipelineFactory):
         processing_step_2 = ProcessingStep(
             name="local-processing-step",
             step_args=processor.run(
-                code="pipelines/sources/example_pipeline/simple_step.py",
+                code="pipelines/sources/lead_conversion/simple_step.py",
                 inputs=[],  # No inputs
                 outputs=[],  # No outputs
             ),
@@ -71,7 +71,7 @@ class LeadConversionFactory(SagemakerPipelineFactory):
         )
 
 
-"""This error is thrown because in SageMaker's ProcessingStep, either step_args or processor is required, but not both at the same time.In your example_pipeline_definition.py, you're defining processing_step_2 without the required arguments:"""
+"""This error is thrown because in SageMaker's ProcessingStep, either step_args or processor is required, but not both at the same time.In your lead_conversion_definition.py, you're defining processing_step_2 without the required arguments:"""
 """The ExamplePipeline class implements a specific SageMaker pipeline, inheriting from SagemakerPipelineFactory.
 ""It defines an instance type parameter that can be configured at runtime, depending on whether the session is local or cloud-based.
 The pipeline uses the scikit-learn image provided by AWS to run a Python script (evaluate.py) in a ScriptProcessor.
