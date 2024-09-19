@@ -2,7 +2,8 @@
 
 import aws_cdk as cdk
 from pipelines.definitions.lead_conversion_pipeline import LeadConversionFactory
-from data_project.pipeline_stack import PipelineStack
+from pipeline_stack import PipelineStack
+
 
 
 
