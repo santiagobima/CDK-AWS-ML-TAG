@@ -1,12 +1,15 @@
 # run_pipeline_locally.py
 
+import boto3
 import sagemaker
 from sagemaker.local import LocalSession
 from pipelines.definitions.lead_conversion_pipeline import LeadConversionFactory
 
+session = #check how boto3 how to return a session and then use it in line 12.
+
 def main():
     # Crear una sesión local de SageMaker
-    sm_session = LocalSession()
+    sm_session = LocalSession(boto_session=)
     sm_session.config = {'local': {'local_code': True}}
 
     # Definir el rol de IAM (puedes usar un rol ficticio en modo local)
