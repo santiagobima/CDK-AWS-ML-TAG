@@ -1,6 +1,4 @@
 
-
-
 Tú (el desarrollador)
 │
 ├── Crea la aplicación CDK (`app`)
