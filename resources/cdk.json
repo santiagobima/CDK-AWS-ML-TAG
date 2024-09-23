@@ -1,0 +1,16 @@
+{
+  "app": "python app.py",
+  "context": {
+    "region": "eu-west-1",
+    "account": "373024328391",
+    "resource_prefix": "dsm",
+    "vpc_name": "vpc-0582e2090d0f0a197",
+    "tags": {
+      "application": "ds-talentgarden-deploying-sagemaker-pipelines",
+      "cost-center": "ds-talentgarden-deploying-sagemaker-pipelines",
+      "team": "Talent Garden : data-team"
+    }
+  }
+}
+
+
