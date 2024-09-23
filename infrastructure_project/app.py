@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import aws_cdk as cdk
-from infrastructure_project.vpc_stack import VpcStack
-from infrastructure_project.sagemaker_stack import SagemakerStack
+from vpc_stack import VpcStack
+from sagemaker_stack import SagemakerStack
 import aws_cdk.aws_ec2 as ec2
 from constructs import Construct
 
