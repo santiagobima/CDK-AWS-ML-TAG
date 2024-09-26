@@ -4,6 +4,9 @@ import aws_cdk as cdk
 from sagemaker_stack import SagemakerStack
 import aws_cdk.aws_ec2 as ec2
 from constructs import Construct
+import os
+from dotenv import load_dotenv
+
 
 LOGICAL_PREFIX = "DSM"
 
