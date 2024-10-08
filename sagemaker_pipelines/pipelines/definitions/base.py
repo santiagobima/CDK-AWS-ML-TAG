@@ -47,15 +47,16 @@ def create_sagemaker_session(
             sagemaker_session = LocalPipelineSession(
                 default_bucket=default_bucket,
             )
+            logger.info("Modo local activado para SageMaker")
         else:
             sagemaker_session = PipelineSession(
                 boto_session=boto_session,
                 sagemaker_client=sagemaker_client,
                 default_bucket=default_bucket,
             )
-        logger.info("SageMaker Session created")
+            logger.info("Sesión de SageMaker en la nube activada")
     except Exception as e:
-        logger.exception("Failed to generate a SageMaker Session")
+        logger.exception("No se pudo crear la sesión de SageMaker")
         raise e
 
     return sagemaker_session

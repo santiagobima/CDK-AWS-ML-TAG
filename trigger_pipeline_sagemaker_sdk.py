@@ -1,14 +1,29 @@
+import os
 import sagemaker
-from sagemaker.workflow.pipeline import Pipeline 
+from sagemaker.workflow.pipeline import Pipeline
+from sagemaker.workflow.pipeline_context import LocalPipelineSession
 
-session=sagemaker.Session()
+# Verificar si estamos en modo local
+local_mode = os.getenv('LOCAL_MODE', 'false').lower() == 'true'
 
-pipeline_name="example-pipeline"
+# Crear la sesión de SageMaker
+if local_mode:
+    print("Ejecutando el pipeline en modo local")
+    session = LocalPipelineSession()
+else:
+    print("Ejecutando el pipeline en la nube")
+    session = sagemaker.Session()
 
-pipeline=Pipeline(name=pipeline_name,sagemaker_session=session)
+# Definir el nombre del pipeline
+pipeline_name = "example-pipeline"
 
-execution=pipeline.start()
+# Cargar el pipeline
+pipeline = Pipeline(name=pipeline_name, sagemaker_session=session)
 
+# Iniciar la ejecución del pipeline
+execution = pipeline.start()
+
+# Esperar a que el pipeline termine
 execution.wait()
 
 print("Pipeline execution completed")

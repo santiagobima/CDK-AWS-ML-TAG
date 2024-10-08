@@ -4,9 +4,8 @@ from sagemaker import LocalSession, ScriptProcessor
 from sagemaker.workflow import parameters
 from sagemaker.workflow.pipeline import Pipeline
 from sagemaker.workflow.steps import ProcessingStep
-
 from pipelines.definitions.base import SagemakerPipelineFactory
-
+import os
 
 class LeadConversionFactory(SagemakerPipelineFactory):
     pipeline_config_parameter: str
@@ -17,20 +16,23 @@ class LeadConversionFactory(SagemakerPipelineFactory):
         pipeline_name: str,
         sm_session: sagemaker.Session,
     ) -> Pipeline:
-        # Define a parameter for configuring the instance type
+        # Definir una variable de entorno para ejecutar en local o no
+        local_mode = os.getenv('LOCAL_MODE', 'false').lower() == 'true'
+
+        # Definir un parámetro para configurar el tipo de instancia
         instance_type_var = parameters.ParameterString(
             name="InstanceType",
             default_value="local" if isinstance(sm_session, LocalSession) else "ml.m5.large"
         )
 
-        # Use the SKLearn image provided by AWS SageMaker
+        # Usar la imagen de SKLearn proporcionada por AWS SageMaker
         image_uri = sagemaker.image_uris.retrieve(
             framework="sklearn",
             region=sm_session.boto_region_name,
             version="0.23-1",
         )
 
-        # Create a ScriptProcessor and add code / run parameters
+        # Crear un ScriptProcessor y agregar código/parámetros de ejecución
         processor = ScriptProcessor(
             image_uri=image_uri,
             command=["python3"],
@@ -40,11 +42,35 @@ class LeadConversionFactory(SagemakerPipelineFactory):
             sagemaker_session=sm_session,
         )
 
-        # Step 1: Processing example step
+        # Paso 1: Ejemplo de paso de procesamiento
+        if local_mode:
+            code_path = os.path.abspath("./pipelines/sources/lead_conversion/evaluate.py")
+            inputs = []  # No inputs for local mode
+            outputs = []  # No outputs for local mode
+        else:
+            # En modo no local, usa S3
+            code_path = "pipelines/sources/lead_conversion/evaluate.py"
+            
+            # Definir inputs y outputs para procesamiento en la nube
+            inputs = [
+                sagemaker.processing.ProcessingInput(
+                    source='s3://your-bucket/input-data',  # Ruta de los datos en S3
+                    destination='/opt/ml/processing/input'  # Directorio en el contenedor
+                )
+            ]
+            outputs = [
+                sagemaker.processing.ProcessingOutput(
+                    source='/opt/ml/processing/output',  # Directorio donde se generan los resultados
+                    destination='s3://your-bucket/output-data'  # Ruta en S3 donde guardar los resultados
+                )
+            ]
+
         processing_step = ProcessingStep(
             name="processing-example",
             step_args=processor.run(
-                code="pipelines/sources/lead_conversion/evaluate.py",
+                code=code_path,
+                inputs=inputs,  # Pasa los inputs aquí
+                outputs=outputs  # Pasa los outputs aquí
             ),
             job_arguments=[
                 "--config-parameter", self.pipeline_config_parameter,
@@ -52,20 +78,26 @@ class LeadConversionFactory(SagemakerPipelineFactory):
             ],
         )
 
-        # Step 2: Local processing step without S3
+        # Paso 2: Paso de procesamiento local sin S3
         processing_step_2 = ProcessingStep(
             name="local-processing-step",
             step_args=processor.run(
                 code="pipelines/sources/lead_conversion/simple_step.py",
-                inputs=[],  # No inputs
-                outputs=[],  # No outputs
+                inputs=[],  # Sin entradas
+                outputs=[],  # Sin salidas
             ),
         )
 
-        # Define the pipeline
+        # Definir los pasos a incluir en el pipeline según el modo (local o no local)
+        if local_mode:
+            steps = [processing_step_2]  # Solo el paso local
+        else:
+            steps = [processing_step]  # Solo el paso no local
+
+        # Definir el pipeline con los pasos apropiados
         return Pipeline(
             name=pipeline_name,
-            steps=[processing_step, processing_step_2],
+            steps=steps,  # Incluir solo los pasos relevantes según el modo
             sagemaker_session=sm_session,
             parameters=[instance_type_var],
         )
