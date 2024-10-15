@@ -18,28 +18,24 @@ class PipelineStack(cdk.Stack):
         scope: Construct,
         id: str,
         factory: SagemakerPipelineFactory,
+        env: cdk.Environment,  # Recibimos el entorno como argumento
         **kwargs
     ) -> None:
-        # Definir explícitamente account y region
-        env_account = scope.node.try_get_context("account")
-        env_region = scope.node.try_get_context("region")
-
-        # Si estamos en modo local, usar la región del bucket S3 (eu-west-1)
-        local_mode = os.getenv('LOCAL_MODE', 'false').lower() == 'true'
-        if local_mode:
-            env_region = "eu-west-1"  # Definir la región del bucket S3 en modo local
-
-        super().__init__(scope, id, env={
-            "account": env_account,
-            "region": env_region,
-        }, **kwargs)
+        # Pasar 'env' directamente al constructor de 'cdk.Stack'
+        super().__init__(scope, id, env=env, **kwargs)
 
         self.factory = factory
         self.prefix = self.node.try_get_context("resource_prefix")
 
-        # Mostrar que estamos en modo local
+        # Definir explícitamente account y region para manejar local_mode
+        local_mode = os.getenv('LOCAL_MODE', 'false').lower() == 'true'
+
         if local_mode:
             print("Ejecutando en modo local")
+            # Usar la región del bucket S3 en modo local
+            env_region = "eu-west-1"
+        else:
+            env_region = self.region
 
         # Cargar nombres de recursos desde SSM Parameter Store (solo si no estamos en modo local)
         if not local_mode:
@@ -49,7 +45,7 @@ class PipelineStack(cdk.Stack):
                 self, f"/{self.prefix}/SagemakerExecutionRoleArn")
         else:
             # Utilizar el bucket de S3 en eu-west-1 para almacenar resultados en modo local
-            sources_bucket_name = "awsbucketsb"  # Tu bucket de S3
+            sources_bucket_name = "awsbucketsb"
             sm_execution_role_arn = "arn:aws:iam::123456789012:role/local-role"  # Cambia el ARN si es necesario
 
         # Crear el pipeline configurado
@@ -72,8 +68,8 @@ class PipelineStack(cdk.Stack):
 
         # Crear la sesión de SageMaker (local o en la nube)
         sm_session: sagemaker.Session = create_sagemaker_session(
-            region=self.region,  # Se asegura que la región esté bien definida
-            default_bucket=sources_bucket_name,  # Ahora siempre usa tu bucket "awsbucketsb"
+            region=self.region,
+            default_bucket=sources_bucket_name,
             local_mode=local_mode
         )
 

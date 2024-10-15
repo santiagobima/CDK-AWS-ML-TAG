@@ -14,17 +14,21 @@ class SagemakerStack(cdk.Stack):
         self,
         scope: Construct,
         id: str,
-        vpc: ec2.Vpc,  # Pass the VPC as an argument
+        vpc_name: str,  # Pasamos el nombre de la VPC en lugar de un objeto VPC
+        env: cdk.Environment,  # Env se mantiene igual
         **kwargs
     ) -> None:
-        super().__init__(scope, id, **kwargs)  
+        super().__init__(scope, id, env=env, **kwargs)
 
         self.prefix = self.node.try_get_context("resource_prefix")
 
-        # Create IAM role for SageMaker Users
+        # Lookup de la VPC usando el nombre pasado como argumento
+        self.vpc = ec2.Vpc.from_lookup(self, id=f"{self.prefix}-VpcLookup", vpc_id=vpc_name)
+
+        # Crear el rol de ejecución de SageMaker
         self.sm_execution_role = self.create_execution_role()
 
-        # Create S3 bucket for SageMaker code sources
+        # Crear el bucket de S3 para los fuentes de SageMaker
         self.sm_sources_bucket = self.create_sm_sources_bucket()
 
         ssm.StringParameter(
@@ -34,20 +38,19 @@ class SagemakerStack(cdk.Stack):
             description="SageMaker Sources Bucket Name",
         )
 
-        # Grant read access to SageMaker execution role
+        # Conceder acceso de lectura al rol de ejecución de SageMaker
         self.sm_sources_bucket.grant_read(self.sm_execution_role)
 
-        # Create S3 bucket for SageMaker data
+        # Crear el bucket de S3 para los datos de SageMaker
         self.sm_data_bucket = self.create_data_bucket()
 
-        # Grant read/write access to SageMaker execution role
+        # Conceder acceso de lectura/escritura al rol de ejecución de SageMaker
         self.sm_data_bucket.grant_read_write(self.sm_execution_role)
 
-        # Use the provided VPC
-        self.vpc = vpc
+        # Obtener los subnets públicos de la VPC
         public_subnet_ids = [public_subnet.subnet_id for public_subnet in self.vpc.public_subnets]
 
-        # Create SageMaker Studio domain
+        # Crear el dominio de SageMaker Studio
         self.domain = sm.CfnDomain(
             self, "SagemakerDomain",
             auth_mode='IAM',
@@ -64,7 +67,7 @@ class SagemakerStack(cdk.Stack):
             )],
         )
 
-        # Create SageMaker Studio default user profile
+        # Crear el perfil de usuario predeterminado de SageMaker Studio
         self.user = sm.CfnUserProfile(
             self, 'SageMakerStudioUserProfile',
             domain_id=self.domain.attr_domain_id,
@@ -72,6 +75,7 @@ class SagemakerStack(cdk.Stack):
             user_settings=sm.CfnUserProfile.UserSettingsProperty(),
         )
 
+    # Métodos auxiliares (sin cambios)
     def create_execution_role(self) -> iam.Role:
         role = iam.Role(
             self, 'SagemakerExecutionRole',
