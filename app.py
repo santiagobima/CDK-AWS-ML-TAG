@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 
-import sys
-import os
 import aws_cdk as cdk
-import aws_cdk.aws_ec2 as ec2  # Importamos ec2 para manejar la VPC
+import aws_cdk.aws_ec2 as ec2
+from constructs import Construct
+import os
 
 from stacks.sagemaker_stack import SagemakerStack
 from stacks.pipeline_stack import PipelineStack
+from pipelines.definitions.lead_conversion_pipeline import LeadConversionFactory  # Importamos la fábrica
 
 LOGICAL_PREFIX = "DSM"
 
@@ -27,16 +28,20 @@ vpc_name = app.node.try_get_context("vpc_name")
 if not vpc_name:
     raise ValueError("The VPC name was not found in the context. Please specify 'vpc_name' in cdk.json.")
 
-# Crear el stack de recursos de SageMaker (roles, buckets, etc.), pasando el nombre de la VPC
+# Crear la instancia de la fábrica de pipelines
+factory = LeadConversionFactory(pipeline_config_parameter="your_value_here")
+
+# Crear el stack de recursos de SageMaker, pasando el nombre de la VPC
 sagemaker_stack = SagemakerStack(app, id=f"{LOGICAL_PREFIX}-SagemakerStack", vpc_name=vpc_name, env=env)
 
-# Crear el stack de pipelines, si es necesario puedes pasar una fábrica aquí
+# Crear el stack de pipelines, pasando la fábrica válida
 pipeline_stack = PipelineStack(
     app,
     id=f"{LOGICAL_PREFIX}-PipelinesStack",
-    factory=None,  # Aquí puedes pasar la fábrica de pipeline si es necesario
+    factory=factory,  # Pasa la fábrica aquí
     env=env
 )
 
 # Generar el template
 app.synth()
+
