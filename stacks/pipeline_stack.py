@@ -46,7 +46,7 @@ class PipelineStack(cdk.Stack):
         else:
             # Utilizar el bucket de S3 en eu-west-1 para almacenar resultados en modo local
             sources_bucket_name = "awsbucketsb"
-            sm_execution_role_arn = "arn:aws:iam::123456789012:role/local-role"  # Cambia el ARN si es necesario
+            sm_execution_role_arn = "arn:aws:iam::123456789012:role/local-role"  # Es un ejemplo random.
 
         # Crear el pipeline configurado
         self.lead_conversion, self.lead_conversion_arn = self.create_pipeline(
@@ -85,7 +85,13 @@ class PipelineStack(cdk.Stack):
 
             pipeline_def_json = json.dumps(json.loads(pipeline.definition()), indent=2, sort_keys=True)
 
-        # Definir el recurso CloudFormation para el pipeline
+        # Si estamos en modo local, no crear el recurso de CloudFormation para el pipeline
+        if local_mode:
+            print("Ejecutando en modo local. No se creará el recurso SageMaker::Pipeline.")
+            arn = f"arn:aws:sagemaker:{self.region}:{self.account}:pipeline/{pipeline_name}"
+            return None, arn
+
+        # Definir el recurso CloudFormation para el pipeline en la nube
         pipeline_cfn = sm.CfnPipeline(
             self,
             id=f"SagemakerPipeline-{pipeline_name}",
