@@ -1,15 +1,7 @@
 import os
+import sagemaker
 from sagemaker.workflow.pipeline import Pipeline
 from sagemaker.workflow.pipeline_context import LocalPipelineSession
-import sys
-
-# Añadir el directorio raíz del proyecto al PYTHONPATH
-root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.append(root_dir)
-print(f"Directorio raíz añadido al PYTHONPATH: {root_dir}")  # Verificar si es correcto
-
-from pipelines.definitions.lead_conversion_pipeline import LeadConversionFactory  
-
 
 # Verificar si estamos en modo local
 local_mode = os.getenv('LOCAL_MODE', 'false').lower() == 'true'
@@ -29,9 +21,10 @@ if local_mode:
     # Aquí, en lugar de ejecutar pipeline.start(), ejecutamos manualmente los pasos del pipeline.
     print(f"Ejecutando pasos de pipeline {pipeline_name} localmente...")
 
-    # Aquí es donde deberías definir los pasos del pipeline
-    # Por ejemplo, podrías invocar directamente los scripts que definen tus pasos
-    os.system("python3 pipelines/sources/lead_conversion/evaluate.py")
+    # Ejecución del script evaluate.py pasando argumentos
+    os.system("python3 pipelines/sources/lead_conversion/evaluate.py --config_parameter 'Cloud Developer' --name 'Santiago'")
+
+    # Ejecución del siguiente paso
     os.system("python3 pipelines/sources/lead_conversion/simple_step.py")
 
     print("Ejecución local del pipeline completada.")
