@@ -54,14 +54,14 @@ class LeadConversionFactory(SagemakerPipelineFactory):
             # Definir inputs y outputs para procesamiento en la nube
             inputs = [
                 sagemaker.processing.ProcessingInput(
-                    source='s3://dsm-sm-data/input-data',  # Ruta de los datos en S3
+                    source='s3://dsa-sm-data/input-data',  # Ruta de los datos en S3
                     destination='/opt/ml/processing/input'  # Directorio en el contenedor
                 )
             ]
             outputs = [
                 sagemaker.processing.ProcessingOutput(
                     source='/opt/ml/processing/output',  # Directorio donde se generan los resultados
-                    destination='s3://dsm-sm-data/output-data'  # Ruta en S3 donde guardar los resultados
+                    destination='s3://dsa-sm-data/output-data'  # Ruta en S3 donde guardar los resultados
                 )
             ]
 

@@ -35,21 +35,12 @@ class SagemakerStack(cdk.Stack):
             # Crear o reutilizar el bucket de S3 para los fuentes de SageMaker
             self.sm_sources_bucket = self.create_sm_sources_bucket()
 
-            # Verificar si el parámetro ya existe en SSM
-            try:
-                existing_parameter = ssm.StringParameter.from_string_parameter_name(
-                    self, 'ExistingSourcesBucketName', 
-                    string_parameter_name=f"/{self.prefix}/SourcesBucketName"
-                )
-                print(f"Parámetro existente encontrado: {existing_parameter.string_value}")
-            except Exception:
-                # Si el parámetro no existe, crearlo
-                ssm.StringParameter(
-                    self, 'SourcesBucketName',
-                    string_value=self.sm_sources_bucket.bucket_name,
-                    parameter_name=f"/{self.prefix}/SourcesBucketName",
-                    description="SageMaker Sources Bucket Name",
-                )
+            # Verificar si el parámetro ya existe en SSM y crearlo si no existe
+            self.ensure_ssm_parameter(
+                name=f"/{self.prefix}/SourcesBucketName",
+                value=self.sm_sources_bucket.bucket_name,
+                description="SageMaker Sources Bucket Name"
+            )
 
             # Conceder acceso de lectura al rol de ejecución de SageMaker
             self.sm_sources_bucket.grant_read(self.sm_execution_role)
@@ -88,8 +79,23 @@ class SagemakerStack(cdk.Stack):
                 user_settings=sm.CfnUserProfile.UserSettingsProperty(),
             )
 
-    # Métodos auxiliares (actualizados para reutilizar buckets y parámetros)
-    
+    def ensure_ssm_parameter(self, name: str, value: str, description: str):
+        """
+        Verificar si un parámetro ya existe en SSM y crearlo si no está presente.
+        """
+        try:
+            existing_parameter = ssm.StringParameter.from_string_parameter_name(
+                self, 'ExistingParameter', string_parameter_name=name)
+            print(f"Parámetro existente encontrado: {existing_parameter.string_value}")
+        except Exception:
+            print(f"Parámetro no encontrado, creando: {name}")
+            ssm.StringParameter(
+                self, 'NewParameter',
+                string_value=value,
+                parameter_name=name,
+                description=description,
+            )
+
     def create_execution_role(self) -> iam.Role:
         role = iam.Role(
             self, 'SagemakerExecutionRole',
@@ -103,11 +109,12 @@ class SagemakerStack(cdk.Stack):
                 ),
             ],
         )
-        ssm.StringParameter(
-            self, 'SagemakerExecutionRoleArn',
-            string_value=role.role_arn,
-            parameter_name=f"/{self.prefix}/SagemakerExecutionRoleArn",
-            description="SageMaker Execution Role ARN",
+        
+        # Almacenar el ARN del rol en SSM
+        self.ensure_ssm_parameter(
+            name=f"/{self.prefix}/SagemakerExecutionRoleArn",
+            value=role.role_arn,
+            description="SageMaker Execution Role ARN"
         )
 
         return role
@@ -115,10 +122,10 @@ class SagemakerStack(cdk.Stack):
     def create_sm_sources_bucket(self) -> s3.Bucket:
         try:
             # Intentar reutilizar el bucket si ya existe
-            return s3.Bucket.from_bucket_name(self, "ExistingSourcesBucket", bucket_name="dsm-sm-sources")
+            return s3.Bucket.from_bucket_name(self, "ExistingSourcesBucket", bucket_name=f"{self.prefix}-sm-sources")
         except Exception as e:
             # Si no existe, crear uno nuevo
-            print(f"El bucket 'dsm-sm-sources' no existe, creando uno nuevo. Detalles del error: {e}")
+            print(f"El bucket no existe, creando uno nuevo. Detalles del error: {e}")
             return s3.Bucket(
                 self,
                 id="SourcesBucket",
@@ -140,10 +147,10 @@ class SagemakerStack(cdk.Stack):
     def create_data_bucket(self):
         try:
             # Intentar reutilizar el bucket si ya existe
-            return s3.Bucket.from_bucket_name(self, "ExistingDataBucket", bucket_name="dsm-sm-data")
+            return s3.Bucket.from_bucket_name(self, "ExistingDataBucket", bucket_name=f"{self.prefix}-sm-data")
         except Exception as e:
             # Si no existe, crear uno nuevo
-            print(f"El bucket 'dsm-sm-data' no existe, creando uno nuevo. Detalles del error: {e}")
+            print(f"El bucket no existe, creando uno nuevo. Detalles del error: {e}")
             return s3.Bucket(
                 self,
                 id="DataBucket",
