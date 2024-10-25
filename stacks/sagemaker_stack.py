@@ -134,37 +134,28 @@ class SagemakerStack(cdk.Stack):
                 versioned=False,
                 removal_policy=cdk.RemovalPolicy.DESTROY,
                 auto_delete_objects=True,
-                # Access
                 access_control=s3.BucketAccessControl.PRIVATE,
                 block_public_access=s3.BlockPublicAccess.BLOCK_ALL,
                 public_read_access=False,
                 object_ownership=s3.ObjectOwnership.OBJECT_WRITER,
                 enforce_ssl=True,
-                # Encryption
                 encryption=s3.BucketEncryption.S3_MANAGED,
             )
 
-    def create_data_bucket(self):
-        try:
-            # Intentar reutilizar el bucket si ya existe
-            return s3.Bucket.from_bucket_name(self, "ExistingDataBucket", bucket_name=f"{self.prefix}-sm-data")
-        except Exception as e:
-            # Si no existe, crear uno nuevo
-            print(f"El bucket no existe, creando uno nuevo. Detalles del error: {e}")
-            return s3.Bucket(
-                self,
-                id="DataBucket",
-                bucket_name=f"{self.prefix}-sm-data-{self.account}",  # Cambia el nombre para que sea único
-                lifecycle_rules=[],
-                versioned=False,
-                removal_policy=cdk.RemovalPolicy.DESTROY,
-                auto_delete_objects=True,
-                # Access
-                access_control=s3.BucketAccessControl.PRIVATE,
-                block_public_access=s3.BlockPublicAccess.BLOCK_ALL,
-                public_read_access=False,
-                object_ownership=s3.ObjectOwnership.OBJECT_WRITER,
-                enforce_ssl=True,
-                # Encryption
-                encryption=s3.BucketEncryption.S3_MANAGED,
-            )
+    def create_data_bucket(self) -> s3.Bucket:
+        # Crear un nuevo bucket de datos siempre, con un nombre único basado en el prefijo y la cuenta
+        return s3.Bucket(
+            self,
+            id="DataBucket",
+            bucket_name=f"{self.prefix}-sm-data-{self.account}",  # Asegura un nombre único para el bucket
+            lifecycle_rules=[],
+            versioned=False,
+            removal_policy=cdk.RemovalPolicy.DESTROY,  # Eliminar el bucket al destruir la stack
+            auto_delete_objects=True,  # Borrar los objetos al eliminar el bucket
+            access_control=s3.BucketAccessControl.PRIVATE,  # Acceso privado al bucket
+            block_public_access=s3.BlockPublicAccess.BLOCK_ALL,  # Bloquear acceso público
+            public_read_access=False,
+            object_ownership=s3.ObjectOwnership.OBJECT_WRITER,
+            enforce_ssl=True,
+            encryption=s3.BucketEncryption.S3_MANAGED,  # Encriptar los objetos en el bucket
+        )

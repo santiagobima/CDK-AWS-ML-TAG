@@ -28,17 +28,14 @@ vpc_name = app.node.try_get_context("vpc_name")
 if not vpc_name:
     raise ValueError("The VPC name was not found in the context. Please specify 'vpc_name' in cdk.json.")
 
-# Crear la instancia de la fábrica de pipelines
-factory = LeadConversionFactory(pipeline_config_parameter="Cloud Developer")
-
 # Crear el stack de recursos de SageMaker, pasando el nombre de la VPC
 sagemaker_stack = SagemakerStack(app, id=f"{LOGICAL_PREFIX}-SagemakerStack", vpc_name=vpc_name, env=env)
 
 # Crear el stack de pipelines, pasando la fábrica válida
-pipeline_stack = PipelineStack(
+lead_conversion_pipeline = PipelineStack(
     app,
     id=f"{LOGICAL_PREFIX}-PipelinesStack",
-    factory=factory,  # Pasa la fábrica aquí
+    factory=LeadConversionFactory(pipeline_config_parameter="Cloud Developer"),  # Pasa la fábrica aquí
     env=env
 )
 

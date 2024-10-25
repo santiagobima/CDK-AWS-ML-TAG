@@ -9,7 +9,7 @@ import os
 
 class LeadConversionFactory(SagemakerPipelineFactory):
     pipeline_config_parameter: str
-
+        
     def create(
         self,
         role: str,
@@ -54,14 +54,16 @@ class LeadConversionFactory(SagemakerPipelineFactory):
             # Definir inputs y outputs para procesamiento en la nube
             inputs = [
                 sagemaker.processing.ProcessingInput(
-                    source='s3://dsa-sm-data/input-data',  # Ruta de los datos en S3
-                    destination='/opt/ml/processing/input'  # Directorio en el contenedor
+                    source='s3://dsa-sm-data-373024328391',  # Ruta de los datos en S3 --> needs to change 
+                    #source=f's3://{DATA_BUCKET}'
+                    destination='s3://dsa-sm-data-373024328391'
+                    #destination=f's3://{ML_BUCKET}'
                 )
             ]
             outputs = [
                 sagemaker.processing.ProcessingOutput(
-                    source='/opt/ml/processing/output',  # Directorio donde se generan los resultados
-                    destination='s3://dsa-sm-data/output-data'  # Ruta en S3 donde guardar los resultados
+                    source='s3://dsa-sm-data-373024328391',  # Directorio donde se generan los resultados
+                    destination='s3://dsa-sm-data-373024328391'  # Ruta en S3 donde guardar los resultados
                 )
             ]
 
@@ -101,6 +103,7 @@ class LeadConversionFactory(SagemakerPipelineFactory):
             sagemaker_session=sm_session,
             parameters=[instance_type_var],
         )
+
 
 
 """This error is thrown because in SageMaker's ProcessingStep, either step_args or processor is required, but not both at the same time.In your lead_conversion_definition.py, you're defining processing_step_2 without the required arguments:"""

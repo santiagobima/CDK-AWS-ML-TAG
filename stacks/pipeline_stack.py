@@ -19,6 +19,7 @@ class PipelineStack(cdk.Stack):
         id: str,
         factory: SagemakerPipelineFactory,
         env: cdk.Environment,  # Recibimos el entorno como argumento
+        local_mode: bool = False,
         **kwargs
     ) -> None:
         # Pasar 'env' directamente al constructor de 'cdk.Stack'
