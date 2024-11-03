@@ -42,28 +42,26 @@ class LeadConversionFactory(SagemakerPipelineFactory):
             sagemaker_session=sm_session,
         )
 
-        # Paso 1: Ejemplo de paso de procesamiento
+        # Paso de procesamiento con S3 como única ubicación de datos
         if local_mode:
             code_path = os.path.abspath("./pipelines/sources/lead_conversion/evaluate.py")
             inputs = []  # No inputs for local mode
             outputs = []  # No outputs for local mode
         else:
-            # En modo no local, usa S3
+            # En modo no local, usa S3 sin subdirectorios adicionales
             code_path = "pipelines/sources/lead_conversion/evaluate.py"
             
-            # Definir inputs y outputs para procesamiento en la nube
+            # Definir inputs y outputs usando el bucket directamente
             inputs = [
                 sagemaker.processing.ProcessingInput(
-                    source='s3://dsa-sm-data-373024328391',  # Ruta de los datos en S3 --> needs to change 
-                    #source=f's3://{DATA_BUCKET}'
-                    destination='s3://dsa-sm-data-373024328391'
-                    #destination=f's3://{ML_BUCKET}'
+                    source='s3://dsa-sm-data-373024328391',  # Ruta directa en S3
+                    destination='/opt/ml/processing/input'   # Ruta en el contenedor
                 )
             ]
             outputs = [
                 sagemaker.processing.ProcessingOutput(
-                    source='s3://dsa-sm-data-373024328391',  # Directorio donde se generan los resultados
-                    destination='s3://dsa-sm-data-373024328391'  # Ruta en S3 donde guardar los resultados
+                    source='/opt/ml/processing/output',  # Directorio de salida en el contenedor
+                    destination='s3://dsa-sm-data-373024328391'  # Ruta directa en S3 para los resultados
                 )
             ]
 
@@ -80,7 +78,7 @@ class LeadConversionFactory(SagemakerPipelineFactory):
             ],
         )
 
-        # Paso 2: Paso de procesamiento local sin S3
+        # Paso de procesamiento local sin S3
         processing_step_2 = ProcessingStep(
             name="local-processing-step",
             step_args=processor.run(
