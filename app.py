@@ -1,17 +1,27 @@
 #!/usr/bin/env python3
 
-import aws_cdk as cdk
-import aws_cdk.aws_ec2 as ec2
-from constructs import Construct
 import os
+import aws_cdk as cdk
+from dotenv import load_dotenv
+from constructs import Construct
 
 from stacks.sagemaker_stack import SagemakerStack
 from stacks.pipeline_stack import PipelineStack
-from pipelines.definitions.lead_conversion_pipeline import LeadConversionFactory  # Importamos la fábrica
+from pipelines.definitions.lead_conversion_pipeline import LeadConversionFactory
 
 LOGICAL_PREFIX = "DSM"
 
-# Función para obtener el entorno de la cuenta y la región
+# Cargar el archivo .env en función del entorno
+environment = os.getenv("ENVIRONMENT", "sandbox").lower()
+env_file = f"env/.env.dev" if environment == "sandbox" else f"env/.env.prod"  
+load_dotenv(env_file)
+
+# Confirmación de variables de entorno
+print(f"Entorno seleccionado: {environment}")
+print(f"Archivo de entorno cargado: {env_file}")
+print(f"DATA_BUCKET: {os.getenv('DATA_BUCKET')}")
+print(f"SOURCES_BUCKET: {os.getenv('SOURCES_BUCKET')}")
+
 def get_environment_from_context(app):
     account = app.node.try_get_context("account")
     region = app.node.try_get_context("region")
@@ -24,21 +34,20 @@ app = cdk.App()
 env = get_environment_from_context(app)
 vpc_name = app.node.try_get_context("vpc_name")
 
-# Validar que el nombre de la VPC esté presente en el contexto
 if not vpc_name:
     raise ValueError("The VPC name was not found in the context. Please specify 'vpc_name' in cdk.json.")
 
-# Crear el stack de recursos de SageMaker, pasando el nombre de la VPC
+# Crear el stack de recursos de SageMaker
 sagemaker_stack = SagemakerStack(app, id=f"{LOGICAL_PREFIX}-SagemakerStack", vpc_name=vpc_name, env=env)
 
-# Crear el stack de pipelines, pasando la fábrica válida
+# Crear el stack de pipelines y establecer dependencia
 lead_conversion_pipeline = PipelineStack(
     app,
     id=f"{LOGICAL_PREFIX}-PipelinesStack",
-    factory=LeadConversionFactory(pipeline_config_parameter="Cloud Developer"),  # Pasa la fábrica aquí
+    factory=LeadConversionFactory(pipeline_config_parameter="Cloud Developer"),
     env=env
 )
+lead_conversion_pipeline.add_dependency(sagemaker_stack)  # Establecer dependencia
 
 # Generar el template
 app.synth()
-

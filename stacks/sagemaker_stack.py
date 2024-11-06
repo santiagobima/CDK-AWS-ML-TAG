@@ -1,7 +1,6 @@
 import os
 import aws_cdk as cdk
 from aws_cdk import (
-    aws_sagemaker as sm,
     aws_iam as iam,
     aws_s3 as s3,
     aws_ec2 as ec2,
@@ -14,8 +13,8 @@ class SagemakerStack(cdk.Stack):
         self,
         scope: Construct,
         id: str,
-        vpc_name: str,  # Pasamos el nombre de la VPC en lugar de un objeto VPC
-        env: cdk.Environment,  # Env se mantiene igual
+        vpc_name: str,
+        env: cdk.Environment,
         **kwargs
     ) -> None:
         super().__init__(scope, id, env=env, **kwargs)
@@ -32,68 +31,38 @@ class SagemakerStack(cdk.Stack):
         self.sm_execution_role = self.create_execution_role()
 
         if not local_mode:
-            # Crear o reutilizar el bucket de S3 para los fuentes de SageMaker
-            self.sm_sources_bucket = self.create_sm_sources_bucket()
+            # Obtener el bucket de S3 para los datos de SageMaker desde el entorno o crearlo si no existe
+            data_bucket_name = os.getenv("DATA_BUCKET")
+            self.sm_data_bucket = self.get_or_create_bucket(data_bucket_name, "DataBucket")
 
-            # Verificar si el parámetro ya existe en SSM y crearlo si no existe
-            self.ensure_ssm_parameter(
-                name=f"/{self.prefix}/SourcesBucketName",
-                value=self.sm_sources_bucket.bucket_name,
-                description="SageMaker Sources Bucket Name"
-            )
+            # Obtener el bucket de S3 para las fuentes de SageMaker desde el entorno o crearlo si no existe
+            sources_bucket_name = os.getenv("SOURCES_BUCKET")
+            self.sm_sources_bucket = self.get_or_create_bucket(sources_bucket_name, "SourcesBucket")
 
-            # Conceder acceso de lectura al rol de ejecución de SageMaker
+            # Conceder acceso de lectura/escritura al rol de ejecución de SageMaker en ambos buckets
+            self.sm_data_bucket.grant_read_write(self.sm_execution_role)
             self.sm_sources_bucket.grant_read(self.sm_execution_role)
 
-            # Crear o reutilizar el bucket de S3 para los datos de SageMaker
-            self.sm_data_bucket = self.create_data_bucket()
-
-            # Conceder acceso de lectura/escritura al rol de ejecución de SageMaker
-            self.sm_data_bucket.grant_read_write(self.sm_execution_role)
-
-            # Obtener los subnets públicos de la VPC
-            public_subnet_ids = [public_subnet.subnet_id for public_subnet in self.vpc.public_subnets]
-
-            # Crear el dominio de SageMaker Studio (solo en modo no local)
-            self.domain = sm.CfnDomain(
-                self, "SagemakerDomain",
-                auth_mode='IAM',
-                domain_name=f'{self.prefix}-SG-Project',
-                default_user_settings=sm.CfnDomain.UserSettingsProperty(
-                    execution_role=self.sm_execution_role.role_arn
-                ),
-                app_network_access_type='PublicInternetOnly',
-                vpc_id=self.vpc.vpc_id,
-                subnet_ids=public_subnet_ids,
-                tags=[cdk.CfnTag(
-                    key="project",
-                    value="example-pipelines"
-                )],
-            )
-
-            # Crear el perfil de usuario predeterminado de SageMaker Studio
-            self.user = sm.CfnUserProfile(
-                self, 'SageMakerStudioUserProfile',
-                domain_id=self.domain.attr_domain_id,
-                user_profile_name='default-user',
-                user_settings=sm.CfnUserProfile.UserSettingsProperty(),
-            )
-
-    def ensure_ssm_parameter(self, name: str, value: str, description: str):
-        """
-        Verificar si un parámetro ya existe en SSM y crearlo si no está presente.
-        """
-        try:
-            existing_parameter = ssm.StringParameter.from_string_parameter_name(
-                self, 'ExistingParameter', string_parameter_name=name)
-            print(f"Parámetro existente encontrado: {existing_parameter.string_value}")
-        except Exception:
-            print(f"Parámetro no encontrado, creando: {name}")
+            # Crear los parámetros en SSM
             ssm.StringParameter(
-                self, 'NewParameter',
-                string_value=value,
-                parameter_name=name,
-                description=description,
+                self, 'DataBucketName',
+                parameter_name=f"/{self.prefix}/DataBucketName",
+                string_value=self.sm_data_bucket.bucket_name,
+                description="Data bucket name for SageMaker"
+            )
+
+            ssm.StringParameter(
+                self, 'SourcesBucketName',
+                parameter_name=f"/{self.prefix}/SourcesBucketName",
+                string_value=self.sm_sources_bucket.bucket_name,
+                description="Sources bucket name for SageMaker"
+            )
+
+            ssm.StringParameter(
+                self, 'SagemakerExecutionRoleArn',
+                parameter_name=f"/{self.prefix}/SagemakerExecutionRoleArn",
+                string_value=self.sm_execution_role.role_arn,
+                description="SageMaker Execution Role ARN"
             )
 
     def create_execution_role(self) -> iam.Role:
@@ -109,53 +78,51 @@ class SagemakerStack(cdk.Stack):
                 ),
             ],
         )
-        
-        # Almacenar el ARN del rol en SSM
-        self.ensure_ssm_parameter(
-            name=f"/{self.prefix}/SagemakerExecutionRoleArn",
-            value=role.role_arn,
-            description="SageMaker Execution Role ARN"
-        )
+
+        # Agregar permisos específicos para los buckets de datos y fuentes
+        role.add_to_policy(iam.PolicyStatement(
+            actions=[
+                "s3:ListBucket",
+                "s3:GetBucketLocation",
+                "s3:GetObject",
+                "s3:PutObject",
+                "s3:DeleteObject"
+            ],
+            resources=[
+                f"arn:aws:s3:::{os.getenv('DATA_BUCKET')}",
+                f"arn:aws:s3:::{os.getenv('DATA_BUCKET')}/*",
+                f"arn:aws:s3:::{os.getenv('SOURCES_BUCKET')}",
+                f"arn:aws:s3:::{os.getenv('SOURCES_BUCKET')}/*"
+            ]
+        ))
 
         return role
 
-    def create_sm_sources_bucket(self) -> s3.Bucket:
-        try:
-            # Intentar reutilizar el bucket si ya existe
-            return s3.Bucket.from_bucket_name(self, "ExistingSourcesBucket", bucket_name=f"{self.prefix}-sm-sources")
-        except Exception as e:
-            # Si no existe, crear uno nuevo
-            print(f"El bucket no existe, creando uno nuevo. Detalles del error: {e}")
-            return s3.Bucket(
-                self,
-                id="SourcesBucket",
-                bucket_name=f"{self.prefix}-sm-sources-{self.account}",  # Cambia el nombre para que sea único
-                lifecycle_rules=[],
-                versioned=False,
-                removal_policy=cdk.RemovalPolicy.DESTROY,
-                auto_delete_objects=True,
-                access_control=s3.BucketAccessControl.PRIVATE,
-                block_public_access=s3.BlockPublicAccess.BLOCK_ALL,
-                public_read_access=False,
-                object_ownership=s3.ObjectOwnership.OBJECT_WRITER,
-                enforce_ssl=True,
-                encryption=s3.BucketEncryption.S3_MANAGED,
-            )
+    def get_or_create_bucket(self, bucket_name: str, bucket_id: str) -> s3.Bucket:
+        """
+        Obtiene un bucket S3 por su nombre si existe, o lo crea si no.
+        """
+        if bucket_name:
+            try:
+                # Intentar reutilizar el bucket si ya existe
+                return s3.Bucket.from_bucket_name(self, bucket_id, bucket_name=bucket_name)
+            except Exception as e:
+                print(f"El bucket '{bucket_name}' especificado no existe o no es accesible. Detalles del error: {e}")
 
-    def create_data_bucket(self) -> s3.Bucket:
-        # Crear un nuevo bucket de datos siempre, con un nombre único basado en el prefijo y la cuenta
+        # Si el bucket no existe o no se especifica, crearlo
+        print(f"Creando nuevo bucket con ID '{bucket_id}' ya que no se encontró '{bucket_name}' en el entorno.")
         return s3.Bucket(
             self,
-            id="DataBucket",
-            bucket_name=f"{self.prefix}-sm-data-{self.account}",  # Asegura un nombre único para el bucket
+            id=bucket_id,
+            bucket_name=f"{self.prefix}-{bucket_id.lower()}-{self.account}",
             lifecycle_rules=[],
             versioned=False,
-            removal_policy=cdk.RemovalPolicy.DESTROY,  # Eliminar el bucket al destruir la stack
-            auto_delete_objects=True,  # Borrar los objetos al eliminar el bucket
-            access_control=s3.BucketAccessControl.PRIVATE,  # Acceso privado al bucket
-            block_public_access=s3.BlockPublicAccess.BLOCK_ALL,  # Bloquear acceso público
+            removal_policy=cdk.RemovalPolicy.DESTROY,
+            auto_delete_objects=True,
+            access_control=s3.BucketAccessControl.PRIVATE,
+            block_public_access=s3.BlockPublicAccess.BLOCK_ALL,
             public_read_access=False,
             object_ownership=s3.ObjectOwnership.OBJECT_WRITER,
             enforce_ssl=True,
-            encryption=s3.BucketEncryption.S3_MANAGED,  # Encriptar los objetos en el bucket
+            encryption=s3.BucketEncryption.S3_MANAGED,
         )

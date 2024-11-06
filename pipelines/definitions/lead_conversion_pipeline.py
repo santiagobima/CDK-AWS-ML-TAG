@@ -1,3 +1,4 @@
+import os
 import sagemaker
 import sagemaker.image_uris
 from sagemaker import LocalSession, ScriptProcessor
@@ -5,34 +6,33 @@ from sagemaker.workflow import parameters
 from sagemaker.workflow.pipeline import Pipeline
 from sagemaker.workflow.steps import ProcessingStep
 from pipelines.definitions.base import SagemakerPipelineFactory
-import os
 
 class LeadConversionFactory(SagemakerPipelineFactory):
     pipeline_config_parameter: str
-        
+
     def create(
         self,
         role: str,
         pipeline_name: str,
         sm_session: sagemaker.Session,
     ) -> Pipeline:
-        # Definir una variable de entorno para ejecutar en local o no
-        local_mode = os.getenv('LOCAL_MODE', 'false').lower() == 'true'
+        # Determinar si se está en modo local
+        local_mode = os.getenv("LOCAL_MODE", "false").lower() == "true"
 
-        # Definir un parámetro para configurar el tipo de instancia
+        # Parámetro de instancia (local o cloud)
         instance_type_var = parameters.ParameterString(
             name="InstanceType",
             default_value="local" if isinstance(sm_session, LocalSession) else "ml.m5.large"
         )
 
-        # Usar la imagen de SKLearn proporcionada por AWS SageMaker
+        # Configurar el URI de la imagen de SKLearn proporcionada por AWS SageMaker
         image_uri = sagemaker.image_uris.retrieve(
             framework="sklearn",
             region=sm_session.boto_region_name,
             version="0.23-1",
         )
 
-        # Crear un ScriptProcessor y agregar código/parámetros de ejecución
+        # Crear el ScriptProcessor con la configuración adecuada
         processor = ScriptProcessor(
             image_uri=image_uri,
             command=["python3"],
@@ -42,35 +42,38 @@ class LeadConversionFactory(SagemakerPipelineFactory):
             sagemaker_session=sm_session,
         )
 
-        # Paso de procesamiento con S3 como única ubicación de datos
+        # Obtener el bucket de datos desde la variable de entorno, y eliminar cualquier barra al final
+        data_bucket_name = os.getenv("DATA_BUCKET").rstrip('/')
+
+        # Configurar los inputs y outputs dependiendo del modo
         if local_mode:
             code_path = os.path.abspath("./pipelines/sources/lead_conversion/evaluate.py")
-            inputs = []  # No inputs for local mode
-            outputs = []  # No outputs for local mode
+            inputs = []
+            outputs = []
         else:
-            # En modo no local, usa S3 sin subdirectorios adicionales
             code_path = "pipelines/sources/lead_conversion/evaluate.py"
-            
-            # Definir inputs y outputs usando el bucket directamente
+
+            # Definir inputs y outputs basados en S3 usando el bucket de datos del entorno
             inputs = [
                 sagemaker.processing.ProcessingInput(
-                    source='s3://dsa-sm-data-373024328391',  # Ruta directa en S3
-                    destination='/opt/ml/processing/input'   # Ruta en el contenedor
+                    source=f"s3://{data_bucket_name}/input-data",  # Ajuste para una subcarpeta si es necesario
+                    destination="/opt/ml/processing/input"
                 )
             ]
             outputs = [
                 sagemaker.processing.ProcessingOutput(
-                    source='/opt/ml/processing/output',  # Directorio de salida en el contenedor
-                    destination='s3://dsa-sm-data-373024328391'  # Ruta directa en S3 para los resultados
+                    source="/opt/ml/processing/output",
+                    destination=f"s3://{data_bucket_name}/output-data"
                 )
             ]
 
+        # Crear el paso de procesamiento
         processing_step = ProcessingStep(
             name="processing-example",
             step_args=processor.run(
                 code=code_path,
-                inputs=inputs,  # Pasa los inputs aquí
-                outputs=outputs  # Pasa los outputs aquí
+                inputs=inputs,
+                outputs=outputs
             ),
             job_arguments=[
                 "--config-parameter", self.pipeline_config_parameter,
@@ -78,30 +81,29 @@ class LeadConversionFactory(SagemakerPipelineFactory):
             ],
         )
 
-        # Paso de procesamiento local sin S3
+        # Paso 2: Paso de procesamiento local sin S3
         processing_step_2 = ProcessingStep(
             name="local-processing-step",
             step_args=processor.run(
                 code="pipelines/sources/lead_conversion/simple_step.py",
-                inputs=[],  # Sin entradas
-                outputs=[],  # Sin salidas
+                inputs=[],
+                outputs=[],
             ),
         )
 
-        # Definir los pasos a incluir en el pipeline según el modo (local o no local)
+        # Definir los pasos del pipeline en función del modo
         if local_mode:
-            steps = [processing_step_2]  # Solo el paso local
+            steps = [processing_step_2]
         else:
-            steps = [processing_step]  # Solo el paso no local
+            steps = [processing_step]
 
-        # Definir el pipeline con los pasos apropiados
+        # Definir el pipeline completo
         return Pipeline(
             name=pipeline_name,
-            steps=steps,  # Incluir solo los pasos relevantes según el modo
+            steps=steps,
             sagemaker_session=sm_session,
             parameters=[instance_type_var],
         )
-
 
 
 """This error is thrown because in SageMaker's ProcessingStep, either step_args or processor is required, but not both at the same time.In your lead_conversion_definition.py, you're defining processing_step_2 without the required arguments:"""
