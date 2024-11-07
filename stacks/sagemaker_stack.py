@@ -13,8 +13,8 @@ class SagemakerStack(cdk.Stack):
         self,
         scope: Construct,
         id: str,
-        vpc_name: str,
         env: cdk.Environment,
+        vpc_name: str,
         **kwargs
     ) -> None:
         super().__init__(scope, id, env=env, **kwargs)

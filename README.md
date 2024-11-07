@@ -54,3 +54,8 @@ Follow the instructions to run the pipeline:
 python trigger_sagemaker_sdk.py
 
 
+
+
+In order to execute :cdk deploy --all  --profile sandbox --context env=dev
+
+In order to delete: cdk destroy --all  --profile sandbox --context env=dev

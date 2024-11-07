@@ -27,6 +27,7 @@ class PipelineStack(cdk.Stack):
         self.factory = factory
         self.prefix = self.node.try_get_context("resource_prefix")
         local_mode = os.getenv('LOCAL_MODE', 'false').lower() == 'true'
+        #self.local_mode = local_mode --> es el que tengo que activar y comentar el de arriba
         env_region = "eu-west-1" if local_mode else self.region
 
         # Cargar nombres de recursos desde SSM Parameter Store (solo si no estamos en modo local)
