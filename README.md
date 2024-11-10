@@ -66,3 +66,7 @@ In order to exectute the pipeline: python pipelines/executions/trigger_pipeline_
 
 In order to delete: cdk destroy --all  --profile sandbox --context env=dev
 
+
+Branch base: develop-environment: All works with the environment working and the pipeline working. Ultima vez utilizada 10.11.2024
+
+Branch where I am working now  : develop
