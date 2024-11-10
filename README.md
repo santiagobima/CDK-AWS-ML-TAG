@@ -56,6 +56,13 @@ python trigger_sagemaker_sdk.py
 
 
 
+
+
+In order to bootstrap : cdk bootstrap  --profile sandbox --context env=dev
+
 In order to execute :cdk deploy --all  --profile sandbox --context env=dev
 
+In order to exectute the pipeline: python pipelines/executions/trigger_pipeline_sagemaker_sdk.py
+
 In order to delete: cdk destroy --all  --profile sandbox --context env=dev
+
