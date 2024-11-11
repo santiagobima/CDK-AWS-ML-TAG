@@ -1,48 +1,38 @@
-# pipeline_stack.py
 import os
 import json
+import logging
 from typing import Tuple
 import aws_cdk as cdk
 import sagemaker
-from aws_cdk import (
-    aws_sagemaker as sm,
-    aws_ssm as ssm,
-)
+from aws_cdk import aws_sagemaker as sm, aws_ssm as ssm
 from constructs import Construct
-
 from pipelines.definitions.base import SagemakerPipelineFactory, create_sagemaker_session
 
+# Configuración del logger
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 class PipelineStack(cdk.Stack):
+    """
+    Stack de CDK para la configuración de pipelines de SageMaker, 
+    soporta ejecución en modo local o en la nube.
+    """
     def __init__(
         self,
         scope: Construct,
         id: str,
         factory: SagemakerPipelineFactory,
         env: cdk.Environment,
-        local_mode: bool = False,
+        local_mode: bool,  # Recibe `local_mode` desde app.py
         **kwargs
     ) -> None:
         super().__init__(scope, id, env=env, **kwargs)
-
+        
         self.factory = factory
         self.prefix = self.node.try_get_context("resource_prefix")
-        local_mode = os.getenv('LOCAL_MODE', 'false').lower() == 'true'
-        #self.local_mode = local_mode --> es el que tengo que activar y comentar el de arriba
-        env_region = "eu-west-1" if local_mode else self.region
-
-        # Cargar nombres de recursos desde SSM Parameter Store (solo si no estamos en modo local)
-        if not local_mode:
-            try:
-                sources_bucket_name = ssm.StringParameter.value_from_lookup(
-                    self, f"/{self.prefix}/SourcesBucketName")
-                sm_execution_role_arn = ssm.StringParameter.value_from_lookup(
-                    self, f"/{self.prefix}/SagemakerExecutionRoleArn")
-            except Exception as e:
-                print(f"Error al obtener parámetros SSM: {e}")
-                raise ValueError("Parámetros SSM no disponibles. Asegúrate de que `DSM-SagemakerStack` se haya desplegado primero.")
-        else:
-            sources_bucket_name = "awsbucketsb"
-            sm_execution_role_arn = "arn:aws:iam::123456789012:role/local-role"
+        
+        # Cargar nombres de recursos desde SSM Parameter Store
+        sources_bucket_name, sm_execution_role_arn = self._load_ssm_parameters()
 
         # Crear el pipeline configurado
         self.lead_conversion, self.lead_conversion_arn = self.create_pipeline(
@@ -50,7 +40,25 @@ class PipelineStack(cdk.Stack):
             pipeline_factory=self.factory,
             sources_bucket_name=sources_bucket_name,
             sm_execution_role_arn=sm_execution_role_arn,
+            local_mode=local_mode  # Se pasa `local_mode` al pipeline
         )
+
+    def _load_ssm_parameters(self) -> Tuple[str, str]:
+        """
+        Carga los parámetros necesarios desde SSM.
+
+        :return: Tupla con el nombre del bucket de fuentes y el ARN del rol de ejecución.
+        """
+        try:
+            sources_bucket_name = ssm.StringParameter.value_from_lookup(
+                self, f"/{self.prefix}/SourcesBucketName")
+            sm_execution_role_arn = ssm.StringParameter.value_from_lookup(
+                self, f"/{self.prefix}/SagemakerExecutionRoleArn")
+            logger.info("Parámetros cargados exitosamente desde SSM.")
+            return sources_bucket_name, sm_execution_role_arn
+        except Exception as e:
+            logger.error(f"Error al obtener parámetros SSM: {e}")
+            raise ValueError("Parámetros SSM no disponibles. Despliega `DSM-SagemakerStack` primero.")
 
     def create_pipeline(
         self,
@@ -58,29 +66,33 @@ class PipelineStack(cdk.Stack):
         pipeline_factory: SagemakerPipelineFactory,
         sources_bucket_name: str,
         sm_execution_role_arn: str,
+        local_mode: bool
     ) -> Tuple[sm.CfnPipeline, str]:
-        local_mode = os.getenv('LOCAL_MODE', 'false').lower() == 'true'
-        sm_session: sagemaker.Session = create_sagemaker_session(
-            region=self.region,
+        """
+        Crea y configura el pipeline de SageMaker.
+
+        :param pipeline_name: Nombre del pipeline.
+        :param pipeline_factory: Fábrica de pipeline.
+        :param sources_bucket_name: Nombre del bucket de fuentes.
+        :param sm_execution_role_arn: ARN del rol de ejecución de SageMaker.
+        :param local_mode: Si es True, se usa LocalPipelineSession.
+        :return: El recurso SageMaker::Pipeline y su ARN.
+        """
+        # Crear sesión de SageMaker en función de local_mode
+        sm_session = create_sagemaker_session(
             default_bucket=sources_bucket_name,
             local_mode=local_mode
         )
 
-        if 'dummy-value-for-' in sources_bucket_name:
-            pipeline_def_json = '{}'
-        else:
-            pipeline = pipeline_factory.create(
-                pipeline_name=pipeline_name,
-                role=sm_execution_role_arn,
-                sm_session=sm_session,
-            )
-            pipeline_def_json = json.dumps(json.loads(pipeline.definition()), indent=2, sort_keys=True)
+        pipeline = pipeline_factory.create(
+            pipeline_name=pipeline_name,
+            role=sm_execution_role_arn,
+            sm_session=sm_session,
+        )
+        pipeline_def_json = json.dumps(json.loads(pipeline.definition()), indent=2, sort_keys=True)
+        logger.info(f"Definición del pipeline para '{pipeline_name}' generada con éxito.")
 
-        if local_mode:
-            print("Ejecutando en modo local. No se creará el recurso SageMaker::Pipeline.")
-            arn = f"arn:aws:sagemaker:{self.region}:{self.account}:pipeline/{pipeline_name}"
-            return None, arn
-
+        # Crear el recurso CfnPipeline en la nube
         pipeline_cfn = sm.CfnPipeline(
             self,
             id=f"SagemakerPipeline-{pipeline_name}",
@@ -93,4 +105,5 @@ class PipelineStack(cdk.Stack):
             resource='pipeline',
             resource_name=pipeline_cfn.pipeline_name,
         )
+        logger.info(f"Pipeline '{pipeline_name}' creado en la nube con ARN: {arn}.")
         return pipeline_cfn, arn

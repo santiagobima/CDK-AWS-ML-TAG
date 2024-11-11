@@ -1,71 +1,63 @@
 import os
+import logging
 import aws_cdk as cdk
-from aws_cdk import (
-    aws_iam as iam,
-    aws_s3 as s3,
-    aws_ec2 as ec2,
-    aws_ssm as ssm,
-)
+from aws_cdk import aws_iam as iam, aws_s3 as s3, aws_ec2 as ec2, aws_ssm as ssm
 from constructs import Construct
 
+# Configuración del logger
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 class SagemakerStack(cdk.Stack):
+    """
+    Stack de CDK para los recursos de SageMaker, incluyendo roles y buckets necesarios para los pipelines.
+    """
     def __init__(
         self,
         scope: Construct,
         id: str,
         env: cdk.Environment,
         vpc_name: str,
+        local_mode: bool,  # Recibe `local_mode` desde app.py
         **kwargs
     ) -> None:
         super().__init__(scope, id, env=env, **kwargs)
-
+        
         self.prefix = self.node.try_get_context("resource_prefix")
 
-        # Verificar si estamos en modo local
-        local_mode = os.getenv('LOCAL_MODE', 'false').lower() == 'true'
-
-        # Lookup de la VPC usando el nombre pasado como argumento
+        # Lookup de la VPC
         self.vpc = ec2.Vpc.from_lookup(self, id=f"{self.prefix}-VpcLookup", vpc_id=vpc_name)
+        logger.info(f"VPC '{vpc_name}' cargada exitosamente.")
 
         # Crear el rol de ejecución de SageMaker
         self.sm_execution_role = self.create_execution_role()
 
-        if not local_mode:
-            # Obtener el bucket de S3 para los datos de SageMaker desde el entorno o crearlo si no existe
-            data_bucket_name = os.getenv("DATA_BUCKET")
-            self.sm_data_bucket = self.get_or_create_bucket(data_bucket_name, "DataBucket")
+        # Obtener o crear buckets de datos y fuentes
+        self.sm_data_bucket = self.get_or_create_bucket(
+            bucket_name=os.getenv("DATA_BUCKET"),
+            bucket_id="DataBucket",
+            description="Data bucket name for SageMaker"
+        )
 
-            # Obtener el bucket de S3 para las fuentes de SageMaker desde el entorno o crearlo si no existe
-            sources_bucket_name = os.getenv("SOURCES_BUCKET")
-            self.sm_sources_bucket = self.get_or_create_bucket(sources_bucket_name, "SourcesBucket")
+        self.sm_sources_bucket = self.get_or_create_bucket(
+            bucket_name=os.getenv("SOURCES_BUCKET"),
+            bucket_id="SourcesBucket",
+            description="Sources bucket name for SageMaker"
+        )
 
-            # Conceder acceso de lectura/escritura al rol de ejecución de SageMaker en ambos buckets
-            self.sm_data_bucket.grant_read_write(self.sm_execution_role)
-            self.sm_sources_bucket.grant_read(self.sm_execution_role)
+        # Conceder acceso de lectura/escritura en los buckets
+        self.sm_data_bucket.grant_read_write(self.sm_execution_role)
+        self.sm_sources_bucket.grant_read(self.sm_execution_role)
 
-            # Crear los parámetros en SSM
-            ssm.StringParameter(
-                self, 'DataBucketName',
-                parameter_name=f"/{self.prefix}/DataBucketName",
-                string_value=self.sm_data_bucket.bucket_name,
-                description="Data bucket name for SageMaker"
-            )
-
-            ssm.StringParameter(
-                self, 'SourcesBucketName',
-                parameter_name=f"/{self.prefix}/SourcesBucketName",
-                string_value=self.sm_sources_bucket.bucket_name,
-                description="Sources bucket name for SageMaker"
-            )
-
-            ssm.StringParameter(
-                self, 'SagemakerExecutionRoleArn',
-                parameter_name=f"/{self.prefix}/SagemakerExecutionRoleArn",
-                string_value=self.sm_execution_role.role_arn,
-                description="SageMaker Execution Role ARN"
-            )
+        # Crear parámetros en SSM
+        self.create_ssm_parameters()
 
     def create_execution_role(self) -> iam.Role:
+        """
+        Crea el rol de ejecución de SageMaker con los permisos necesarios.
+
+        :return: El rol de IAM creado.
+        """
         role = iam.Role(
             self, 'SagemakerExecutionRole',
             assumed_by=iam.ServicePrincipal('sagemaker.amazonaws.com'),
@@ -78,15 +70,13 @@ class SagemakerStack(cdk.Stack):
                 ),
             ],
         )
+        logger.info("Rol de ejecución de SageMaker creado con éxito.")
 
-        # Agregar permisos específicos para los buckets de datos y fuentes
+        # Agregar permisos específicos para los buckets
         role.add_to_policy(iam.PolicyStatement(
             actions=[
-                "s3:ListBucket",
-                "s3:GetBucketLocation",
-                "s3:GetObject",
-                "s3:PutObject",
-                "s3:DeleteObject"
+                "s3:ListBucket", "s3:GetBucketLocation",
+                "s3:GetObject", "s3:PutObject", "s3:DeleteObject"
             ],
             resources=[
                 f"arn:aws:s3:::{os.getenv('DATA_BUCKET')}",
@@ -95,27 +85,30 @@ class SagemakerStack(cdk.Stack):
                 f"arn:aws:s3:::{os.getenv('SOURCES_BUCKET')}/*"
             ]
         ))
-
         return role
 
-    def get_or_create_bucket(self, bucket_name: str, bucket_id: str) -> s3.Bucket:
+    def get_or_create_bucket(self, bucket_name: str, bucket_id: str, description: str) -> s3.Bucket:
         """
-        Obtiene un bucket S3 por su nombre si existe, o lo crea si no.
+        Obtiene o crea un bucket de S3 por su nombre.
+
+        :param bucket_name: Nombre del bucket especificado en el entorno.
+        :param bucket_id: Identificador del bucket.
+        :param description: Descripción para el parámetro SSM.
+        :return: Instancia del bucket de S3.
         """
         if bucket_name:
             try:
-                # Intentar reutilizar el bucket si ya existe
+                logger.info(f"Intentando cargar bucket '{bucket_name}'.")
                 return s3.Bucket.from_bucket_name(self, bucket_id, bucket_name=bucket_name)
             except Exception as e:
-                print(f"El bucket '{bucket_name}' especificado no existe o no es accesible. Detalles del error: {e}")
+                logger.warning(f"Bucket '{bucket_name}' no encontrado. Error: {e}")
 
-        # Si el bucket no existe o no se especifica, crearlo
-        print(f"Creando nuevo bucket con ID '{bucket_id}' ya que no se encontró '{bucket_name}' en el entorno.")
+        # Crear nuevo bucket si no existe
+        logger.info(f"Creando nuevo bucket con ID '{bucket_id}' ya que '{bucket_name}' no se encontró.")
         return s3.Bucket(
             self,
             id=bucket_id,
             bucket_name=f"{self.prefix}-{bucket_id.lower()}-{self.account}",
-            lifecycle_rules=[],
             versioned=False,
             removal_policy=cdk.RemovalPolicy.DESTROY,
             auto_delete_objects=True,
@@ -126,3 +119,32 @@ class SagemakerStack(cdk.Stack):
             enforce_ssl=True,
             encryption=s3.BucketEncryption.S3_MANAGED,
         )
+
+    def create_ssm_parameters(self):
+        """
+        Crea los parámetros necesarios en SSM Parameter Store para los nombres de los buckets
+        y el ARN del rol de ejecución.
+        """
+        ssm.StringParameter(
+            self, 'DataBucketName',
+            parameter_name=f"/{self.prefix}/DataBucketName",
+            string_value=self.sm_data_bucket.bucket_name,
+            description="Data bucket name for SageMaker"
+        )
+        logger.info(f"Parámetro SSM '/{self.prefix}/DataBucketName' creado.")
+
+        ssm.StringParameter(
+            self, 'SourcesBucketName',
+            parameter_name=f"/{self.prefix}/SourcesBucketName",
+            string_value=self.sm_sources_bucket.bucket_name,
+            description="Sources bucket name for SageMaker"
+        )
+        logger.info(f"Parámetro SSM '/{self.prefix}/SourcesBucketName' creado.")
+
+        ssm.StringParameter(
+            self, 'SagemakerExecutionRoleArn',
+            parameter_name=f"/{self.prefix}/SagemakerExecutionRoleArn",
+            string_value=self.sm_execution_role.role_arn,
+            description="SageMaker Execution Role ARN"
+        )
+        logger.info(f"Parámetro SSM '/{self.prefix}/SagemakerExecutionRoleArn' creado.")

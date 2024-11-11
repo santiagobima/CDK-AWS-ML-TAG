@@ -1,62 +1,46 @@
+import os
 import logging
-from abc import abstractmethod
-
+from abc import ABC, abstractmethod
 import boto3
 import sagemaker
-from sagemaker.workflow.pipeline import Pipeline
-
-from pydantic import BaseModel
+from sagemaker.workflow.pipeline import Pipeline  # Importación directa de Pipeline
 from sagemaker.workflow.pipeline_context import LocalPipelineSession, PipelineSession
+from pydantic import BaseModel
 
-logger = logging.getLogger()  #allowing you to use it throughout the project to log events, such as debugging information, errors, or other runtime details.
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
-
-
-
-class SagemakerPipelineFactory(BaseModel):
-    """Base class for all pipeline factories. The decorator is used to define the abstract method.meaning this method doesn't have an actual implementation in this class.
-"""
-
+class SagemakerPipelineFactory(BaseModel, ABC):
     @abstractmethod
     def create(
         self,
         role: str,
         pipeline_name: str,
         sm_session: sagemaker.Session,
-    ) -> Pipeline:
-        raise NotImplementedError
+    ) -> Pipeline:  # Uso directo de Pipeline en lugar de sagemaker.workflow.pipeline.Pipeline
+        raise NotImplementedError("Debe implementar el método 'create' en la subclase.")
 
-
-def create_sagemaker_session(
-    region: str,
-    default_bucket: str,
-    local_mode=False
-) -> sagemaker.session.Session:
+def create_sagemaker_session(default_bucket: str, local_mode=False) -> sagemaker.Session:
     """
-    Gets the sagemaker session based on the region.
-    :param region: the aws region to start the session
-    :param default_bucket: the bucket to use for storing the artifacts
-    :param local_mode: if True, the session will be created in local mode
-    :return:
+    Crea una sesión de SageMaker, en local si `local_mode=True`.
     """
+    region = os.getenv('CDK_DEFAULT_REGION')
     boto_session = boto3.Session(region_name=region)
 
-    sagemaker_client = boto_session.client("sagemaker")
     try:
         if local_mode:
-            sagemaker_session = LocalPipelineSession(
-                default_bucket=default_bucket,
-            )
-            logger.info("Modo local activado para SageMaker")
+            sagemaker_session = LocalPipelineSession(default_bucket=default_bucket)
+            logger.info("Modo local activado para SageMaker.")
         else:
+            sagemaker_client = boto_session.client("sagemaker")
             sagemaker_session = PipelineSession(
                 boto_session=boto_session,
                 sagemaker_client=sagemaker_client,
                 default_bucket=default_bucket,
             )
-            logger.info("Sesión de SageMaker en la nube activada")
+            logger.info("Sesión de SageMaker en la nube activada.")
     except Exception as e:
-        logger.exception("No se pudo crear la sesión de SageMaker")
-        raise e
+        logger.exception("Error al crear la sesión de SageMaker")
+        raise RuntimeError(f"No se pudo crear la sesión de SageMaker: {e}")
 
     return sagemaker_session
