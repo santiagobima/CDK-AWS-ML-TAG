@@ -1,5 +1,4 @@
-## Deploying SageMaker Pipelines Using CDK
-
+## Deploying SageMaker Pipelines Using CDK --> Develop <<>>
 ## Structure
 
 The project consists of two CDK projects:
@@ -53,3 +52,22 @@ cdk deploy --profile sandbox
 Follow the instructions to run the pipeline:
 
 python trigger_sagemaker_sdk.py
+
+
+#REMOVE IF LOCAL AND ELSE. WE WILL DO IT IN LOCAL MODE ALL THE TIME. IF the pipeline does not exist in aws we cant run. the in put and ouput will be in awws. the only thing is that the power will be used in local.  The line 10 we can remove also. If we run this script it's a local mode.
+
+
+
+
+In order to bootstrap : cdk bootstrap  --profile sandbox --context env=dev
+
+In order to execute :cdk deploy --all  --profile sandbox --context env=dev
+
+In order to exectute the pipeline: python pipelines/executions/trigger_pipeline_sagemaker_sdk.py
+
+In order to delete: cdk destroy --all  --profile sandbox --context env=dev
+
+
+Branch base: develop-environment: All works with the environment working and the pipeline working. Ultima vez utilizada 10.11.2024
+
+Branch where I am working now  : develop
