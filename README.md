@@ -58,6 +58,7 @@ python trigger_sagemaker_sdk.py
 
 
 
+----_--------------_--------_------------__---------------------_-----------
 
 In order to bootstrap : cdk bootstrap  --profile sandbox --context env=dev
 
@@ -68,6 +69,6 @@ In order to exectute the pipeline: python pipelines/executions/trigger_pipeline_
 In order to delete: cdk destroy --all  --profile sandbox --context env=dev
 
 
-Branch base: develop-environment: All works with the environment working and the pipeline working. Ultima vez utilizada 10.11.2024
+Branch base: main : Funciona todo sin meter nada del proyecto de George. Es la base del proyecto funciona.
 
-Branch where I am working now  : develop
+Branch where I am working now  : develop -->> Agregando a la base del proyecto leer con Athena el bucket S3 de George y de ahí en adelante.
