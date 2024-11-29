@@ -76,7 +76,13 @@ class SagemakerStack(cdk.Stack):
         role.add_to_policy(iam.PolicyStatement(
             actions=[
                 "s3:ListBucket", "s3:GetBucketLocation",
-                "s3:GetObject", "s3:PutObject", "s3:DeleteObject"
+                "s3:GetObject", "s3:PutObject", "s3:DeleteObject",
+                "athena:StartQueryExecution",
+                "athena:GetQueryExecution",
+                "athena:GetQueryResults",
+                "glue:GetTable",
+                "glue:GetDatabase"
+                
             ],
             resources=[
                 f"arn:aws:s3:::{os.getenv('DATA_BUCKET')}",

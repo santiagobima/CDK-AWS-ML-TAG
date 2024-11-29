@@ -2,9 +2,9 @@ import os
 import sagemaker
 import sagemaker.image_uris
 from sagemaker import ScriptProcessor
-from sagemaker.workflow import parameters
 from sagemaker.workflow.pipeline import Pipeline
 from sagemaker.workflow.steps import ProcessingStep
+from sagemaker.workflow.parameters import ParameterString
 from pipelines.definitions.base import SagemakerPipelineFactory
 import logging
 
@@ -34,7 +34,7 @@ class LeadConversionFactory(SagemakerPipelineFactory):
         :return: Objeto `Pipeline` configurado.
         """
         # Determinar el tipo de instancia en función del modo
-        instance_type_var = parameters.ParameterString(
+        instance_type_var = ParameterString(
             name="InstanceType",
             default_value="local" if self.local_mode else "ml.m5.large"
         )
@@ -62,12 +62,18 @@ class LeadConversionFactory(SagemakerPipelineFactory):
         data_bucket_name = os.getenv("DATA_BUCKET").rstrip('/')
         inputs, outputs = self._configure_io(data_bucket_name)
 
+        # **Nuevo: agregar requirements.txt**
+        requirements_input = sagemaker.processing.ProcessingInput(
+            source=f"s3://{data_bucket_name}/requirements.txt",  # Cambiar por tu ruta
+            destination="/opt/ml/processing/input/code/requirements.txt"
+        )
+
         # Crear pasos del pipeline
-        processing_step = ProcessingStep(
-            name="processing-example",
+        processing_step_1 = ProcessingStep(
+            name="processing-evaluate",
             step_args=processor.run(
                 code="pipelines/sources/lead_conversion/evaluate.py",
-                inputs=inputs,
+                inputs=[*inputs, requirements_input],
                 outputs=outputs,
             ),
             job_arguments=[
@@ -75,9 +81,18 @@ class LeadConversionFactory(SagemakerPipelineFactory):
                 "--name", "santiago"
             ],
         )
+        
+        processing_step_2 = ProcessingStep(
+            name="processing-athena-query",
+            step_args=processor.run(
+                code="pipelines/sources/lead_conversion/athena_query.py",
+                inputs=[*inputs, requirements_input],
+                outputs=outputs,
+            ),
+        )
 
         # Definir los pasos del pipeline
-        steps = [processing_step]
+        steps = [processing_step_1, processing_step_2]
 
         logger.info(f"Pipeline '{pipeline_name}' configurado con {len(steps)} paso(s).")
 
@@ -110,10 +125,3 @@ class LeadConversionFactory(SagemakerPipelineFactory):
             )
         ]
         return inputs, outputs
-
-
-"""This error is thrown because in SageMaker's ProcessingStep, either step_args or processor is required, but not both at the same time.In your lead_conversion_definition.py, you're defining processing_step_2 without the required arguments:"""
-"""The ExamplePipeline class implements a specific SageMaker pipeline, inheriting from SagemakerPipelineFactory.
-""It defines an instance type parameter that can be configured at runtime, depending on whether the session is local or cloud-based.
-The pipeline uses the scikit-learn image provided by AWS to run a Python script (evaluate.py) in a ScriptProcessor.
-A processing step is created using the ScriptProcessor, and the custom configuration parameter (pipeline_config_parameter) is passed as an argument to the script."""
