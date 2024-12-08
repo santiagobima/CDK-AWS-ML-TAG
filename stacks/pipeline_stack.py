@@ -85,6 +85,7 @@ class PipelineStack(cdk.Stack):
         )
 
         pipeline = pipeline_factory.create(
+            scope=self,
             pipeline_name=pipeline_name,
             role=sm_execution_role_arn,
             sm_session=sm_session,

@@ -1,11 +1,10 @@
 import os
 import sagemaker
-import sagemaker.image_uris
-from sagemaker import ScriptProcessor
 from sagemaker.workflow.pipeline import Pipeline
-from sagemaker.workflow.steps import ProcessingStep
 from sagemaker.workflow.parameters import ParameterString
+from sagemaker.workflow.steps import ProcessingStep
 from pipelines.definitions.base import SagemakerPipelineFactory
+from pipelines.definitions.pipeline_step import PipelineStep
 import logging
 
 logger = logging.getLogger(__name__)
@@ -21,6 +20,7 @@ class LeadConversionFactory(SagemakerPipelineFactory):
 
     def create(
         self,
+        scope,  # Se pasa el scope desde PipelineStack
         role: str,
         pipeline_name: str,
         sm_session: sagemaker.Session,
@@ -28,6 +28,7 @@ class LeadConversionFactory(SagemakerPipelineFactory):
         """
         Crea el pipeline de SageMaker.
 
+        :param scope: Alcance del constructo (proporcionado por PipelineStack).
         :param role: ARN del rol de ejecución de SageMaker.
         :param pipeline_name: Nombre del pipeline.
         :param sm_session: Sesión de SageMaker.
@@ -40,59 +41,61 @@ class LeadConversionFactory(SagemakerPipelineFactory):
         )
         logger.info(f"Modo local: {self.local_mode}")
 
-        # Configurar URI de imagen de SKLearn de AWS SageMaker
-        image_uri = sagemaker.image_uris.retrieve(
-            framework="sklearn",
-            region=sm_session.boto_region_name,
-            version="0.23-1",
-        )
-        logger.info(f"URI de imagen SKLearn: {image_uri}")
-
-        # Configurar ScriptProcessor
-        processor = ScriptProcessor(
-            image_uri=image_uri,
-            command=["python3"],
-            instance_type=instance_type_var,
-            instance_count=1,
-            role=role,
-            sagemaker_session=sm_session,
-        )
-
-        # Configurar inputs y outputs en S3 (sin cambios entre local y nube)
+        # Configurar inputs y outputs
         data_bucket_name = os.getenv("DATA_BUCKET").rstrip('/')
         inputs, outputs = self._configure_io(data_bucket_name)
 
-        # **Nuevo: agregar requirements.txt**
-        requirements_input = sagemaker.processing.ProcessingInput(
-            source=f"s3://{data_bucket_name}/requirements.txt",  # Cambiar por tu ruta
-            destination="/opt/ml/processing/input/code/requirements.txt"
-        )
+        # Validar la ruta al archivo de código
+        script_path = "pipelines/sources/lead_conversion/simple_step.py"
+        if not os.path.isfile(script_path):
+            raise FileNotFoundError(f"El archivo '{script_path}' no existe. Verifica la ruta.")
 
-        # Crear pasos del pipeline
-        processing_step_1 = ProcessingStep(
-            name="processing-evaluate",
-            step_args=processor.run(
-                code="pipelines/sources/lead_conversion/evaluate.py",
-                inputs=[*inputs, requirements_input],
-                outputs=outputs,
-            ),
+        # Configurar paso de preparación de datos con Docker
+        data_prep_processor = PipelineStep(
+            scope=scope,
+            id="DataPrepProcessor",
+            dockerfile_path="pipelines/sources/lead_conversion",
+            step_name="data-preparation",
+            command=["python3", "simple_step.py"],
+            instance_type=instance_type_var,
+            role=role,
+            sagemaker_session=sm_session,
+        ).create_processor()
+
+        data_prep_step = ProcessingStep(
+            name="DataPreparationStep",
+            processor=data_prep_processor,
+            inputs=inputs,
+            outputs=outputs,
+            code=script_path,
             job_arguments=[
                 "--config-parameter", self.pipeline_config_parameter,
                 "--name", "santiago"
             ],
         )
-        
-        processing_step_2 = ProcessingStep(
-            name="processing-athena-query",
-            step_args=processor.run(
-                code="pipelines/sources/lead_conversion/athena_query.py",
-                inputs=[*inputs, requirements_input],
-                outputs=outputs,
-            ),
+
+        # Configurar paso de inferencia con Docker
+        inference_processor = PipelineStep(
+            scope=scope,
+            id="InferenceProcessor",
+            dockerfile_path="pipelines/sources/lead_conversion",
+            step_name="inference",
+            command=["python3", "simple_step.py"],
+            instance_type=instance_type_var,
+            role=role,
+            sagemaker_session=sm_session,
+        ).create_processor()
+
+        inference_step = ProcessingStep(
+            name="InferenceStep",
+            processor=inference_processor,
+            inputs=inputs,
+            outputs=outputs,
+            code=script_path,
         )
 
         # Definir los pasos del pipeline
-        steps = [processing_step_1, processing_step_2]
+        steps = [data_prep_step, inference_step]
 
         logger.info(f"Pipeline '{pipeline_name}' configurado con {len(steps)} paso(s).")
 
