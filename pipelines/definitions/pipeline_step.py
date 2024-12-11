@@ -1,6 +1,8 @@
 from constructs import Construct
 from aws_cdk.aws_ecr_assets import DockerImageAsset
 from sagemaker import ScriptProcessor
+from aws_cdk.aws_ecr_assets import DockerImageAsset, Platform
+
 
 class PipelineStep:
     def __init__(self, scope: Construct, id: str, dockerfile_path: str, step_name: str, command: list, instance_type: str, role: str, sagemaker_session):
@@ -34,7 +36,8 @@ class PipelineStep:
         asset = DockerImageAsset(
             scope=self.scope,
             id=self.id,
-            directory=self.dockerfile_path
+            directory=self.dockerfile_path,
+            platform=Platform.LINUX_AMD64
         )
         return asset.image_uri
 
