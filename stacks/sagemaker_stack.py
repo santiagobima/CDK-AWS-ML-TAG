@@ -72,7 +72,7 @@ class SagemakerStack(cdk.Stack):
         )
         logger.info("Rol de ejecución de SageMaker creado con éxito.")
 
-        # Agregar permisos específicos para los buckets
+        # Agregar permisos específicos para los buckets, Athena y Glue
         role.add_to_policy(iam.PolicyStatement(
             actions=[
                 "s3:ListBucket", "s3:GetBucketLocation",
@@ -80,15 +80,19 @@ class SagemakerStack(cdk.Stack):
                 "athena:StartQueryExecution",
                 "athena:GetQueryExecution",
                 "athena:GetQueryResults",
+                "athena:GetWorkGroup",
                 "glue:GetTable",
-                "glue:GetDatabase"
-                
+                "glue:GetDatabase",
+                "glue:GetPartition"
             ],
             resources=[
                 f"arn:aws:s3:::{os.getenv('DATA_BUCKET')}",
                 f"arn:aws:s3:::{os.getenv('DATA_BUCKET')}/*",
                 f"arn:aws:s3:::{os.getenv('SOURCES_BUCKET')}",
-                f"arn:aws:s3:::{os.getenv('SOURCES_BUCKET')}/*"
+                f"arn:aws:s3:::{os.getenv('SOURCES_BUCKET')}/*",
+                f"arn:aws:glue:{self.region}:{self.account}:database/{os.getenv('DATABASE')}",
+                f"arn:aws:glue:{self.region}:{self.account}:table/{os.getenv('DATABASE')}/*",
+                "arn:aws:athena:*:*:workgroup/AmazonAthenaLakeFormation"
             ]
         ))
         return role

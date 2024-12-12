@@ -45,7 +45,7 @@ class LeadConversionFactory(SagemakerPipelineFactory):
         data_bucket_name = os.getenv("DATA_BUCKET").rstrip('/')
         inputs, outputs = self._configure_io(data_bucket_name)
 
-        # Validar la ruta al archivo de código
+        # Validar la ruta al archivo de código para preparación de datos
         script_path = "pipelines/sources/lead_conversion/simple_step.py"
         if not os.path.isfile(script_path):
             raise FileNotFoundError(f"El archivo '{script_path}' no existe. Verifica la ruta.")
@@ -74,28 +74,38 @@ class LeadConversionFactory(SagemakerPipelineFactory):
             ],
         )
 
-        # Configurar paso de inferencia con Docker
-        inference_processor = PipelineStep(
+        # Validar la ruta al archivo de código para consulta a Athena
+        athena_script_path = "pipelines/sources/lead_conversion/athena_query.py"
+        if not os.path.isfile(athena_script_path):
+            raise FileNotFoundError(f"El archivo '{athena_script_path}' no existe. Verifica la ruta.")
+
+        # Configurar paso de consulta a Athena con Docker
+        retrieve_data_processor = PipelineStep(
             scope=scope,
-            id="InferenceProcessor",
+            id="RetrieveDataProcessor",
             dockerfile_path="pipelines/sources/lead_conversion",
-            step_name="inference",
-            command=["python3", "simple_step.py"],
+            step_name="retrieve-data",
+            command=["python3", "athena_query.py"],
             instance_type=instance_type_var,
             role=role,
-            sagemaker_session=sm_session,
+            sagemaker_session=sm_session
         ).create_processor()
 
-        inference_step = ProcessingStep(
-            name="InferenceStep",
-            processor=inference_processor,
-            inputs=inputs,
+        # Configurar variables de entorno en el procesador
+        retrieve_data_processor.env = {
+            "CDK_DEFAULT_REGION": os.getenv("CDK_DEFAULT_REGION")
+        }
+
+        retrieve_data_step = ProcessingStep(
+            name="RetrieveDataStep",
+            processor=retrieve_data_processor,
+            inputs=[],  # No inputs necesarios para este paso
             outputs=outputs,
-            code=script_path,
+            code=athena_script_path
         )
 
         # Definir los pasos del pipeline
-        steps = [data_prep_step, inference_step]
+        steps = [data_prep_step, retrieve_data_step]
 
         logger.info(f"Pipeline '{pipeline_name}' configurado con {len(steps)} paso(s).")
 
