@@ -4,7 +4,7 @@ import boto3
 
 # Configuración de constantes
 DATABASE = "refined"
-TABLE = "hubspot_contacts_latest"
+TABLE = "hubspot_call_outcome_support_latest"
 REGION = os.getenv("CDK_DEFAULT_REGION")
 
 def read_from_athena(database, table, region):

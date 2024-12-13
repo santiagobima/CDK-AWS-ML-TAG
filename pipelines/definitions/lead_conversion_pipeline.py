@@ -73,7 +73,11 @@ class LeadConversionFactory(SagemakerPipelineFactory):
                 "--name", "santiago"
             ],
         )
-
+        
+        
+        
+         
+            
         # Validar la ruta al archivo de código para consulta a Athena
         athena_script_path = "pipelines/sources/lead_conversion/athena_query.py"
         if not os.path.isfile(athena_script_path):
@@ -105,6 +109,9 @@ class LeadConversionFactory(SagemakerPipelineFactory):
         )
 
         # Definir los pasos del pipeline
+    
+        retrieve_data_step.add_depends_on([data_prep_step])
+        
         steps = [data_prep_step, retrieve_data_step]
 
         logger.info(f"Pipeline '{pipeline_name}' configurado con {len(steps)} paso(s).")
