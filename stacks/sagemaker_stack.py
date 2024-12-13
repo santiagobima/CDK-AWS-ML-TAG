@@ -72,76 +72,55 @@ class SagemakerStack(cdk.Stack):
         )
         logger.info("Rol de ejecución de SageMaker creado con éxito.")
 
-#               - Effect: Allow
-#                 Action:
-#                   - glue:DeleteTable
-#                   - glue:BatchCreatePartition
-#                   - glue:GetTable
-#                   - glue:UpdateTable
-#                   - glue:CreateTable
-#                 Resource:
-#                   - arn:aws:glue:${aws:region}:${aws:accountId}:catalog
-#                   - arn:aws:glue:${aws:region}:${aws:accountId}:database/trusted
-#                   - arn:aws:glue:${aws:region}:${aws:accountId}:table/trusted/*
-#                   - arn:aws:glue:${aws:region}:${aws:accountId}:database/cleaned
-#                   - arn:aws:glue:${aws:region}:${aws:accountId}:table/cleaned/*
-#                   - arn:aws:glue:${aws:region}:${aws:accountId}:database/refined
-#                   - arn:aws:glue:${aws:region}:${aws:accountId}:table/refined/*
-
-#               - Effect: Allow
-#                 Action:
-#                   - s3:PutObject
-#                   - s3:GetObject
-#                   - s3:DeleteObject
-#                 Resource:
-#                   - arn:aws:s3:::${self:custom.env.DATA_BUCKET}/*
-#                   - arn:aws:s3:::${self:custom.env.ATHENA_RESULT_BUCKET}/*
-
-#               - Effect: Allow
-#                 Action:
-#                   - s3:ListBucket
-#                 Resource:
-#                   - arn:aws:s3:::${self:custom.env.DATA_BUCKET}
-#                   - arn:aws:s3:::${self:custom.env.ATHENA_RESULT_BUCKET}
-              
-#               - Effect: Allow
-#                 Action:
-#                   - "lakeformation:*"
-#                 Resource:
-#                   - "*"
-
-#               - Effect: Allow
-#                 Action:
-#                   - athena:StartQueryExecution
-#                   - athena:GetQueryExecution
-#                   - athena:GetQueryResults
-#                 Resource:
-#                   - arn:aws:athena:${aws:region}:${aws:accountId}:workgroup/primary
-
-
-        # Agregar permisos específicos para los buckets, Athena y Glue
+        #  LAKEFORMATION IAM
         role.add_to_policy(iam.PolicyStatement(
             actions=[
-                "s3:ListBucket", "s3:GetBucketLocation",
-                "s3:GetObject", "s3:PutObject", "s3:DeleteObject",
-                "athena:StartQueryExecution",
-                "athena:GetQueryExecution",
-                "athena:GetQueryResults",
-                "athena:GetWorkGroup",
-                "glue:GetTable",
-                "glue:GetDatabase",
-                "glue:GetPartition"
+                "lakeformation:*"
+            ],
+            resources=["*"]
+        ))
+
+        #  S3 IAM
+        role.add_to_policy(iam.PolicyStatement(
+            actions=[
+                "s3:ListBucket",
+                "s3:GetBucketLocation",
+                "s3:GetObject",
+                "s3:PutObject",
+                "s3:DeleteObject"
             ],
             resources=[
                 f"arn:aws:s3:::{os.getenv('DATA_BUCKET')}",
                 f"arn:aws:s3:::{os.getenv('DATA_BUCKET')}/*",
-                "arn:aws:s3:::aws-athena-query-results-373024328391-eu-west-1",
                 f"arn:aws:s3:::{os.getenv('SOURCES_BUCKET')}",
                 f"arn:aws:s3:::{os.getenv('SOURCES_BUCKET')}/*",
+                "arn:aws:s3:::aws-athena-query-results-373024328391-eu-west-1"
+            ]
+        ))
+
+        #  ATHENA IAM
+        role.add_to_policy(iam.PolicyStatement(
+            actions=[
+                "athena:StartQueryExecution",
+                "athena:GetQueryExecution",
+                "athena:GetQueryResults",
+                "athena:GetWorkGroup"
+            ],
+            resources=[f"arn:aws:athena:{self.region}:{self.account}:workgroup/primary"]
+        ))
+
+        #  GLUE IAM
+        role.add_to_policy(iam.PolicyStatement(
+            actions=[
+                "glue:GetTable",
+                "glue:GetDatabase",
+                "glue:GetPartition",
+
+            ],   
+            resources=[
                 f"arn:aws:glue:{self.region}:{self.account}:catalog",
                 f"arn:aws:glue:{self.region}:{self.account}:database/{os.getenv('DATABASE')}",
-                f"arn:aws:glue:{self.region}:{self.account}:table/{os.getenv('DATABASE')}/*",
-                f"arn:aws:athena:{self.region}:{self.account}:workgroup/primary"
+                f"arn:aws:glue:{self.region}:{self.account}:table/{os.getenv('DATABASE')}/*"
             ]
         ))
 
