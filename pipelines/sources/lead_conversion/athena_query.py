@@ -4,7 +4,7 @@ import boto3
 
 # Configuración de constantes
 DATABASE = "refined"
-TABLE = "hubspot_call_outcome_support_latest"
+TABLE = "hubspot_courses_pipeline_support_latest"
 REGION = os.getenv("CDK_DEFAULT_REGION")
 
 def read_from_athena(database, table, region):
@@ -29,7 +29,7 @@ def read_from_athena(database, table, region):
             database=database,
             ctas_approach=False,
             boto3_session=boto3_session,
-            workgroup="AmazonAthenaLakeFormation"
+            workgroup="primary"
         )
         print("Datos leídos correctamente:")
         print(df.head())

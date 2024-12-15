@@ -83,8 +83,6 @@ class SagemakerStack(cdk.Stack):
         #  S3 IAM
         role.add_to_policy(iam.PolicyStatement(
             actions=[
-                "s3:ListBucket",
-                "s3:GetBucketLocation",
                 "s3:GetObject",
                 "s3:PutObject",
                 "s3:DeleteObject"
@@ -94,7 +92,21 @@ class SagemakerStack(cdk.Stack):
                 f"arn:aws:s3:::{os.getenv('DATA_BUCKET')}/*",
                 f"arn:aws:s3:::{os.getenv('SOURCES_BUCKET')}",
                 f"arn:aws:s3:::{os.getenv('SOURCES_BUCKET')}/*",
-                "arn:aws:s3:::aws-athena-query-results-373024328391-eu-west-1"
+                "arn:aws:s3:::aws-athena-query-results-373024328391-eu-west-1",
+                f"arn:aws:s3:::aws-athena-query-results-373024328391-eu-west-1/*"
+            ]
+        ))
+
+        # S3 List
+        role.add_to_policy(iam.PolicyStatement(
+            actions=[
+                "s3:ListBucket"
+            ],
+            resources=[
+                f"arn:aws:s3:::{os.getenv('DATA_BUCKET')}",
+                f"arn:aws:s3:::{os.getenv('SOURCES_BUCKET')}",
+                "arn:aws:s3:::aws-athena-query-results-373024328391-eu-west-1",
+                f"arn:aws:s3:::aws-athena-query-results-373024328391-eu-west-1/*"
             ]
         ))
 
@@ -124,7 +136,7 @@ class SagemakerStack(cdk.Stack):
             ]
         ))
 
-        lakeformation.CfnPermissions(self, "SagemakerLakeformationPermission",
+        """lakeformation.CfnPermissions(self, "SagemakerLakeformationPermission",
             data_lake_principal=lakeformation.CfnPermissions.DataLakePrincipalProperty(
                 data_lake_principal_identifier=role.role_arn
             ),
@@ -139,7 +151,7 @@ class SagemakerStack(cdk.Stack):
                     table_wildcard=lakeformation.CfnPermissions.TableWildcardProperty()
                 )
             )
-        )
+        ) """
 
         return role
 
