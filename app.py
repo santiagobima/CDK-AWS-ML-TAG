@@ -17,7 +17,7 @@ logger.setLevel(logging.INFO)
 LOGICAL_PREFIX = "DSM"
 
 # Definir el modo de ejecución local aquí en el "control room"
-LOCAL_MODE = False  # Cambiar a True para ejecutar el cálculo en modo local
+LOCAL_MODE = True  # Cambiar a True para ejecutar el cálculo en modo local
 
 def load_environment(app):
     """
