@@ -1,11 +1,10 @@
 import os
 import sagemaker
-import sagemaker.image_uris
-from sagemaker import ScriptProcessor
-from sagemaker.workflow import parameters
 from sagemaker.workflow.pipeline import Pipeline
+from sagemaker.workflow.parameters import ParameterString
 from sagemaker.workflow.steps import ProcessingStep
 from pipelines.definitions.base import SagemakerPipelineFactory
+from pipelines.definitions.pipeline_step import PipelineStep
 import logging
 
 logger = logging.getLogger(__name__)
@@ -21,6 +20,7 @@ class LeadConversionFactory(SagemakerPipelineFactory):
 
     def create(
         self,
+        scope,  # Se pasa el scope desde PipelineStack
         role: str,
         pipeline_name: str,
         sm_session: sagemaker.Session,
@@ -28,56 +28,91 @@ class LeadConversionFactory(SagemakerPipelineFactory):
         """
         Crea el pipeline de SageMaker.
 
+        :param scope: Alcance del constructo (proporcionado por PipelineStack).
         :param role: ARN del rol de ejecución de SageMaker.
         :param pipeline_name: Nombre del pipeline.
         :param sm_session: Sesión de SageMaker.
         :return: Objeto `Pipeline` configurado.
         """
         # Determinar el tipo de instancia en función del modo
-        instance_type_var = parameters.ParameterString(
+        instance_type_var = ParameterString(
             name="InstanceType",
             default_value="local" if self.local_mode else "ml.m5.large"
         )
         logger.info(f"Modo local: {self.local_mode}")
 
-        # Configurar URI de imagen de SKLearn de AWS SageMaker
-        image_uri = sagemaker.image_uris.retrieve(
-            framework="sklearn",
-            region=sm_session.boto_region_name,
-            version="0.23-1",
-        )
-        logger.info(f"URI de imagen SKLearn: {image_uri}")
-
-        # Configurar ScriptProcessor
-        processor = ScriptProcessor(
-            image_uri=image_uri,
-            command=["python3"],
-            instance_type=instance_type_var,
-            instance_count=1,
-            role=role,
-            sagemaker_session=sm_session,
-        )
-
-        # Configurar inputs y outputs en S3 (sin cambios entre local y nube)
+        # Configurar inputs y outputs
         data_bucket_name = os.getenv("DATA_BUCKET").rstrip('/')
         inputs, outputs = self._configure_io(data_bucket_name)
 
-        # Crear pasos del pipeline
-        processing_step = ProcessingStep(
-            name="processing-example",
-            step_args=processor.run(
-                code="pipelines/sources/lead_conversion/evaluate.py",
-                inputs=inputs,
-                outputs=outputs,
-            ),
+        # Validar la ruta al archivo de código para preparación de datos
+        script_path = "pipelines/sources/lead_conversion/simple_step.py"
+        if not os.path.isfile(script_path):
+            raise FileNotFoundError(f"El archivo '{script_path}' no existe. Verifica la ruta.")
+
+        # Configurar paso de preparación de datos con Docker
+        data_prep_processor = PipelineStep(
+            scope=scope,
+            id="DataPrepProcessor",
+            dockerfile_path="pipelines/sources/lead_conversion",
+            step_name="data-preparation",
+            command=["python3", "simple_step.py"],
+            instance_type=instance_type_var,
+            role=role,
+            sagemaker_session=sm_session,
+        ).create_processor()
+
+        data_prep_step = ProcessingStep(
+            name="DataPreparationStep",
+            processor=data_prep_processor,
+            inputs=inputs,
+            outputs=outputs,
+            code=script_path,
             job_arguments=[
                 "--config-parameter", self.pipeline_config_parameter,
                 "--name", "santiago"
             ],
         )
+        
+        
+        
+         
+            
+        # Validar la ruta al archivo de código para consulta a Athena
+        athena_script_path = "pipelines/sources/lead_conversion/athena_query.py"
+        if not os.path.isfile(athena_script_path):
+            raise FileNotFoundError(f"El archivo '{athena_script_path}' no existe. Verifica la ruta.")
+
+        # Configurar paso de consulta a Athena con Docker
+        retrieve_data_processor = PipelineStep(
+            scope=scope,
+            id="RetrieveDataProcessor",
+            dockerfile_path="pipelines/sources/lead_conversion",
+            step_name="retrieve-data",
+            command=["python3", "athena_query.py"],
+            instance_type=instance_type_var,
+            role=role,
+            sagemaker_session=sm_session
+        ).create_processor()
+
+        # Configurar variables de entorno en el procesador
+        retrieve_data_processor.env = {
+            "CDK_DEFAULT_REGION": os.getenv("CDK_DEFAULT_REGION")
+        }
+
+        retrieve_data_step = ProcessingStep(
+            name="RetrieveDataStep",
+            processor=retrieve_data_processor,
+            inputs=[],  # No inputs necesarios para este paso
+            outputs=outputs,
+            code=athena_script_path
+        )
 
         # Definir los pasos del pipeline
-        steps = [processing_step]
+    
+        retrieve_data_step.add_depends_on([data_prep_step])
+        
+        steps = [data_prep_step, retrieve_data_step]
 
         logger.info(f"Pipeline '{pipeline_name}' configurado con {len(steps)} paso(s).")
 
@@ -110,10 +145,3 @@ class LeadConversionFactory(SagemakerPipelineFactory):
             )
         ]
         return inputs, outputs
-
-
-"""This error is thrown because in SageMaker's ProcessingStep, either step_args or processor is required, but not both at the same time.In your lead_conversion_definition.py, you're defining processing_step_2 without the required arguments:"""
-"""The ExamplePipeline class implements a specific SageMaker pipeline, inheriting from SagemakerPipelineFactory.
-""It defines an instance type parameter that can be configured at runtime, depending on whether the session is local or cloud-based.
-The pipeline uses the scikit-learn image provided by AWS to run a Python script (evaluate.py) in a ScriptProcessor.
-A processing step is created using the ScriptProcessor, and the custom configuration parameter (pipeline_config_parameter) is passed as an argument to the script."""

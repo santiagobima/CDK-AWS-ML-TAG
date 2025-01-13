@@ -1,7 +1,7 @@
 import os
 import logging
 import aws_cdk as cdk
-from aws_cdk import aws_iam as iam, aws_s3 as s3, aws_ec2 as ec2, aws_ssm as ssm
+from aws_cdk import aws_iam as iam, aws_s3 as s3, aws_ec2 as ec2, aws_ssm as ssm, aws_lakeformation as lakeformation
 from constructs import Construct
 
 # Configuración del logger
@@ -72,19 +72,87 @@ class SagemakerStack(cdk.Stack):
         )
         logger.info("Rol de ejecución de SageMaker creado con éxito.")
 
-        # Agregar permisos específicos para los buckets
+        #  LAKEFORMATION IAM
         role.add_to_policy(iam.PolicyStatement(
             actions=[
-                "s3:ListBucket", "s3:GetBucketLocation",
-                "s3:GetObject", "s3:PutObject", "s3:DeleteObject"
+                "lakeformation:*"
+            ],
+            resources=["*"]
+        ))
+
+        #  S3 IAM
+        role.add_to_policy(iam.PolicyStatement(
+            actions=[
+                "s3:GetObject",
+                "s3:PutObject",
+                "s3:DeleteObject"
             ],
             resources=[
                 f"arn:aws:s3:::{os.getenv('DATA_BUCKET')}",
                 f"arn:aws:s3:::{os.getenv('DATA_BUCKET')}/*",
                 f"arn:aws:s3:::{os.getenv('SOURCES_BUCKET')}",
-                f"arn:aws:s3:::{os.getenv('SOURCES_BUCKET')}/*"
+                f"arn:aws:s3:::{os.getenv('SOURCES_BUCKET')}/*",
+                "arn:aws:s3:::aws-athena-query-results-373024328391-eu-west-1",
+                f"arn:aws:s3:::aws-athena-query-results-373024328391-eu-west-1/*"
             ]
         ))
+
+        # S3 List
+        role.add_to_policy(iam.PolicyStatement(
+            actions=[
+                "s3:ListBucket"
+            ],
+            resources=[
+                f"arn:aws:s3:::{os.getenv('DATA_BUCKET')}",
+                f"arn:aws:s3:::{os.getenv('SOURCES_BUCKET')}",
+                "arn:aws:s3:::aws-athena-query-results-373024328391-eu-west-1",
+                f"arn:aws:s3:::aws-athena-query-results-373024328391-eu-west-1/*"
+            ]
+        ))
+
+        #  ATHENA IAM
+        role.add_to_policy(iam.PolicyStatement(
+            actions=[
+                "athena:StartQueryExecution",
+                "athena:GetQueryExecution",
+                "athena:GetQueryResults",
+                "athena:GetWorkGroup"
+            ],
+            resources=[f"arn:aws:athena:{self.region}:{self.account}:workgroup/primary"]
+        ))
+
+        #  GLUE IAM
+        role.add_to_policy(iam.PolicyStatement(
+            actions=[
+                "glue:GetTable",
+                "glue:GetDatabase",
+                "glue:GetPartition",
+
+            ],   
+            resources=[
+                f"arn:aws:glue:{self.region}:{self.account}:catalog",
+                f"arn:aws:glue:{self.region}:{self.account}:database/{os.getenv('DATABASE')}",
+                f"arn:aws:glue:{self.region}:{self.account}:table/{os.getenv('DATABASE')}/*"
+            ]
+        ))
+
+        """lakeformation.CfnPermissions(self, "SagemakerLakeformationPermission",
+            data_lake_principal=lakeformation.CfnPermissions.DataLakePrincipalProperty(
+                data_lake_principal_identifier=role.role_arn
+            ),
+            resource=lakeformation.CfnPermissions.ResourceProperty(
+                database_resource=lakeformation.CfnPermissions.DatabaseResourceProperty(
+                    catalog_id=os.getenv("CDK_DEFAULT_ACCOUNT"),
+                    name="refined"
+                ),
+                table_resource=lakeformation.CfnPermissions.TableResourceProperty(
+                    catalog_id=os.getenv("CDK_DEFAULT_ACCOUNT"),
+                    database_name="refined",
+                    table_wildcard=lakeformation.CfnPermissions.TableWildcardProperty()
+                )
+            )
+        ) """
+
         return role
 
     def get_or_create_bucket(self, bucket_name: str, bucket_id: str, description: str) -> s3.Bucket:
