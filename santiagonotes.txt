@@ -1,0 +1,94 @@
+    Relación entre las clases:
+    
+    
+    1.	PipelineStack → Crea el pipeline y usa un objeto de LeadConversionFactory.
+	2.	LeadConversionFactory → Define los pasos del pipeline.
+	3.	ProcessingStep → Representa cada paso dentro del pipeline.
+	4.	SagemakerStack → Crea los recursos necesarios para ejecutar el pipeline (buckets, roles, etc.).
+	5.	Pipeline (de SageMaker) → Es el objeto final que contiene todos los pasos del pipeline y que se ejecutará en AWS.
+
+
+
+
+
+Imagina que el Pipeline es una Fábrica de Automóviles
+	1.	PipelineStack es la fábrica completa.
+	2.	LeadConversionFactory es la línea de ensamblaje que arma los autos.
+	3.	ProcessingStep son las máquinas de ensamblaje que realizan tareas específicas (ejemplo: pintar el coche).
+	4.	SagemakerStack es la infraestructura de la fábrica (los almacenes y herramientas necesarias).
+	5.	Pipeline es el auto terminado, listo para venderse.
+
+
+
+    Aquí empieza todo. Se crea una instancia de PipelineStack y se le pasa un objeto LeadConversionFactory.
+
+    lead_conversion_pipeline = PipelineStack(
+    app,
+    id=f"{LOGICAL_PREFIX}-PipelinesStack",
+    factory=LeadConversionFactory(  # Este es el objeto que se pasa como parámetro
+        pipeline_config_parameter="Cloud Developer",
+        local_mode=LOCAL_MODE
+    ),
+    env=cdk.Environment(account=account, region=region),
+    local_mode=LOCAL_MODE
+)
+
+	•	PipelineStack es la fábrica.
+	•	LeadConversionFactory es la línea de ensamblaje que sabe cómo construir el pipeline.
+	•	factory=LeadConversionFactory(...) → Se pasa como parámetro el objeto LeadConversionFactory, que sabe cómo armar el pipeline.
+
+    Aquí tienes cómo se conectan las clases en el código:
+	1.	app.py: Crea el objeto LeadConversionFactory y lo pasa a PipelineStack.
+	2.	PipelineStack: Usa create_pipeline() para construir el pipeline.
+	3.	create_pipeline(): Llama al método create() de LeadConversionFactory.
+	4.	LeadConversionFactory.create(): Define los pasos del pipeline usando ProcessingStep.
+	5.	ProcessingStep: Representa cada tarea dentro del pipeline.
+	6.	SagemakerStack: Crea los recursos (buckets, roles, etc.) que el pipeline necesita.
+
+    	1.	El proyecto empieza en app.py, que crea PipelineStack y le pasa un LeadConversionFactory.
+	2.	PipelineStack usa create_pipeline para construir el pipeline con LeadConversionFactory.
+	3.	LeadConversionFactory define los pasos del pipeline con ProcessingStep.
+	4.	ProcessingStep representa cada tarea que se ejecutará en SageMaker.
+	5.	SagemakerStack crea los recursos (buckets, roles) para que el pipeline funcione.
+
+
+    e crea un objeto de LeadConversionFactory en app.py.
+	2.	Ese objeto se pasa a PipelineStack como factory.
+	3.	Dentro de PipelineStack, se llama a create_pipeline pasando self.factory como pipeline_factory.
+	4.	Dentro de create_pipeline, se usa pipeline_factory.create() para construir el pipeline.
+	5.	create() en LeadConversionFactory devuelve un Pipeline con los pasos configurados.
+
+
+    class FábricaDePizzas:
+    def crear_pizza(self):
+        return "🍕 Pizza lista"
+
+def hacer_pedido(fabrica: FábricaDePizzas):
+    return fabrica.crear_pizza()
+
+# Crear un objeto de la clase
+mi_fabrica = FábricaDePizzas()
+
+# Pasamos el objeto como parámetro
+pizza = hacer_pedido(mi_fabrica)
+
+print(pizza)  # 🍕 Pizza lista
+
+FábricaDePizzas → Es LeadConversionFactory.
+	•	hacer_pedido(fabrica) → Es create_pipeline(pipeline_factory).
+	•	mi_fabrica = FábricaDePizzas() → Se crea un objeto de LeadConversionFactory.
+	•	hacer_pedido(mi_fabrica) → Se pasa el objeto a create_pipeline.
+
+
+    
+El objeto que se crea con LeadConversionFactory se llama factory en app.py.
+Después, se pasa con ese nombre a PipelineStack, donde se guarda en self.factory.
+Cuando create_pipeline lo recibe, lo llama pipeline_factory, pero sigue siendo el mismo objeto.
+
+🔹 Nombres de la misma instancia en distintas partes del código
+Lugar del código	Nombre del objeto
+app.py	factory
+PipelineStack	self.factory
+create_pipeline	pipeline_factory
+
+Así que aunque el nombre de la variable cambia, sigue siendo el mismo objeto en memoria.

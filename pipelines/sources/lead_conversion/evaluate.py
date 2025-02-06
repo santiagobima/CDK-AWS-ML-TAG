@@ -33,3 +33,4 @@ else:
     # Copiar el archivo a la ubicación de salida sin problemas de sistema de archivos
     shutil.copy(local_output_path, os.path.join(output_dir, "log.txt"))
     print("Archivo guardado en el directorio de salida de SageMaker para procesamiento en la nube.")
+
