@@ -6,9 +6,9 @@ import aws_cdk as cdk
 from dotenv import load_dotenv
 from constructs import Construct
 
-from stacks.sagemaker_stack import SagemakerStack
-from stacks.pipeline_stack import PipelineStack
-from pipelines.definitions.lead_conversion_pipeline import LeadConversionFactory
+from Stack.sagemaker_stack import SagemakerStack
+from Stack.pipeline_stack import PipelineStack
+from pipelines.lead_conversion_rate.lead_conversion_pipeline import LeadConversionFactory
 
 # Configuración del logger
 logger = logging.getLogger(__name__)

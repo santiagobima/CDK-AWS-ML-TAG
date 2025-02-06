@@ -3,8 +3,8 @@ import sagemaker
 from sagemaker.workflow.pipeline import Pipeline
 from sagemaker.workflow.parameters import ParameterString
 from sagemaker.workflow.steps import ProcessingStep
-from pipelines.definitions.base import SagemakerPipelineFactory
-from pipelines.definitions.pipeline_step import PipelineStep
+from Constructors.base import SagemakerPipelineFactory
+from Constructors.pipeline_step import PipelineStep
 import logging
 
 logger = logging.getLogger(__name__)
@@ -46,7 +46,7 @@ class LeadConversionFactory(SagemakerPipelineFactory):
         inputs, outputs = self._configure_io(data_bucket_name)
 
         # Validar la ruta al archivo de código para preparación de datos
-        script_path = "pipelines/sources/lead_conversion/simple_step.py"
+        script_path = "pipelines/lead_conversion_rate/sources/simple_step.py"
         if not os.path.isfile(script_path):
             raise FileNotFoundError(f"El archivo '{script_path}' no existe. Verifica la ruta.")
 
@@ -54,7 +54,7 @@ class LeadConversionFactory(SagemakerPipelineFactory):
         data_prep_processor = PipelineStep(
             scope=scope,
             id="DataPrepProcessor",
-            dockerfile_path="pipelines/sources/lead_conversion",
+            dockerfile_path="pipelines/lead_conversion_rate/sources",
             step_name="data-preparation",
             command=["python3", "simple_step.py"],
             instance_type=instance_type_var,
@@ -79,7 +79,7 @@ class LeadConversionFactory(SagemakerPipelineFactory):
          
             
         # Validar la ruta al archivo de código para consulta a Athena
-        athena_script_path = "pipelines/sources/lead_conversion/athena_query.py"
+        athena_script_path = "pipelines/lead_conversion_rate/sources/athena_query.py"
         if not os.path.isfile(athena_script_path):
             raise FileNotFoundError(f"El archivo '{athena_script_path}' no existe. Verifica la ruta.")
 
@@ -87,7 +87,7 @@ class LeadConversionFactory(SagemakerPipelineFactory):
         retrieve_data_processor = PipelineStep(
             scope=scope,
             id="RetrieveDataProcessor",
-            dockerfile_path="pipelines/sources/lead_conversion",
+            dockerfile_path="pipelines/lead_conversion_rate/sources",
             step_name="retrieve-data",
             command=["python3", "athena_query.py"],
             instance_type=instance_type_var,

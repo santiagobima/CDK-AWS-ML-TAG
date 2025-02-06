@@ -6,7 +6,7 @@ import aws_cdk as cdk
 import sagemaker
 from aws_cdk import aws_sagemaker as sm, aws_ssm as ssm
 from constructs import Construct
-from pipelines.definitions.base import SagemakerPipelineFactory, create_sagemaker_session
+from Constructors.base import SagemakerPipelineFactory, create_sagemaker_session
 
 # Configuración del logger
 logger = logging.getLogger(__name__)
