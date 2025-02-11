@@ -7,6 +7,7 @@ import sagemaker
 from aws_cdk import aws_sagemaker as sm, aws_ssm as ssm
 from constructs import Construct
 from Constructors.base import SagemakerPipelineFactory, create_sagemaker_session
+from pipelines.lead_conversion_rate.definition import create_pipeline
 
 # Configuración del logger
 logger = logging.getLogger(__name__)
@@ -84,12 +85,13 @@ class PipelineStack(cdk.Stack):
             local_mode=local_mode
         )
 
-        pipeline = pipeline_factory.create(
+        pipeline = create_pipeline(
             scope=self,
-            pipeline_name=pipeline_name,
             role=sm_execution_role_arn,
+            pipeline_name=pipeline_name,
             sm_session=sm_session,
         )
+        
         pipeline_def_json = json.dumps(json.loads(pipeline.definition()), indent=2, sort_keys=True)
         logger.info(f"Definición del pipeline para '{pipeline_name}' generada con éxito.")
 
