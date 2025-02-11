@@ -7,7 +7,7 @@ import sagemaker
 from aws_cdk import aws_sagemaker as sm, aws_ssm as ssm
 from constructs import Construct
 from Constructors.base import SagemakerPipelineFactory, create_sagemaker_session
-from pipelines.lead_conversion_rate.definition import create_pipeline
+from Pipelines.lead_conversion_rate.definition import create_pipeline
 
 # Configuración del logger
 logger = logging.getLogger(__name__)
