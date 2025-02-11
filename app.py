@@ -8,7 +8,7 @@ from constructs import Construct
 
 from Stack.sagemaker_stack import SagemakerStack
 from Stack.pipeline_stack import PipelineStack
-from pipelines.lead_conversion_rate.lead_conversion_pipeline import LeadConversionFactory
+from Constructors.lead_conversion_factory import LeadConversionFactory
 
 # Configuración del logger
 logger = logging.getLogger(__name__)

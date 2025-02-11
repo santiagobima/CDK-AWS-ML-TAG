@@ -1,6 +1,6 @@
 import sagemaker
 from sagemaker.workflow.pipeline import Pipeline
-from pipelines.lead_conversion_rate.lead_conversion_pipeline import LeadConversionFactory
+from Constructors.lead_conversion_factory import LeadConversionFactory
 import os
 import logging
 
