@@ -1,3 +1,13 @@
+"""
+1. Data prep the data and save them on S3. 
+2. Execute the model and save the .pkl model on S3.
+"""
+
+
+
+
+
+
 import os
 import logging
 
@@ -58,20 +68,18 @@ class LeadConversionFactory(SagemakerPipelineFactory):
             raise FileNotFoundError(f"El archivo '{script_path}' no existe. Verifica la ruta.")
 
         # Configurar paso de preparación de datos con Docker
-        data_prep_processor = PipelineStep(
-            scope=scope,
-            id="DataPrepProcessor",
-            dockerfile_path="pipelines/lead_conversion_rate/sources",
-            step_name="data-preparation",
-            command=["python3", "simple_step.py"],
-            instance_type=instance_type_var,
-            role=role,
-            sagemaker_session=sm_session,
-        ).create_processor()
-
         data_prep_step = ProcessingStep(
             name="DataPreparationStep",
-            processor=data_prep_processor,
+            processor=PipelineStep(
+                scope=scope,
+                id="DataPrepProcessor",
+                dockerfile_path="pipelines/lead_conversion_rate/sources",
+                step_name="data-preparation",
+                command=["python3", "simple_step.py"],
+                instance_type=instance_type_var,
+                role=role,
+                sagemaker_session=sm_session,
+            ).create_processor(),
             inputs=inputs,
             outputs=outputs,
             code=script_path,
