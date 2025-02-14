@@ -1,8 +1,10 @@
 import os
 import logging
-from abc import ABC, abstractmethod
 import boto3
 import sagemaker
+
+from constructs import Construct
+from abc import ABC, abstractmethod
 from sagemaker.workflow.pipeline import Pipeline  # Importación directa de Pipeline
 from sagemaker.workflow.pipeline_context import LocalPipelineSession, PipelineSession
 from pydantic import BaseModel
@@ -11,9 +13,11 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 class SagemakerPipelineFactory(BaseModel, ABC):
+
     @abstractmethod
     def create(
         self,
+        scope: Construct,
         role: str,
         pipeline_name: str,
         sm_session: sagemaker.Session,

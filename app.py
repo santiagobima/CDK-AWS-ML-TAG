@@ -8,7 +8,7 @@ from constructs import Construct
 
 from Stack.sagemaker_stack import SagemakerStack
 from Stack.pipeline_stack import PipelineStack
-from Constructors.lead_conversion_factory import LeadConversionFactory
+from pipelines.lead_conversion_rate.definition import LeadConversionFactory
 
 # Configuración del logger
 logger = logging.getLogger(__name__)
@@ -40,6 +40,9 @@ app = cdk.App()
 # Cargar las variables de entorno a partir del contexto
 load_environment(app)
 
+SOURCE_BUCKET = os.getenv("SOURCES_BUCKET")
+assert SOURCE_BUCKET is not None
+
 # Configuración de entorno y VPC desde variables de entorno
 account = os.getenv('CDK_DEFAULT_ACCOUNT')
 region = os.getenv('CDK_DEFAULT_REGION')
@@ -62,9 +65,12 @@ logger.info("Stack de SageMaker configurado correctamente.")
 lead_conversion_pipeline = PipelineStack(
     app,
     id=f"{LOGICAL_PREFIX}-PipelinesStack",
-    factory=LeadConversionFactory(pipeline_config_parameter="Cloud Developer", local_mode=LOCAL_MODE),
+    factory=LeadConversionFactory(local_mode=LOCAL_MODE),
     env=cdk.Environment(account=account, region=region),
-    local_mode=LOCAL_MODE  # Pasamos `local_mode` desde app.py
+    local_mode=LOCAL_MODE,  # Pasamos `local_mode` desde app.py
+    pipeline_name="LeadConversionPipeline",
+    source_bucket_name=SOURCE_BUCKET,
+    sm_execution_role_arn=sagemaker_stack.sm_execution_role.role_arn,
 )
 lead_conversion_pipeline.add_dependency(sagemaker_stack)
 logger.info("Stack de pipelines configurado correctamente con dependencia en el stack de SageMaker.")

@@ -1,11 +1,12 @@
 from constructs import Construct
+from sagemaker.workflow.parameters import ParameterString
 from aws_cdk.aws_ecr_assets import DockerImageAsset
 from sagemaker import ScriptProcessor
 from aws_cdk.aws_ecr_assets import DockerImageAsset, Platform
 
 
 class PipelineStep:
-    def __init__(self, scope: Construct, id: str, dockerfile_path: str, step_name: str, command: list, instance_type: str, role: str, sagemaker_session):
+    def __init__(self, scope: Construct, id: str, dockerfile_path: str, step_name: str, command: list, instance_type: ParameterString, role: str, sagemaker_session):
         """
         Clase para gestionar un paso del pipeline con imágenes Docker personalizadas.
 
