@@ -31,7 +31,7 @@ class PipelineStack(cdk.Stack):
         super().__init__(scope, id, env=env, **kwargs)
         
         self.factory = factory
-        self.prefix = self.node.try_get_context("resource_prefix")
+        self.prefix = self.node.try_get_context("resource_prefix") 
         
         # Cargar nombres de recursos desde SSM Parameter Store
         # sources_bucket_name, sm_execution_role_arn = self._load_ssm_parameters()

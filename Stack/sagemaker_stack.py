@@ -58,10 +58,18 @@ class SagemakerStack(cdk.Stack):
 
         :return: El rol de IAM creado.
         """
+        
+        
+        
+        
+        role_name = f"{self.prefix}-sm-execution-role".replace(" ", "-").replace(":", "-")[:64]
+        role_name = role_name.strip("_-.")  # Asegurar que no comience/termine con caracteres inválidos
+        logger.info(f"Generando rol con nombre: {role_name}")
+        
         role = iam.Role(
             self, 'SagemakerExecutionRole',
             assumed_by=iam.ServicePrincipal('sagemaker.amazonaws.com'),
-            role_name=f"{self.prefix}-sm-execution-role",
+            role_name=role_name,
             managed_policies=[
                 iam.ManagedPolicy.from_managed_policy_arn(
                     self,
@@ -70,6 +78,7 @@ class SagemakerStack(cdk.Stack):
                 ),
             ],
         )
+        
         logger.info("Rol de ejecución de SageMaker creado con éxito.")
 
         #  LAKEFORMATION IAM

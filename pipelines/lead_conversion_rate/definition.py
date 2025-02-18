@@ -3,11 +3,6 @@
 2. Execute the model and save the .pkl model on S3.
 """
 
-
-
-
-
-
 import os
 import logging
 
@@ -26,14 +21,10 @@ class LeadConversionFactory(SagemakerPipelineFactory):
     """
     Clase que define el pipeline de conversión de clientes potenciales.
     """
+    local_mode: bool = False  # ✅ Se define como atributo directamente
 
-    def __init__(self, local_mode: bool = False):
-        """
-        Constructor de la fábrica de pipelines.
-
-        :param local_mode: Indica si se ejecutará en modo local o en la nube.
-        """
-        self.local_mode = local_mode
+    class Config:
+        arbitrary_types_allowed = True  # ✅ Permite tipos como Construct y Session
 
     def create(
         self,

@@ -12,7 +12,11 @@ from pydantic import BaseModel
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-class SagemakerPipelineFactory(BaseModel, ABC):
+class SagemakerPipelineFactory(BaseModel):
+    local_mode: bool = False
+
+    class Config:
+        arbitrary_types_allowed = True  # ✅ Permite clases abstractas en Pydantic
 
     @abstractmethod
     def create(
@@ -21,7 +25,7 @@ class SagemakerPipelineFactory(BaseModel, ABC):
         role: str,
         pipeline_name: str,
         sm_session: sagemaker.Session,
-    ) -> Pipeline:  # Uso directo de Pipeline en lugar de sagemaker.workflow.pipeline.Pipeline
+    ) -> Pipeline:
         raise NotImplementedError("Debe implementar el método 'create' en la subclase.")
 
 def create_sagemaker_session(default_bucket: str, local_mode=False) -> sagemaker.Session:

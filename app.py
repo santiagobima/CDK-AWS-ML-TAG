@@ -8,7 +8,7 @@ from constructs import Construct
 
 from Stack.sagemaker_stack import SagemakerStack
 from Stack.pipeline_stack import PipelineStack
-from pipelines.lead_conversion_rate.definition import LeadConversionFactory
+from Pipelines.lead_conversion_rate.definition import LeadConversionFactory
 
 # Configuración del logger
 logger = logging.getLogger(__name__)
@@ -23,7 +23,7 @@ def load_environment(app):
     """
     Carga el archivo .env según el entorno especificado en `cdk deploy --context env=...`.
     """
-    env = app.node.try_get_context('env')
+    env = app.node.try_get_context('env') or 'dev'
     if not env:
         raise ValueError("El entorno no está especificado. Use `--context env=dev` o `--context env=prod`.")
     
@@ -52,6 +52,12 @@ if not account or not region or not vpc_name:
     raise ValueError("Faltan variables de entorno necesarias: CDK_DEFAULT_ACCOUNT, CDK_DEFAULT_REGION o VPC_ID.")
 
 # Crear el stack de recursos de SageMaker
+
+# Obtener el prefijo del contexto de CDK
+LOGICAL_PREFIX = app.node.try_get_context("resource_prefix")
+if not LOGICAL_PREFIX:
+    raise ValueError("El prefijo lógico (resource_prefix) no está definido en cdk.json")
+
 sagemaker_stack = SagemakerStack(
     app, 
     id=f"{LOGICAL_PREFIX}-SagemakerStack",
@@ -62,6 +68,9 @@ sagemaker_stack = SagemakerStack(
 logger.info("Stack de SageMaker configurado correctamente.")
 
 # Crear el stack de pipelines y establecer la dependencia en el stack de SageMaker
+
+print(f"DEBUG - ARN del rol de SageMaker que se pasa al pipeline: {sagemaker_stack.sm_execution_role.role_arn}")
+
 lead_conversion_pipeline = PipelineStack(
     app,
     id=f"{LOGICAL_PREFIX}-PipelinesStack",
