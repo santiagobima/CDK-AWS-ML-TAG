@@ -3,6 +3,7 @@ import logging
 import aws_cdk as cdk
 from aws_cdk import aws_iam as iam, aws_s3 as s3, aws_ec2 as ec2, aws_ssm as ssm, aws_lakeformation as lakeformation
 from constructs import Construct
+import re
 
 # Configuración del logger
 logger = logging.getLogger(__name__)
@@ -58,12 +59,14 @@ class SagemakerStack(cdk.Stack):
 
         :return: El rol de IAM creado.
         """
-        
-        
-        
-        
-        role_name = f"{self.prefix}-sm-execution-role".replace(" ", "-").replace(":", "-")[:64]
-        role_name = role_name.strip("_-.")  # Asegurar que no comience/termine con caracteres inválidos
+                
+        role_name = f"{self.prefix}-sm-execution-role"
+
+        role_name = re.sub(r"[^a-zA-Z0-9+=,.@_-]", "", role_name)  
+
+        # Asegurar que no exceda 64 caracteres y eliminar caracteres inválidos al inicio o final
+        role_name = role_name[:64].strip("_-.")
+
         logger.info(f"Generando rol con nombre: {role_name}")
         
         role = iam.Role(

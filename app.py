@@ -5,6 +5,7 @@ import logging
 import aws_cdk as cdk
 from dotenv import load_dotenv
 from constructs import Construct
+import boto3
 
 from Stack.sagemaker_stack import SagemakerStack
 from Stack.pipeline_stack import PipelineStack
@@ -33,6 +34,7 @@ def load_environment(app):
     logger.info(f"Archivo de entorno cargado: {env_file}")
     logger.info(f"DATA_BUCKET: {os.getenv('DATA_BUCKET')}")
     logger.info(f"SOURCES_BUCKET: {os.getenv('SOURCES_BUCKET')}")
+
 
 # Crear la aplicación CDK
 app = cdk.App()
@@ -69,18 +71,36 @@ logger.info("Stack de SageMaker configurado correctamente.")
 
 # Crear el stack de pipelines y establecer la dependencia en el stack de SageMaker
 
-print(f"DEBUG - ARN del rol de SageMaker que se pasa al pipeline: {sagemaker_stack.sm_execution_role.role_arn}")
+#sm_execution_role_arn = sagemaker_stack.sm_execution_role.role_arn
+
+
+ssm_client = boto3.client("ssm", region_name=region)
+
+# Obtener el ARN del rol de SageMaker desde SSM
+sm_execution_role_arn = ssm_client.get_parameter(
+    Name=f"/{LOGICAL_PREFIX}/SagemakerExecutionRoleArn"
+)["Parameter"]["Value"]
+
+
+print(f"DEBUG - ARN del rol de SageMaker que se pasa al pipeline: {sm_execution_role_arn}")
+
+# Forzar la resolución del ARN del rol antes de pasarlo al pipeline
+if isinstance(sm_execution_role_arn, cdk.CfnOutput):
+    sm_execution_role_arn = sm_execution_role_arn.value
+
+print(f"DEBUG - ARN del rol de SageMaker que se pasa al pipeline: {sm_execution_role_arn}")
 
 lead_conversion_pipeline = PipelineStack(
     app,
     id=f"{LOGICAL_PREFIX}-PipelinesStack",
     factory=LeadConversionFactory(local_mode=LOCAL_MODE),
     env=cdk.Environment(account=account, region=region),
-    local_mode=LOCAL_MODE,  # Pasamos `local_mode` desde app.py
+    local_mode=LOCAL_MODE,
     pipeline_name="LeadConversionPipeline",
     source_bucket_name=SOURCE_BUCKET,
-    sm_execution_role_arn=sagemaker_stack.sm_execution_role.role_arn,
+    sm_execution_role_arn=sm_execution_role_arn,  # ✅ Pasamos el ARN ya resuelto
 )
+
 lead_conversion_pipeline.add_dependency(sagemaker_stack)
 logger.info("Stack de pipelines configurado correctamente con dependencia en el stack de SageMaker.")
 
