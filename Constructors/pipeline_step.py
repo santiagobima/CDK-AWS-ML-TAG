@@ -1,59 +1,61 @@
-from constructs import Construct
+from sagemaker.processing import ScriptProcessor
+from sagemaker.sklearn import SKLearnProcessor
+from sagemaker.xgboost import XGBoostProcessor
+from sagemaker import Session
 from sagemaker.workflow.parameters import ParameterString
-from aws_cdk.aws_ecr_assets import DockerImageAsset
-from sagemaker import ScriptProcessor
-from aws_cdk.aws_ecr_assets import DockerImageAsset, Platform
+import logging
+import os
 
+# Configuración del logger
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class PipelineStep:
-    def __init__(self, scope: Construct, id: str, dockerfile_path: str, step_name: str, command: list, instance_type: ParameterString, role: str, sagemaker_session):
+    def __init__(self, step_name: str, script_path: str, instance_type: str, role: str, sagemaker_session: Session, framework: str):
         """
-        Clase para gestionar un paso del pipeline con imágenes Docker personalizadas.
-
-        :param scope: Alcance del constructo (para la integración con CDK).
-        :param id: Identificador único del paso.
-        :param dockerfile_path: Ruta al Dockerfile.
-        :param step_name: Nombre del paso.
-        :param command: Comando a ejecutar en el contenedor.
-        :param instance_type: Tipo de instancia para SageMaker.
-        :param role: ARN del rol de ejecución de SageMaker.
-        :param sagemaker_session: Sesión de SageMaker.
+        Clase para gestionar un paso del pipeline sin necesidad de imágenes Docker personalizadas.
         """
-        self.scope = scope
-        self.id = id
-        self.dockerfile_path = dockerfile_path
         self.step_name = step_name
-        self.command = command
+        self.script_path = script_path
         self.instance_type = instance_type
         self.role = role
         self.sagemaker_session = sagemaker_session
-
-    def create_sagemaker_image(self):
-        """
-        Crea la imagen Docker usando CDK y devuelve su URI.
-
-        :return: URI de la imagen Docker creada.
-        """
-        asset = DockerImageAsset(
-            scope=self.scope,
-            id=self.id,
-            directory=self.dockerfile_path,
-            platform=Platform.LINUX_AMD64
-        )
-        return asset.image_uri
+        self.framework = framework.lower()
 
     def create_processor(self):
         """
-        Configura el procesador de SageMaker con la imagen creada.
-
-        :return: Instancia de ScriptProcessor configurada.
+        Crea el procesador de SageMaker adecuado según el framework especificado.
         """
-        image_uri = self.create_sagemaker_image()
-        return ScriptProcessor(
-            image_uri=image_uri,
-            command=self.command,
-            instance_type=self.instance_type,
-            instance_count=1,
-            role=self.role,
-            sagemaker_session=self.sagemaker_session
-        )
+        if self.framework == "sklearn":
+            processor = SKLearnProcessor(
+                framework_version="1.2-1",
+                role=self.role,
+                instance_type=self.instance_type,
+                instance_count=1,
+                sagemaker_session=self.sagemaker_session,
+            )
+            logger.info(f"Usando SKLearnProcessor para el paso '{self.step_name}'.")
+
+        elif self.framework == "xgboost":
+            processor = XGBoostProcessor(
+                framework_version="1.5-1",
+                role=self.role,
+                instance_type=self.instance_type,
+                instance_count=1,
+                sagemaker_session=self.sagemaker_session,
+            )
+            logger.info(f"Usando XGBoostProcessor para el paso '{self.step_name}'.")
+
+        else:
+            region = os.getenv("CDK_DEFAULT_REGION", "us-east-1")  # 🔹 Ahora obtiene la región correcta
+            processor = ScriptProcessor(
+                image_uri=f"{region}.dkr.ecr.amazonaws.com/sagemaker-scikit-learn:1.2-1-cpu-py3",
+                role=self.role,
+                instance_type=self.instance_type,
+                instance_count=1,
+                command=["python3"],
+                sagemaker_session=self.sagemaker_session,
+            )
+            logger.info(f"Usando ScriptProcessor con imagen preexistente para el paso '{self.step_name}'.")
+
+        return processor

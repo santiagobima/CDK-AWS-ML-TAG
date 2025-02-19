@@ -5,8 +5,11 @@ import sagemaker
 
 from constructs import Construct
 from abc import ABC, abstractmethod
-from sagemaker.workflow.pipeline import Pipeline  # Importación directa de Pipeline
+from sagemaker.workflow.pipeline import Pipeline
 from sagemaker.workflow.pipeline_context import LocalPipelineSession, PipelineSession
+from sagemaker.sklearn.processing import SKLearnProcessor
+from sagemaker.xgboost.processing import XGBoostProcessor
+from sagemaker.processing import ScriptProcessor
 from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
@@ -27,6 +30,7 @@ class SagemakerPipelineFactory(BaseModel):
         sm_session: sagemaker.Session,
     ) -> Pipeline:
         raise NotImplementedError("Debe implementar el método 'create' en la subclase.")
+
 
 def create_sagemaker_session(default_bucket: str, local_mode=False) -> sagemaker.Session:
     """
@@ -52,3 +56,39 @@ def create_sagemaker_session(default_bucket: str, local_mode=False) -> sagemaker
         raise RuntimeError(f"No se pudo crear la sesión de SageMaker: {e}")
 
     return sagemaker_session
+
+
+def get_processor(
+    framework: str,
+    role: str,
+    instance_type: str,
+    instance_count: int = 1,
+    region: str = os.getenv("CDK_DEFAULT_REGION"),
+) -> ScriptProcessor:
+    """
+    Obtiene el procesador adecuado en función del framework requerido.
+    """
+    if framework == "sklearn":
+        return SKLearnProcessor(
+            framework_version="1.2-1",
+            role=role,
+            instance_type=instance_type,
+            instance_count=instance_count,
+            region=region,
+        )
+    elif framework == "xgboost":
+        return XGBoostProcessor(
+            framework_version="1.5-1",
+            role=role,
+            instance_type=instance_type,
+            instance_count=instance_count,
+            region=region,
+        )
+    else:
+        return ScriptProcessor(
+            image_uri=f"{region}.dkr.ecr.amazonaws.com/sagemaker-processing-container:latest",
+            role=role,
+            instance_type=instance_type,
+            instance_count=instance_count,
+            region=region,
+        )
