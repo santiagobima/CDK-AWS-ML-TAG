@@ -1,11 +1,18 @@
+"""
+1. Data prep the data and save them on S3. 
+2. Execute the model and save the .pkl model on S3.
+"""
+
 import os
-import sagemaker
+import logging
+
+from sagemaker.processing import ProcessingInput, ProcessingOutput
 from sagemaker.workflow.pipeline import Pipeline
+from sagemaker.session import Session
 from sagemaker.workflow.parameters import ParameterString
 from sagemaker.workflow.steps import ProcessingStep
-from pipelines.definitions.base import SagemakerPipelineFactory
-from pipelines.definitions.pipeline_step import PipelineStep
-import logging
+from Constructors.pipeline_factory import SagemakerPipelineFactory
+from Constructors.pipeline_step import PipelineStep
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -14,16 +21,17 @@ class LeadConversionFactory(SagemakerPipelineFactory):
     """
     Clase que define el pipeline de conversión de clientes potenciales.
     """
+    local_mode: bool = False  # ✅ Se define como atributo directamente
 
-    pipeline_config_parameter: str
-    local_mode: bool  # Configuración para determinar si el cálculo es en local
+    class Config:
+        arbitrary_types_allowed = True  # ✅ Permite tipos como Construct y Session
 
     def create(
         self,
         scope,  # Se pasa el scope desde PipelineStack
         role: str,
         pipeline_name: str,
-        sm_session: sagemaker.Session,
+        sm_session: Session,
     ) -> Pipeline:
         """
         Crea el pipeline de SageMaker.
@@ -46,40 +54,33 @@ class LeadConversionFactory(SagemakerPipelineFactory):
         inputs, outputs = self._configure_io(data_bucket_name)
 
         # Validar la ruta al archivo de código para preparación de datos
-        script_path = "pipelines/sources/lead_conversion/simple_step.py"
+        script_path = "pipelines/lead_conversion_rate/sources/simple_step.py"
         if not os.path.isfile(script_path):
             raise FileNotFoundError(f"El archivo '{script_path}' no existe. Verifica la ruta.")
 
         # Configurar paso de preparación de datos con Docker
-        data_prep_processor = PipelineStep(
-            scope=scope,
-            id="DataPrepProcessor",
-            dockerfile_path="pipelines/sources/lead_conversion",
-            step_name="data-preparation",
-            command=["python3", "simple_step.py"],
-            instance_type=instance_type_var,
-            role=role,
-            sagemaker_session=sm_session,
-        ).create_processor()
-
         data_prep_step = ProcessingStep(
             name="DataPreparationStep",
-            processor=data_prep_processor,
+            processor=PipelineStep(
+                scope=scope,
+                id="DataPrepProcessor",
+                dockerfile_path="pipelines/lead_conversion_rate/sources",
+                step_name="data-preparation",
+                command=["python3", "simple_step.py"],
+                instance_type=instance_type_var,
+                role=role,
+                sagemaker_session=sm_session,
+            ).create_processor(),
             inputs=inputs,
             outputs=outputs,
             code=script_path,
             job_arguments=[
-                "--config-parameter", self.pipeline_config_parameter,
                 "--name", "santiago"
             ],
         )
         
-        
-        
-         
-            
         # Validar la ruta al archivo de código para consulta a Athena
-        athena_script_path = "pipelines/sources/lead_conversion/athena_query.py"
+        athena_script_path = "pipelines/lead_conversion_rate/sources/athena_query.py"
         if not os.path.isfile(athena_script_path):
             raise FileNotFoundError(f"El archivo '{athena_script_path}' no existe. Verifica la ruta.")
 
@@ -87,7 +88,7 @@ class LeadConversionFactory(SagemakerPipelineFactory):
         retrieve_data_processor = PipelineStep(
             scope=scope,
             id="RetrieveDataProcessor",
-            dockerfile_path="pipelines/sources/lead_conversion",
+            dockerfile_path="pipelines/lead_conversion_rate/sources",
             step_name="retrieve-data",
             command=["python3", "athena_query.py"],
             instance_type=instance_type_var,
@@ -133,13 +134,13 @@ class LeadConversionFactory(SagemakerPipelineFactory):
         """
         logger.info(f"Configurando pipeline con bucket S3 '{data_bucket_name}' para entrada y salida.")
         inputs = [
-            sagemaker.processing.ProcessingInput(
+            ProcessingInput(
                 source=f"s3://{data_bucket_name}/input-data",
                 destination="/opt/ml/processing/input"
             )
         ]
         outputs = [
-            sagemaker.processing.ProcessingOutput(
+            ProcessingOutput(
                 source="/opt/ml/processing/output",
                 destination=f"s3://{data_bucket_name}/output-data"
             )
