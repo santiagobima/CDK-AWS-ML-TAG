@@ -4,6 +4,7 @@ import aws_cdk as cdk
 from aws_cdk import aws_iam as iam, aws_s3 as s3, aws_ec2 as ec2, aws_ssm as ssm, aws_lakeformation as lakeformation
 from constructs import Construct
 import re
+import boto3
 
 # Configuración del logger
 logger = logging.getLogger(__name__)
@@ -203,28 +204,32 @@ class SagemakerStack(cdk.Stack):
     def create_ssm_parameters(self):
         """
         Crea los parámetros necesarios en SSM Parameter Store para los nombres de los buckets
-        y el ARN del rol de ejecución.
+        y el ARN del rol de ejecución solo si no existen.
         """
-        ssm.StringParameter(
-            self, 'DataBucketName',
-            parameter_name=f"/{self.prefix}/DataBucketName",
-            string_value=self.sm_data_bucket.bucket_name,
-            description="Data bucket name for SageMaker"
-        )
-        logger.info(f"Parámetro SSM '/{self.prefix}/DataBucketName' creado.")
+        ssm_client = boto3.client("ssm", region_name=self.region)
 
-        ssm.StringParameter(
-            self, 'SourcesBucketName',
-            parameter_name=f"/{self.prefix}/SourcesBucketName",
-            string_value=self.sm_sources_bucket.bucket_name,
-            description="Sources bucket name for SageMaker"
-        )
-        logger.info(f"Parámetro SSM '/{self.prefix}/SourcesBucketName' creado.")
+        def parameter_exists(parameter_name):
+            try:
+                ssm_client.get_parameter(Name=parameter_name)
+                return True
+            except ssm_client.exceptions.ParameterNotFound:
+                return False
 
-        ssm.StringParameter(
-            self, 'SagemakerExecutionRoleArn',
-            parameter_name=f"/{self.prefix}/SagemakerExecutionRoleArn",
-            string_value=self.sm_execution_role.role_arn,
-            description="SageMaker Execution Role ARN"
-        )
-        logger.info(f"Parámetro SSM '/{self.prefix}/SagemakerExecutionRoleArn' creado.")
+        parameters = {
+            "DataBucketName": self.sm_data_bucket.bucket_name,
+            "SourcesBucketName": self.sm_sources_bucket.bucket_name,
+            "SagemakerExecutionRoleArn": self.sm_execution_role.role_arn
+        }
+
+        for param_name, param_value in parameters.items():
+            full_param_name = f"/{self.prefix}/{param_name}"
+            if not parameter_exists(full_param_name):
+                ssm.StringParameter(
+                    self, param_name,
+                    parameter_name=full_param_name,
+                    string_value=param_value,
+                    description=f"{param_name} for SageMaker"
+                )
+                logger.info(f"Parámetro SSM '{full_param_name}' creado.")
+            else:
+                logger.info(f"Parámetro SSM '{full_param_name}' ya existe. No se crea nuevamente.")
