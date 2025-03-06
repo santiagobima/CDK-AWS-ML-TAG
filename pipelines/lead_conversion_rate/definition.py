@@ -6,7 +6,7 @@ from sagemaker.session import Session
 from sagemaker.workflow.parameters import ParameterString
 from sagemaker.workflow.steps import ProcessingStep
 from sagemaker.sklearn.processing import SKLearnProcessor
-from Constructors.pipeline_factory import SagemakerPipelineFactory
+from Constructors.pipeline_factory import SagemakerPipelineFactory, get_processor
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -20,7 +20,7 @@ class LeadConversionFactory(SagemakerPipelineFactory):
     class Config:
         arbitrary_types_allowed = True
 
-    def create(self, scope, role: str, pipeline_name: str, sm_session: Session) -> Pipeline:
+    def create(self, scope, role: str, pipeline_name: str, sm_session: Session, image_uri: str) -> Pipeline:
         """
         Crea el pipeline de SageMaker.
         """
@@ -32,8 +32,35 @@ class LeadConversionFactory(SagemakerPipelineFactory):
 
         data_bucket_name = os.getenv("DATA_BUCKET").rstrip('/')
         inputs, outputs = self._configure_io(data_bucket_name)
+        
+        processor = get_processor(role = role, instance_type = instance_type_var.default_value, image_uri=image_uri)
+        
+        data_prep_step = ProcessingStep(
+            name='DataPreparationStep',
+            processor=processor,
+            inputs=inputs,
+            outputs=outputs,
+            code="pipelines/lead_conversion_rate/sources/simple_step.py"
+            
+            
+        )
+        
+        
+        retrieve_data_step = ProcessingStep(
+            name='RetrieveDataStep',
+            processor=processor,
+            inputs=[],  # 
+            outputs=outputs,  # 
+            code="pipelines/lead_conversion_rate/sources/athena_query.py"
+        )
+        
+        retrieve_data_step.add_depends_on([data_prep_step])
+        steps = [data_prep_step,retrieve_data_step]
+        logger.info(f"Pipeline '{pipeline_name}' configurado con {len(steps)} paso(s).")
+        return Pipeline(name=pipeline_name, steps=steps, sagemaker_session=sm_session)
+        
 
-        # Paso de preparación de datos con SKLearnProcessor (sin Docker)
+    """    # Paso de preparación de datos con SKLearnProcessor (sin Docker)
         sklearn_processor = SKLearnProcessor(
             framework_version="1.2-1",
             role=role,
@@ -79,6 +106,7 @@ class LeadConversionFactory(SagemakerPipelineFactory):
             sagemaker_session=sm_session,
             parameters=[instance_type_var],
         )
+"""
 
     def _configure_io(self, data_bucket_name: str):
         """

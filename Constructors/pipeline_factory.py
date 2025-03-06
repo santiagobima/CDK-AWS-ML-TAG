@@ -7,9 +7,7 @@ from constructs import Construct
 from abc import ABC, abstractmethod
 from sagemaker.workflow.pipeline import Pipeline
 from sagemaker.workflow.pipeline_context import LocalPipelineSession, PipelineSession
-from sagemaker.sklearn.processing import SKLearnProcessor
-from sagemaker.xgboost.processing import XGBoostProcessor
-from sagemaker.processing import ScriptProcessor
+from sagemaker.processing import Processor
 from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
@@ -58,37 +56,19 @@ def create_sagemaker_session(default_bucket: str, local_mode=False) -> sagemaker
     return sagemaker_session
 
 
-def get_processor(
-    framework: str,
-    role: str,
-    instance_type: str,
-    instance_count: int = 1,
-    region: str = os.getenv("CDK_DEFAULT_REGION"),
-) -> ScriptProcessor:
+
+        
+def get_processor(role: str, instance_type: str, image_uri: str ) -> Processor:
     """
-    Obtiene el procesador adecuado en función del framework requerido.
+    Retorna un `Processor` con la imagen en ECR personalizada.
     """
-    if framework == "sklearn":
-        return SKLearnProcessor(
-            framework_version="1.2-1",
-            role=role,
-            instance_type=instance_type,
-            instance_count=instance_count,
-            region=region,
-        )
-    elif framework == "xgboost":
-        return XGBoostProcessor(
-            framework_version="1.5-1",
-            role=role,
-            instance_type=instance_type,
-            instance_count=instance_count,
-            region=region,
-        )
-    else:
-        return ScriptProcessor(
-            image_uri=f"{region}.dkr.ecr.amazonaws.com/sagemaker-processing-container:latest",
-            role=role,
-            instance_type=instance_type,
-            instance_count=instance_count,
-            region=region,
-        )
+    
+    sagemaker_session = sagemaker.Session()
+    
+    return Processor(
+        role=role,
+        image_uri=image_uri,
+        instance_type=instance_type,
+        instance_count=1,
+        sagemaker_session=sagemaker_session
+    )
