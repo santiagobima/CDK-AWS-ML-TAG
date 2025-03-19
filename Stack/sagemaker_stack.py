@@ -61,9 +61,9 @@ class SagemakerStack(cdk.Stack):
         image_dir.mkdir(parents=True, exist_ok=True)
 
         # Copiar automáticamente TODOS los archivos Python de `sources/` a `image/`
-        for file in sources_dir.glob("*.py"):
-            shutil.copy(file, image_dir / file.name)
-            print(f"📂 Copiado: {file} -> {image_dir / file.name}")
+        #for file in sources_dir.glob("*.py"):
+        #    shutil.copy(file, image_dir / file.name)
+        #    print(f"📂 Copiado: {file} -> {image_dir / file.name}")
          
              
         self.ecr_image = ecr_assets.DockerImageAsset(
