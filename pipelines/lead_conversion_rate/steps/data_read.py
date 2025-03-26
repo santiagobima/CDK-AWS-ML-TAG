@@ -8,7 +8,7 @@ import pandas as pd
 import numpy as np
 import logging
 
-from Pipelines.lead_conversion_rate.common.api.athena import read_from_athena
+from Pipelines.common.api.athena import read_from_athena
 from Pipelines.lead_conversion_rate.common.utils.data_prep import (
     course_info_data_prep, 
     contacts_info_data_prep, 

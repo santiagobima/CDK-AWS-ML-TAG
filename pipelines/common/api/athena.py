@@ -9,7 +9,7 @@ import logging
 
 
 from dotenv import load_dotenv
-from Pipelines.lead_conversion_rate.common.utils.config import AWS_REGION
+from Pipelines.common.utils.config import AWS_REGION
 
 
 
