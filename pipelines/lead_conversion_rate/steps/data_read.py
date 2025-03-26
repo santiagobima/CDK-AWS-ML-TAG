@@ -25,7 +25,7 @@ from Pipelines.lead_conversion_rate.common.utils.data_prep import (
     get_compare_date
 )
 from Pipelines.lead_conversion_rate.common.utils.feature_engineering import Preprocess
-from Pipelines.lead_conversion_rate.common.constants import closed_win
+from Pipelines.lead_conversion_rate.common.constants import CLOSED_WIN
 from Pipelines.lead_conversion_rate.common.utils.data_prep import get_features
 from Pipelines.lead_conversion_rate.common.utils.data_prep import sanitize_string, format_duration
 
@@ -52,7 +52,7 @@ def read_data(pickle=False, local_source=False,
     if target:
         if 'target' not in baseline_df.columns:
             baseline_df['target'] = 0
-            baseline_df.loc[baseline_df['dealstage'].isin(closed_win), 'target'] = 1
+            baseline_df.loc[baseline_df['dealstage'].isin(CLOSED_WIN), 'target'] = 1
             baseline_df = Preprocess().remove_unneeded_cols(baseline_df)
 
         if pickle:

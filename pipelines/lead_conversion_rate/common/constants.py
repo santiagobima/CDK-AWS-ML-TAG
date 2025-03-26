@@ -490,5 +490,3 @@ JOB_POSITION_MAPPING = {
     ]
 }
 
-
-
