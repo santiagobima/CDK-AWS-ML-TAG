@@ -243,10 +243,14 @@ def call_to_deal_data_prep(df):
 def calls_data_prep(df, call_outcomes_mapping):
     df['hubspot_owner_id'] = df['hubspot_owner_id'].astype('Int64')
     df = df.loc[df['hubspot_owner_id'].notnull()]
+    
 
     df.loc[:, 'hs_call_disposition'] = df['hs_call_disposition'].map(call_outcomes_mapping)
 
     df.loc[:, 'hs_activity_type'] = df['hs_activity_type'].fillna('Call Type Not Specified')
+    
+    df = df.copy()
+    
     df['hs_call_disposition'] = df['hs_call_disposition'].fillna('Call Outcome Not Specified')
 
     df.loc[:, 'answered_bool']  = np.where(
