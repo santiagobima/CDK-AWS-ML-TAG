@@ -19,12 +19,27 @@ from Pipelines.lead_conversion_rate.common.utils.data_prep import (
     deals_to_course_data_prep,
     learn_deals_data_prep,
     contact_to_deals_data_prep,
-    cleanup_baseline_df,
-    contact_analytics_data_prep,
-    find_nearest_dumpdate,
-    get_compare_date
+    contact_analytics_data_prep
 )
-from Pipelines.lead_conversion_rate.common.utils.feature_engineering import Preprocess
+
+from Pipelines.lead_conversion_rate.common.utils.feature_engineering import (
+    Preprocess,
+    cleanup_baseline_df,
+    find_nearest_dumpdate,
+    get_compare_date,
+    sanitize_string,
+    format_duration
+)
+
+from Pipelines.lead_conversion_rate.common.utils.feature_engineering import (
+    Preprocess,
+    cleanup_baseline_df,
+    find_nearest_dumpdate,
+    get_compare_date,
+    sanitize_string,
+    format_duration
+)
+
 from Pipelines.lead_conversion_rate.common.constants import CLOSED_WIN
 from Pipelines.lead_conversion_rate.common.utils.data_prep import get_features
 from Pipelines.lead_conversion_rate.common.utils.data_prep import sanitize_string, format_duration
