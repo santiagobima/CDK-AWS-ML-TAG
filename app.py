@@ -81,8 +81,11 @@ sm_execution_role_arn = ssm_client.get_parameter(
     Name=f"/{LOGICAL_PREFIX}/SagemakerExecutionRoleArn"
 )["Parameter"]["Value"]
 
+image_uri = sagemaker_stack.image_uri
+
 
 print(f"DEBUG - ARN del rol de SageMaker que se pasa al pipeline: {sm_execution_role_arn}")
+print(f"DEBUG - Imagen de ECR para procesamiento: {image_uri}")
 
 # Forzar la resolución del ARN del rol antes de pasarlo al pipeline
 if isinstance(sm_execution_role_arn, cdk.CfnOutput):
@@ -98,7 +101,8 @@ lead_conversion_pipeline = PipelineStack(
     local_mode=LOCAL_MODE,
     pipeline_name="LeadConversionPipeline",
     source_bucket_name=SOURCE_BUCKET,
-    sm_execution_role_arn=sm_execution_role_arn,  # ✅ Pasamos el ARN ya resuelto
+    sm_execution_role_arn=sm_execution_role_arn,
+    image_uri=image_uri
 )
 
 lead_conversion_pipeline.add_dependency(sagemaker_stack)

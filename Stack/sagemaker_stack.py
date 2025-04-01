@@ -1,10 +1,12 @@
 import os
 import logging
 import aws_cdk as cdk
-from aws_cdk import aws_iam as iam, aws_s3 as s3, aws_ec2 as ec2, aws_ssm as ssm, aws_lakeformation as lakeformation
-from constructs import Construct
 import re
 import boto3
+import shutil
+from pathlib import Path
+from aws_cdk import aws_iam as iam, aws_s3 as s3, aws_ec2 as ec2, aws_ssm as ssm, aws_lakeformation as lakeformation, aws_ecr_assets as ecr_assets
+from constructs import Construct
 
 # Configuración del logger
 logger = logging.getLogger(__name__)
@@ -50,6 +52,30 @@ class SagemakerStack(cdk.Stack):
         # Conceder acceso de lectura/escritura en los buckets
         self.sm_data_bucket.grant_read_write(self.sm_execution_role)
         self.sm_sources_bucket.grant_read(self.sm_execution_role)
+        
+        # Definir rutas
+        sources_dir = Path("Pipelines/lead_conversion_rate/sources/")
+        image_dir = Path("image/")
+
+        # Asegurar que la carpeta `image/` existe
+        image_dir.mkdir(parents=True, exist_ok=True)
+
+        # Copiar automáticamente TODOS los archivos Python de `sources/` a `image/`
+        #for file in sources_dir.glob("*.py"):
+        #    shutil.copy(file, image_dir / file.name)
+        #    print(f"📂 Copiado: {file} -> {image_dir / file.name}")
+         
+             
+        self.ecr_image = ecr_assets.DockerImageAsset(
+            self,
+            "sagemakerPipelineImage",
+            directory = "image/",
+            
+        )
+        
+        self.image_uri = self.ecr_image.image_uri
+        logger.info(f'Imagen de ECR creada en: {self.image_uri}')
+            
 
         # Crear parámetros en SSM
         self.create_ssm_parameters()
@@ -218,7 +244,8 @@ class SagemakerStack(cdk.Stack):
         parameters = {
             "DataBucketName": self.sm_data_bucket.bucket_name,
             "SourcesBucketName": self.sm_sources_bucket.bucket_name,
-            "SagemakerExecutionRoleArn": self.sm_execution_role.role_arn
+            "SagemakerExecutionRoleArn": self.sm_execution_role.role_arn,
+            "PipelineImageUri": self.image_uri
         }
 
         for param_name, param_value in parameters.items():

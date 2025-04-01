@@ -1,0 +1,15 @@
+python-dotenv==1.0.0
+boto3
+sagemaker
+awswrangler
+pandas
+numpy
+jupyter
+ipykernel
+seaborn
+scikit-learn==1.2.2
+pycountry
+xgboost
+shap
+imbalanced-learn
+probatus

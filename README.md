@@ -144,9 +144,13 @@ In order to bootstrap : cdk bootstrap --profile sandbox --context env=dev
 
 In order to execute :cdk deploy --all --profile sandbox --context env=dev
 
+In order to exectute more light: cdk deploy --all  --profile sandbox --context env=dev --hotswap
+
 In order to exectute the pipeline: python pipelines/executions/trigger_pipeline_sagemaker_sdk.py
 
 In order to delete: cdk destroy --all --profile sandbox --context env=dev
+
+
 
 Branch base: main : Funciona todo sin meter nada del proyecto de George. Es la base del proyecto funciona.
 

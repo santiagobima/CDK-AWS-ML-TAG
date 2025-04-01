@@ -26,6 +26,7 @@ class PipelineStack(cdk.Stack):
         pipeline_name: str,
         source_bucket_name: str,
         sm_execution_role_arn: str,
+        image_uri: str,
         **kwargs
     ) -> None:
         super().__init__(scope, id, env=env, **kwargs)
@@ -42,7 +43,8 @@ class PipelineStack(cdk.Stack):
             pipeline_factory=self.factory,
             sources_bucket_name=source_bucket_name,
             sm_execution_role_arn=sm_execution_role_arn,
-            local_mode=local_mode  # Se pasa `local_mode` al pipeline
+            local_mode=local_mode,
+            image_uri=image_uri 
         )
 
     # # for now it works, but we'll see
@@ -69,7 +71,8 @@ class PipelineStack(cdk.Stack):
         pipeline_factory: SagemakerPipelineFactory,
         sources_bucket_name: str,
         sm_execution_role_arn: str,
-        local_mode: bool
+        local_mode: bool,
+        image_uri: str
     ) -> Tuple[aws_sagemaker.CfnPipeline, str]:
         """
         Crea y configura el pipeline de SageMaker.
@@ -92,6 +95,7 @@ class PipelineStack(cdk.Stack):
             role=sm_execution_role_arn,
             pipeline_name=pipeline_name,
             sm_session=sm_session,
+            image_uri=image_uri
         )
 
         pipeline_def_json = json.dumps(json.loads(pipeline.definition()), indent=2, sort_keys=True)
