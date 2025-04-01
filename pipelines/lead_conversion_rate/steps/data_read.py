@@ -44,8 +44,7 @@ from Pipelines.lead_conversion_rate.common.constants import CLOSED_WIN
 from Pipelines.lead_conversion_rate.common.utils.data_prep import get_features
 from Pipelines.lead_conversion_rate.common.utils.data_prep import sanitize_string, format_duration
 
-def read_data(pickle=False, local_source=False,
-              data_path='./pickles/new_baseline_features_raw.pkl', target=True):
+def read_data(pickle=False, target=True):
     """
     Read or generate the baseline DataFrame.
 
@@ -59,10 +58,8 @@ def read_data(pickle=False, local_source=False,
     Returns:
         pd.DataFrame: The baseline DataFrame with or without target column.
     """
-    if local_source:
-        baseline_df = pd.read_pickle(data_path)
-    else:
-        baseline_df = get_features()  # Assuming get_features() is a function to generate data
+    
+    baseline_df = get_features()  # Assuming get_features() is a function to generate data
 
     if target:
         if 'target' not in baseline_df.columns:
