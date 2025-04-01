@@ -91,8 +91,7 @@ def save_data(data, data_path, local_source=True):
 
 if __name__ == "__main__":
     data = read_data(
-        local_source=False,
-        data_path="./pickles/new_baseline_features_raw.pkl"
+       
     )
     
     # Puedes imprimir algo para verificar que se ejecuta correctamente
