@@ -69,7 +69,9 @@ class SagemakerStack(cdk.Stack):
         self.ecr_image = ecr_assets.DockerImageAsset(
             self,
             "sagemakerPipelineImage",
-            directory = "image/",
+            directory = ".",
+            file= 'image/Dockerfile',
+            
             
         )
         
