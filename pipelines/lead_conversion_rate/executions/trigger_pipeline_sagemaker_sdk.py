@@ -11,7 +11,7 @@ def execute_cloud_pipeline():
     Ejecuta el pipeline en la nube utilizando SageMaker.
     """
     session = sagemaker.Session()
-    pipeline_name = "example-pipeline"
+    pipeline_name = "LeadConversionPipeline-v2"
     pipeline = Pipeline(name=pipeline_name, sagemaker_session=session)
 
     logger.info(f"Ejecutando pipeline '{pipeline_name}' en la nube...")

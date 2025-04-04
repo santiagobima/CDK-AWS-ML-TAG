@@ -7,6 +7,7 @@ import shutil
 from pathlib import Path
 from aws_cdk import aws_iam as iam, aws_s3 as s3, aws_ec2 as ec2, aws_ssm as ssm, aws_lakeformation as lakeformation, aws_ecr_assets as ecr_assets
 from constructs import Construct
+from aws_cdk.aws_ecr_assets import Platform
 
 # Configuración del logger
 logger = logging.getLogger(__name__)
@@ -71,6 +72,7 @@ class SagemakerStack(cdk.Stack):
             "sagemakerPipelineImage",
             directory = ".",
             file= 'image/Dockerfile',
+            platform=Platform.LINUX_AMD64,
             
             
         )

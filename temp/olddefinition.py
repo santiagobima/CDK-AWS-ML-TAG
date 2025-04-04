@@ -20,7 +20,7 @@ class LeadConversionFactory(SagemakerPipelineFactory):
     class Config:
         arbitrary_types_allowed = True
 
-    def create(self, scope, role: str, pipeline_name: str, sm_session: Session, image_uri: str, update: bool = False) -> Pipeline:
+    def create(self, scope, role: str, pipeline_name: str, sm_session: Session, image_uri: str) -> Pipeline:
         """
         Crea el pipeline de SageMaker.
         """
@@ -46,12 +46,12 @@ class LeadConversionFactory(SagemakerPipelineFactory):
         )
         
         
-        retrieve_data_step=ProcessingStep(
+        retrieve_data_step = ProcessingStep(
             name='RetrieveDataStep',
             processor=processor,
             inputs=[],  # 
             outputs=outputs,  # 
-            code="pipelines/lead_conversion_rate/steps/data_read.py",
+            code="pipelines/lead_conversion_rate/sources/athena_query.py"
         )
         
         retrieve_data_step.add_depends_on([data_prep_step])

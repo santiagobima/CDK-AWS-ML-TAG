@@ -99,7 +99,7 @@ lead_conversion_pipeline = PipelineStack(
     factory=LeadConversionFactory(local_mode=LOCAL_MODE),
     env=cdk.Environment(account=account, region=region),
     local_mode=LOCAL_MODE,
-    pipeline_name="LeadConversionPipeline",
+    pipeline_name="LeadConversionPipeline-v2",
     source_bucket_name=SOURCE_BUCKET,
     sm_execution_role_arn=sm_execution_role_arn,
     image_uri=image_uri
