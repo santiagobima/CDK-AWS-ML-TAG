@@ -94,5 +94,9 @@ if __name__ == "__main__":
        
     )
     
-    # Puedes imprimir algo para verificar que se ejecuta correctamente
-    print("Ejecución completada. Datos cargados correctamente.")
+    print("Ejecution completed.")
+    print("📊 First rows example:")
+    print(data.head())
+    
+    output_path = "/opt/ml/processing/output/test_output.csv"
+    data.head(10).to_csv(output_path, index=False)

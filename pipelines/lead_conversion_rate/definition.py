@@ -121,7 +121,7 @@ class LeadConversionFactory(SagemakerPipelineFactory):
         ]
         outputs = [
             ProcessingOutput(
-                source="/opt/ml/processing/output",
+                source="/opt/ml/processing/output/*",  #---->> I have just change it with Edo.
                 destination=f"s3://{data_bucket_name}/output-data"
             )
         ]
