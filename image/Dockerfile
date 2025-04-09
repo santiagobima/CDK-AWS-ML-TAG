@@ -19,6 +19,8 @@ COPY ../Pipelines/lead_conversion_rate/common/ Pipelines/lead_conversion_rate/co
 # Instalar dependencias y tu paquete
 RUN pip install --upgrade pip setuptools wheel && pip install -r requirements.txt && pip install .
 
+ENV PYTHONUNBUFFERED=1
+
 ENTRYPOINT ["python3"]
 
 # CMD opcional
