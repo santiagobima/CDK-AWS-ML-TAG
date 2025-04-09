@@ -36,7 +36,7 @@ class LeadConversionFactory(SagemakerPipelineFactory):
         processor = get_processor(role = role, instance_type = instance_type_var.default_value, image_uri=image_uri)
         
         data_prep_step = ProcessingStep(
-            name='DataPreparationStep',
+            name='Temporary_Simple_Check_Step',
             processor=processor,
             inputs=inputs,
             outputs=outputs,
