@@ -16,18 +16,16 @@ if not logger.handlers:
     logger.addHandler(handler)
 
 if __name__ == "__main__":
-    logger.info(" This step doesn't require S3 inputs or outputs.")
-    logger.info(" Processing SIMPLE_STEP completed successfully!")
-    
-    
- try:
+    logger.info("This step doesn't require S3 inputs or outputs.")
+    logger.info("Processing SIMPLE_STEP completed successfully!")
+
+    try:
         input_contents = os.listdir('/opt/ml/processing/input')
         logger.info(f"📁 Input directory contents: {input_contents}")
     except FileNotFoundError:
         input_contents = []
         logger.warning("⚠️ Input directory not found.")
 
-    # Guardar log en un archivo de salida
     output_path = "/opt/ml/processing/output/log_check.txt"
     with open(output_path, "w") as f:
         f.write("✅ simple_step.py completed successfully.\n")

@@ -41,8 +41,7 @@ class LeadConversionFactory(SagemakerPipelineFactory):
             inputs=inputs,
             outputs=outputs,
             code="pipelines/lead_conversion_rate/steps/simple_step.py"
-            
-            
+               
         )
         
         

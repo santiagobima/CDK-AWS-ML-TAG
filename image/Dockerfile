@@ -8,20 +8,18 @@ RUN apt-get update && \
     apt-get clean
 
 # Copiar requirements
-COPY ./image/requirements.txt ./requirements.txt
+COPY image/requirements.txt ./requirements.txt
 
-# Copiar archivos necesarios desde el contexto raíz
-COPY ../setup.py .
-COPY ../Pipelines/common/ Pipelines/common/
+# Copiar todo lo necesario desde el contexto raíz (el build context de CDK)
+COPY setup.py .
+COPY Pipelines/common/ pipelines/common/
+COPY Pipelines/lead_conversion_rate/common/ pipelines/lead_conversion_rate/common/
+COPY Pipelines/lead_conversion_rate/steps/ pipelines/lead_conversion_rate/steps/
 
-COPY ../Pipelines/lead_conversion_rate/common/ Pipelines/lead_conversion_rate/common/
-
-# Instalar dependencias y tu paquete
+# Instalar dependencias
 RUN pip install --upgrade pip setuptools wheel && pip install -r requirements.txt && pip install .
 
 ENV PYTHONUNBUFFERED=1
 
+# Entrypoint dinámico para que SageMaker pueda ejecutar cualquier script
 ENTRYPOINT ["python3"]
-
-# CMD opcional
-# CMD ["python3", "script.py"]
