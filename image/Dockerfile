@@ -19,7 +19,5 @@ COPY Pipelines/lead_conversion_rate/steps/ pipelines/lead_conversion_rate/steps/
 # Instalar dependencias
 RUN pip install --upgrade pip setuptools wheel && pip install -r requirements.txt && pip install .
 
-ENV PYTHONUNBUFFERED=1
 
 # Entrypoint dinámico para que SageMaker pueda ejecutar cualquier script
-ENTRYPOINT ["python3"]
