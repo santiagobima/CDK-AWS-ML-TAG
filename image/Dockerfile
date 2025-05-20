@@ -26,7 +26,7 @@ ENV PYTHONUNBUFFERED=1
 ENV PYTHONPATH=/app
 
 # ENTRYPOINT flexible para ejecutar cualquier script pasado como parámetro
-ENTRYPOINT ["python3"]
+
 
 # ENTRYPOINT fijo que ejecuta cualquier script pasado en el parámetro `code=...`
 #ENTRYPOINT ["/bin/bash", "-c"]
