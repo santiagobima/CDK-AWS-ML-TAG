@@ -13,3 +13,4 @@ xgboost
 shap
 imbalanced-learn
 probatus
+PyYAML

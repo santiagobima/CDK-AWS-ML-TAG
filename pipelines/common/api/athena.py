@@ -9,7 +9,7 @@ import logging
 
 
 from dotenv import load_dotenv
-from Pipelines.common.utils.config import AWS_REGION
+from pipelines.common.utils.config import AWS_REGION
 
 
 

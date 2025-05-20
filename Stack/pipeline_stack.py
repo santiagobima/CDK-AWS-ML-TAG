@@ -95,7 +95,9 @@ class PipelineStack(cdk.Stack):
             role=sm_execution_role_arn,
             pipeline_name=pipeline_name,
             sm_session=sm_session,
-            image_uri=image_uri
+            image_uri=image_uri,
+            update=True,
+        
         )
 
         pipeline_def_json = json.dumps(json.loads(pipeline.definition()), indent=2, sort_keys=True)

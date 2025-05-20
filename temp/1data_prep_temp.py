@@ -9,9 +9,9 @@ from itertools import product
 from sklearn.preprocessing import OneHotEncoder
 
 # Importar módulos internos
-from Pipelines.common.api.athena import read_from_athena
-from Pipelines.common.utils.general import sanitize_string, format_duration
-from Pipelines.lead_conversion_rate.common.utils.feature_engineering import Preprocess
+from pipelines.common.api.athena import read_from_athena
+from pipelines.common.utils.general import sanitize_string, format_duration
+from pipelines.lead_conversion_rate.common.utils.feature_engineering import Preprocess
 
 # Configurar el logger
 logger = logging.getLogger(__name__)

@@ -1,8 +1,8 @@
 import pandas as pd
 import logging
 
-from Pipelines.common.utils.general import Preprocess
-from Pipelines.lead_conversion_rate.common.constants import ONEHOT_COLUMNS,MULTIPLE_CATEGORIES
+from pipelines.common.utils.general import Preprocess
+from pipelines.lead_conversion_rate.common.constants import ONEHOT_COLUMNS,MULTIPLE_CATEGORIES
 
 logger = logging.getLogger(__name__)
 

@@ -3,7 +3,7 @@ import numpy as np
 import logging
 import re
 from itertools import product
-from Pipelines.common.api.athena import read_from_athena
+from pipelines.common.api.athena import read_from_athena
 
 
 logger = logging.getLogger(__name__)

@@ -70,5 +70,5 @@ def get_processor(role: str, instance_type: str, image_uri: str ) -> Processor:
         image_uri=image_uri,
         instance_type=instance_type,
         instance_count=1,
-        sagemaker_session=sagemaker_session
+        sagemaker_session=sagemaker_session,
     )
