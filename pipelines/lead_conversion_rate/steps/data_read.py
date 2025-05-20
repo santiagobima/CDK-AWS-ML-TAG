@@ -8,8 +8,8 @@ import pandas as pd
 import numpy as np
 import logging
 
-from Pipelines.common.api.athena import read_from_athena
-from Pipelines.lead_conversion_rate.common.utils.data_prep import (
+from pipelines.common.api.athena import read_from_athena
+from pipelines.lead_conversion_rate.common.utils.data_prep import (
     course_info_data_prep, 
     contacts_info_data_prep, 
     get_merged_contacts, 
@@ -22,7 +22,7 @@ from Pipelines.lead_conversion_rate.common.utils.data_prep import (
     contact_analytics_data_prep
 )
 
-from Pipelines.lead_conversion_rate.common.utils.feature_engineering import (
+from pipelines.lead_conversion_rate.common.utils.feature_engineering import (
     Preprocess,
     cleanup_baseline_df,
     find_nearest_dumpdate,
@@ -31,7 +31,7 @@ from Pipelines.lead_conversion_rate.common.utils.feature_engineering import (
     format_duration
 )
 
-from Pipelines.lead_conversion_rate.common.utils.feature_engineering import (
+from pipelines.lead_conversion_rate.common.utils.feature_engineering import (
     Preprocess,
     cleanup_baseline_df,
     find_nearest_dumpdate,
@@ -40,9 +40,9 @@ from Pipelines.lead_conversion_rate.common.utils.feature_engineering import (
     format_duration
 )
 
-from Pipelines.lead_conversion_rate.common.constants import CLOSED_WIN
-from Pipelines.lead_conversion_rate.common.utils.data_prep import get_features
-from Pipelines.lead_conversion_rate.common.utils.data_prep import sanitize_string, format_duration
+from pipelines.lead_conversion_rate.common.constants import CLOSED_WIN
+from pipelines.lead_conversion_rate.common.utils.data_prep import get_features
+from pipelines.lead_conversion_rate.common.utils.data_prep import sanitize_string, format_duration
 
 def read_data(pickle=False, target=True):
     """

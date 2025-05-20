@@ -9,7 +9,7 @@ import boto3
 
 from Stack.sagemaker_stack import SagemakerStack
 from Stack.pipeline_stack import PipelineStack
-from Pipelines.lead_conversion_rate.definition import LeadConversionFactory
+from pipelines.lead_conversion_rate.definition import LeadConversionFactory
 
 # Configuración del logger
 logger = logging.getLogger(__name__)
