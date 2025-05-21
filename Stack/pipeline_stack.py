@@ -26,16 +26,12 @@ class PipelineStack(cdk.Stack):
         pipeline_name: str,
         source_bucket_name: str,
         sm_execution_role_arn: str,
-        image_uri: str,
         **kwargs
     ) -> None:
         super().__init__(scope, id, env=env, **kwargs)
         
         self.factory = factory
         self.prefix = self.node.try_get_context("resource_prefix") 
-        
-        # Cargar nombres de recursos desde SSM Parameter Store
-        # sources_bucket_name, sm_execution_role_arn = self._load_ssm_parameters()
 
         # Crear el pipeline configurado
         self.pipeline, self.pipeline_arn = self.create_pipeline(
@@ -43,27 +39,8 @@ class PipelineStack(cdk.Stack):
             pipeline_factory=self.factory,
             sources_bucket_name=source_bucket_name,
             sm_execution_role_arn=sm_execution_role_arn,
-            local_mode=local_mode,
-            image_uri=image_uri 
+            local_mode=local_mode
         )
-
-    # # for now it works, but we'll see
-    # def _load_ssm_parameters(self) -> Tuple[str, str]:
-    #     """
-    #     Carga los parámetros necesarios desde SSM.
-
-    #     :return: Tupla con el nombre del bucket de fuentes y el ARN del rol de ejecución.
-    #     """
-    #     try:
-    #         sources_bucket_name = ssm.StringParameter.value_from_lookup(
-    #             self, f"/{self.prefix}/SourcesBucketName")
-    #         sm_execution_role_arn = ssm.StringParameter.value_from_lookup(
-    #             self, f"/{self.prefix}/SagemakerExecutionRoleArn")
-    #         logger.info("Parámetros cargados exitosamente desde SSM.")
-    #         return sources_bucket_name, sm_execution_role_arn
-    #     except Exception as e:
-    #         logger.error(f"Error al obtener parámetros SSM: {e}")
-    #         raise ValueError("Parámetros SSM no disponibles. Despliega `DSM-SagemakerStack` primero.")
 
     def create_pipeline(
         self,
@@ -71,8 +48,7 @@ class PipelineStack(cdk.Stack):
         pipeline_factory: SagemakerPipelineFactory,
         sources_bucket_name: str,
         sm_execution_role_arn: str,
-        local_mode: bool,
-        image_uri: str
+        local_mode: bool
     ) -> Tuple[aws_sagemaker.CfnPipeline, str]:
         """
         Crea y configura el pipeline de SageMaker.
@@ -95,9 +71,7 @@ class PipelineStack(cdk.Stack):
             role=sm_execution_role_arn,
             pipeline_name=pipeline_name,
             sm_session=sm_session,
-            image_uri=image_uri,
             update=True,
-        
         )
 
         pipeline_def_json = json.dumps(json.loads(pipeline.definition()), indent=2, sort_keys=True)

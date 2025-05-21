@@ -7,11 +7,12 @@ from constructs import Construct
 from abc import ABC, abstractmethod
 from sagemaker.workflow.pipeline import Pipeline
 from sagemaker.workflow.pipeline_context import LocalPipelineSession, PipelineSession
-from sagemaker.processing import Processor
+from sagemaker.sklearn.processing import SKLearnProcessor
 from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
+
 
 class SagemakerPipelineFactory(BaseModel):
     local_mode: bool = False
@@ -26,6 +27,8 @@ class SagemakerPipelineFactory(BaseModel):
         role: str,
         pipeline_name: str,
         sm_session: sagemaker.Session,
+        image_uri: str = None,  # No se usará, pero se mantiene por compatibilidad
+        update: bool = False,
     ) -> Pipeline:
         raise NotImplementedError("Debe implementar el método 'create' en la subclase.")
 
@@ -56,19 +59,14 @@ def create_sagemaker_session(default_bucket: str, local_mode=False) -> sagemaker
     return sagemaker_session
 
 
-
-        
-def get_processor(role: str, instance_type: str, image_uri: str ) -> Processor:
+def get_processor(role: str, instance_type: str, image_uri: str = None) -> SKLearnProcessor:
     """
-    Retorna un `Processor` con la imagen en ECR personalizada.
+    Retorna un SKLearnProcessor usando la imagen oficial de SageMaker (sin Docker personalizado).
     """
-    
-    sagemaker_session = sagemaker.Session()
-    
-    return Processor(
+    return SKLearnProcessor(
+        framework_version="1.2-1",
         role=role,
-        image_uri=image_uri,
         instance_type=instance_type,
         instance_count=1,
-        sagemaker_session=sagemaker_session,
     )
+    
