@@ -67,6 +67,6 @@ def get_processor(role: str, instance_type: str, image_uri: str = None) -> SKLea
         framework_version="1.2-1",
         role=role,
         instance_type=instance_type,
-        instance_count=1,
+        instance_count=1
     )
     
