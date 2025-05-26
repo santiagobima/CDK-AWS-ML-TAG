@@ -69,7 +69,7 @@ class LeadConversionFactory(SagemakerPipelineFactory):
                 ),
                 
                 ProcessingInput(
-                    source=f"s3://{data_bucket_name}/code",
+                    source=f"s3://{data_bucket_name}/code/source_code",
                     destination="/opt/ml/processing/source_code"
                     )
               
