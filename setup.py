@@ -9,9 +9,9 @@ setup(
         "boto3",
         "sagemaker",
         "awswrangler",
-        "pandas",
-        "numpy",
-        "scikit-learn==1.2.2",
+        "pandas==1.1.3",
+        "numpy==1.19.2",
+        "scikit-learn==1.2.1",  # También respeta versión de la imagen
         "pycountry",
         "xgboost",
         "shap",
