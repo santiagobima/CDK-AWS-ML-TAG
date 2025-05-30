@@ -414,7 +414,7 @@ def rename_time_in_stage_columns(df: pd.DataFrame, mapping_df: pd.DataFrame) -> 
         col_name = f"{stage}_{suffix}"
         pipeline_col_name = f"{stage}_{pipeline}_{suffix}"
         if col_name in column_list and pipeline_col_name in column_list:
-            df[col_name] = df[col_name].fillna(df[pipeline_col_name]).infer_objects(copy=False)
+            df[col_name] = df[col_name].fillna(df[pipeline_col_name]).infer_objects()
             if suffix == 'time_in':
                 df[col_name] = np.where(
                     df[col_name].fillna(0) == 0, pd.NA, df[col_name]

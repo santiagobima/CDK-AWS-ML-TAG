@@ -6,17 +6,9 @@ setup(
     packages=find_packages(),
     install_requires=[
         "python-dotenv==1.0.0",
-        "boto3",
-        "sagemaker",
-        "awswrangler",
-        "pandas==1.1.3",
-        "numpy>=1.25,<2.0",
-        "scikit-learn==1.2.1",  # También respeta versión de la imagen
         "pycountry",
-        "xgboost",
-        "shap",
-        "imbalanced-learn",
-        "probatus",
-        "PyYAML",
+        "sagemaker==2.244.2",
+        "awswrangler>=3.4.0,<4.0.0",
+        
     ],
 )

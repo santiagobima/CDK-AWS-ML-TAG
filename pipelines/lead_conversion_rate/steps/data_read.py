@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 import pandas as pd
 import numpy as np
+import argparse
 
 from pipelines.common.api.athena import read_from_athena
 from pipelines.lead_conversion_rate.common.utils.data_prep import (
@@ -29,8 +30,8 @@ from pipelines.lead_conversion_rate.common.utils.feature_engineering import (
 )
 from pipelines.lead_conversion_rate.common.constants import CLOSED_WIN
 
-def read_data(pickle=False, target=True):
-    baseline_df = get_features()
+def read_data(env, pickle=False, target=True):
+    baseline_df = get_features(stage=env)
     if target:
         if 'target' not in baseline_df.columns:
             baseline_df['target'] = 0
@@ -48,6 +49,15 @@ def save_data(data, data_path):
     data.to_pickle(data_path)
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--environment",
+        type=str,
+        required=True
+    )
+    args=parser.parse_args()
+    env = args.environment
+    logger.info(f" Environment is = {env}")
     data = read_data()
     logger.info("✅ Ejecución completada.")
     logger.info("📊 Primeras filas:")

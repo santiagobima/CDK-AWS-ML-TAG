@@ -4,8 +4,9 @@ import subprocess
 import logging
 
 # Instalar directamente como paquete desde la carpeta descomprimida
-subprocess.check_call([sys.executable, "-m", "pip", "install", "/opt/ml/processing/source_code"])
-sys.path.insert(0, "/opt/ml/processing/source_code")
+if os.path.exists("/opt/ml/processing/source_code"):
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "/opt/ml/processing/source_code"])
+    sys.path.insert(0, "/opt/ml/processing/source_code")
 
 # Logging
 logging.basicConfig(level=logging.INFO)

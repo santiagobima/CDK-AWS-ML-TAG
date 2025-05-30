@@ -593,25 +593,25 @@ class SummaryProcessor:
 
 
 
-def get_features(stage=None):
-    if stage is None:
+def get_features(stage):
+    """if stage is None:
         stage = os.getenv('CDK_ENV', 'dev')  # Usa 'dev' si no está definido
 
     profile = os.getenv('AWS_PROFILE', 'sandbox')  # Usa 'sandbox' si no está definido
-    print(f"Ejecutando get_features() con stage={stage} y profile={profile}")
+    print(f"Ejecutando get_features() con stage={stage} y profile={profile}")"""
     
     logger.info("Reading data from Athena")
 
     deal_stage_support = read_from_athena(
         database='refined',
-        table="hubspot_deals_stage_support_latest_v3",
+        table="hubspot_deals_stage_support_latest",
         read_from_prod=True,
         stage=stage,
     )
 
     verticals_mapping = read_from_athena(
         database='refined',
-        table='netsuite_verticals_latest_v1',
+        table='netsuite_verticals_latest',
         read_from_prod=True,
         stage=stage,
         columns=[
@@ -622,7 +622,7 @@ def get_features(stage=None):
 
     course_info = read_from_athena(
         database='refined',
-        table='hubspot_courses_latest_v5',
+        table='hubspot_courses_latest',
         read_from_prod=True,
         stage=stage,
         where_clause="WHERE (erogation_entity IS NULL or erogation_entity = 'tag') "
@@ -664,7 +664,7 @@ def get_features(stage=None):
 
     contacts_info = read_from_athena(
         database='refined',
-        table='hubspot_contacts_latest_v13',
+        table='hubspot_contacts_latest',
         columns=[
             'id',
             'hs_object_id',
@@ -718,7 +718,7 @@ def get_features(stage=None):
     deleted_deals = get_deleted_deals(
         df=read_from_athena(
             database='refined',
-            table='hubspot_deal_events_all_v3',
+            table='hubspot_deal_events_all',
             read_from_prod=True,
             stage=stage,
             columns=[
@@ -731,7 +731,7 @@ def get_features(stage=None):
     merged_deals = get_merged_deals(
         read_from_athena(
             database='refined',
-            table='hubspot_deals_latest_v10',
+            table='hubspot_deals_latest',
             read_from_prod=True,
             stage=stage,
             columns=[
@@ -743,7 +743,7 @@ def get_features(stage=None):
     deleted_contacts = get_deleted_contacts(
         df=read_from_athena(
             database='refined',
-            table='hubspot_contact_events_all_v1',
+            table='hubspot_contact_events_all',
             read_from_prod=True,
             stage=stage,
             columns=[
@@ -755,7 +755,7 @@ def get_features(stage=None):
 
     deals_to_course = read_from_athena(
         database='refined',
-        table='hubspot_course_to_deal_latest_v1',
+        table='hubspot_course_to_deal_latest',
         stage=stage,
         read_from_prod=True
     ).pipe(
@@ -767,7 +767,7 @@ def get_features(stage=None):
 
     deals = read_from_athena(
         database='refined',
-        table='hubspot_deals_latest_v10',
+        table='hubspot_deals_latest',
         read_from_prod=True,
         stage=stage,
         columns=[
@@ -800,7 +800,7 @@ def get_features(stage=None):
     contacts_to_deals = contact_to_deals_data_prep(
         df=read_from_athena(
             database='refined',
-            table='hubspot_contact_to_deal_latest_v1',
+            table='hubspot_contact_to_deal_latest',
             read_from_prod=True,
             stage=stage,
         ),
@@ -815,7 +815,7 @@ def get_features(stage=None):
 
     contact_dumps = read_from_athena(
         database='refined',
-        table='hubspot_contacts_all_v1',
+        table='hubspot_contacts_all',
         read_from_prod=True,
         stage=stage,
         columns=[
@@ -859,7 +859,7 @@ def get_features(stage=None):
 
     contact_analytics = read_from_athena(
         database='refined',
-        table='hubspot_contacts_all_v1',
+        table='hubspot_contacts_all',
         read_from_prod=True,
         stage=stage,
         columns=[
@@ -921,7 +921,7 @@ def get_features(stage=None):
 
     meetings_pivot = read_from_athena(
         database='refined',
-        table='hubspot_meetings_latest_v3',
+        table='hubspot_meetings_latest',
         stage=stage,
         read_from_prod=True,
         columns=[
@@ -949,7 +949,7 @@ def get_features(stage=None):
 
     call_to_deal = read_from_athena(
         database='refined',
-        table='hubspot_call_to_deal_latest_v1',
+        table='hubspot_call_to_deal_latest',
         read_from_prod=True,
         stage=stage
     ).pipe(
@@ -958,7 +958,7 @@ def get_features(stage=None):
 
     calls_pivot_dict = read_from_athena(
         database='refined',
-        table='hubspot_calls_latest_v1',
+        table='hubspot_calls_latest',
         read_from_prod=True,
         stage=stage,
         columns=[
@@ -978,7 +978,7 @@ def get_features(stage=None):
         calls_data_prep,
         call_outcomes_mapping=read_from_athena(
             database='refined',
-            table='hubspot_call_outcome_support_latest_v1',
+            table='hubspot_call_outcome_support_latest',
             columns=[
                 'id',
                 'label',

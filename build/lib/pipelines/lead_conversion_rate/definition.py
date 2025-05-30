@@ -49,7 +49,7 @@ class LeadConversionFactory(SagemakerPipelineFactory):
         retrieve_data_step = ProcessingStep(
             name='RetrieveDataStep',
             processor=processor,
-            inputs=[],
+            inputs=inputs,
             outputs=outputs,
             code="pipelines/lead_conversion_rate/steps/data_read.py",
         )
@@ -69,7 +69,7 @@ class LeadConversionFactory(SagemakerPipelineFactory):
                 ),
                 
                 ProcessingInput(
-                    source=f"s3://{data_bucket_name}/code",
+                    source=f"s3://{data_bucket_name}/code/source_code",
                     destination="/opt/ml/processing/source_code"
                     )
               

@@ -52,8 +52,9 @@ class LeadConversionFactory(SagemakerPipelineFactory):
             inputs=inputs,
             outputs=outputs,
             code="pipelines/lead_conversion_rate/steps/data_read.py",
-        )
-
+            job_arguments=["--environment", os.getenv('ENV', 'dev')], 
+        ) 
+        
         retrieve_data_step.add_depends_on([data_prep_step])
         steps = [data_prep_step, retrieve_data_step]
 
