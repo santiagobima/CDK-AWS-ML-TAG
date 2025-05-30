@@ -58,7 +58,7 @@ if __name__ == "__main__":
     args=parser.parse_args()
     env = args.environment
     logger.info(f" Environment is = {env}")
-    data = read_data()
+    data = read_data(env)
     logger.info("✅ Ejecución completada.")
     logger.info("📊 Primeras filas:")
     logger.info(data.head(10).to_string())
