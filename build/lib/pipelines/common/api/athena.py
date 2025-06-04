@@ -16,6 +16,23 @@ from pipelines.common.utils.config import AWS_REGION
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
+def setup_boto_session(stage='dev'):
+    """
+    Configura la sesión boto3 correctamente.
+    - En SageMaker (AWS): sin perfil explícito.
+    - En local: usa 'sandbox' si estás en dev, 'default' si estás en prod.
+    """
+    running_in_sagemaker = os.environ.get("SAGEMAKER_ENV") or os.path.exists("/opt/ml/processing/input")
+    
+    if running_in_sagemaker:
+        boto3.setup_default_session(region_name=AWS_REGION)
+    else:
+        profile_name = 'default' if stage == 'prod' else 'sandbox'
+        boto3.setup_default_session(profile_name=profile_name, region_name=AWS_REGION)
+        logger.info(f"Usando perfil local: {profile_name}")
+        
+    logger.info(f"Stage detectado en setup_boto_session: {stage}")
+
 
 def read_from_athena(database, table, stage='dev', columns=None, filter_key=None,
                      filter_values=None, where_clause=None, chunksize=None, rename_dict=None,
@@ -35,6 +52,7 @@ def read_from_athena(database, table, stage='dev', columns=None, filter_key=None
             aws_session_token=aws_session_token, region_name=region_name
         )
     else:
+        #setup_boto_session(stage)
         boto3.setup_default_session(profile_name='default' if stage == 'prod' else 'sandbox')
 
     GLUE_CLIENT = boto3.client('glue')
@@ -45,6 +63,7 @@ def read_from_athena(database, table, stage='dev', columns=None, filter_key=None
 
         # Get the columns from the table
         database = "prod_" + database
+        logger.info(f"DEBUG - database: {database}, table: {table}, stage: {stage}, read_from_prod: {read_from_prod}")
         response = GLUE_CLIENT.get_table(DatabaseName=database, Name=table)
         original_columns_dict = {col['Name']: col['Type'] for col in
                                  response['Table']['StorageDescriptor']['Columns']}

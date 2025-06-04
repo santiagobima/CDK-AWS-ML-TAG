@@ -51,7 +51,7 @@ class LeadConversionFactory(SagemakerPipelineFactory):
             processor=processor,
             inputs=inputs,
             outputs=outputs,
-            code="pipelines/lead_conversion_rate/steps/data_read.py",
+            code="pipelines/lead_conversion_rate/steps/data_read.py",  #here I did a change
             job_arguments=["--environment", os.getenv('ENV', 'dev')], 
         ) 
         

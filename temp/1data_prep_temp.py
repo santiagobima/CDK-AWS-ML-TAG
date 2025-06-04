@@ -1372,6 +1372,40 @@ def get_features(stage=None):
 
 
 
+def read_from_athena(database, table, stage='dev', columns=None, filter_key=None,
+                     filter_values=None, where_clause=None, chunksize=None, rename_dict=None,
+                     read_from_prod=False):
+    # if config_auth.yml exists, use the values from there
+    if os.path.exists('./config_auth.yml'):
+        with open('./config_auth.yml', 'r') as file:
+            config = yaml.safe_load(file)
+            aws_access_key_id = config['aws_access_key_id']
+            aws_secret_access_key = config['aws_secret_access_key']
+            aws_session_token = config['aws_session_token']
+            region_name = config['region_name']
+
+        boto3.setup_default_session(
+            aws_access_key_id=aws_access_key_id,
+            aws_secret_access_key=aws_secret_access_key,
+            aws_session_token=aws_session_token, region_name=region_name
+        )
+    else:
+        #setup_boto_session(stage)
+        boto3.setup_default_session(profile_name='default' if stage == 'prod' else 'sandbox')
+
+
+  GLUE_CLIENT = boto3.client('glue')
+    passed_database = database
+    original_columns = []
+    if stage == 'dev' and read_from_prod:
+        table = table.split(re.search(r'_v\d+', table).group(0))[0]
+
+        # Get the columns from the table
+        database = "prod_" + database
+        logger.info(f"DEBUG - database: {database}, table: {table}, stage: {stage}, read_from_prod: {read_from_prod}")
+        response = GLUE_CLIENT.get_table(DatabaseName=database, Name=table)
+        original_columns_dict = {col['Name']: col['Type'] for col in
+                                 response['Table']['StorageDescriptor']['Columns']}
 
 
 
