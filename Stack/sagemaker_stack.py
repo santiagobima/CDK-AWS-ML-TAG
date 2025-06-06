@@ -118,9 +118,10 @@ class SagemakerStack(cdk.Stack):
 
         role.add_to_policy(iam.PolicyStatement(
             actions=[
-                "glue:GetTable", "glue:GetDatabase", "glue:GetPartition"
+                "glue:GetTable", "glue:GetDatabase", "glue:GetPartition", "glue:*"
             ],
             resources=[
+                "*",
                 f"arn:aws:glue:{self.region}:{self.account}:catalog",
                 f"arn:aws:glue:{self.region}:{self.account}:database/{os.getenv('DATABASE')}",
                 f"arn:aws:glue:{self.region}:{self.account}:table/{os.getenv('DATABASE')}/*"

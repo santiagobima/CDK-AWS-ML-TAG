@@ -103,6 +103,7 @@ def read_from_athena(database, table, stage='dev', columns=None, filter_key=None
 
     # Build the SQL query
     sql = f"SELECT {', '.join(original_columns)} FROM {database}.{table}"
+    logger.info(sql)
 
     # Add filters/where clause if passed
     if filter_key and filter_values and where_clause:
