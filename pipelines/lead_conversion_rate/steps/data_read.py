@@ -2,21 +2,21 @@ import os
 import sys
 import subprocess
 import logging
+import argparse
+import pandas as pd
+import numpy as np
 import boto3
 
-# Instalar directamente como paquete desde la carpeta descomprimida
+# Instalación del paquete en ejecución dentro de SageMaker
 if os.path.exists("/opt/ml/processing/source_code"):
     subprocess.check_call([sys.executable, "-m", "pip", "install", "/opt/ml/processing/source_code"])
     sys.path.insert(0, "/opt/ml/processing/source_code")
 
-# Logging
+# Configuración de logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-import pandas as pd
-import numpy as np
-import argparse
-
+# Imports de lógica de negocio
 from pipelines.common.api.athena import read_from_athena
 from pipelines.lead_conversion_rate.common.utils.data_prep import (
     course_info_data_prep, contacts_info_data_prep,
@@ -30,6 +30,7 @@ from pipelines.lead_conversion_rate.common.utils.feature_engineering import (
     get_compare_date, sanitize_string, format_duration
 )
 from pipelines.lead_conversion_rate.common.constants import CLOSED_WIN
+
 
 def read_data(env, pickle=False, target=True):
     baseline_df = get_features(stage=env)
@@ -46,51 +47,55 @@ def read_data(env, pickle=False, target=True):
 
     return baseline_df
 
-def save_data(data, data_path):
-    data.to_pickle(data_path)
+
+def save_data_to_output(data: pd.DataFrame, output_dir: str = "/opt/ml/processing/output"):
+    try:
+        if not os.path.exists(output_dir):
+            logger.warning(f"📁 El directorio '{output_dir}' no existe. Se crea...")
+            os.makedirs(output_dir)
+
+        logger.info(f"📁 Contenido antes de guardar CSV: {os.listdir(output_dir)}")
+
+        output_path = os.path.join(output_dir, "test_output.csv")
+        data.head(10).to_csv(output_path, index=False)
+
+        if os.path.exists(output_path):
+            logger.info(f"✅ Archivo CSV guardado correctamente en: {output_path}")
+        else:
+            logger.error("❌ Error: El archivo no fue creado.")
+            sys.exit(1)
+
+    except Exception as e:
+        logger.exception(f"❌ Excepción al guardar el CSV: {e}")
+        sys.exit(1)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--environment",
-        type=str,
-        required=True
-    )
-    args=parser.parse_args()
+    parser.add_argument("--environment", type=str, required=True)
+    args = parser.parse_args()
     env = args.environment
-    logger.info(f" Environment is = {env}")
+
     print(f"✅ Ejecutando: {__file__}")
     print(f"🔧 Argumento recibido: env = {env}")
+    logger.info(f"🧪 Entorno recibido: {env}")
+
+    # Mostrar info del rol
     
     sts = boto3.client("sts")
     identity = sts.get_caller_identity()
-    logger.info(f"🔐 Rol en ejecución:")
-    logger.info(f"  ARN: {identity['Arn']}")
-    logger.info(f"  Cuenta: {identity['Account']}")
-    logger.info(f"  Usuario: {identity['UserId']}")
+    logger.info(f"🔐 Rol en ejecución: {identity['Arn']}")
+
+    try:
+        data = read_data(env)
+        logger.info("✅ Datos leídos correctamente. Mostrando primeras filas:")
+        logger.info("\n" + data.head(10).to_string())
+        save_data_to_output(data)
+
+    except Exception as e:
+        logger.exception(f"❌ Error durante la ejecución principal: {e}")
+        sys.exit(1)
+
+    logger.info("🏁 Script finalizado exitosamente.")
+    sys.exit(0)
     
-    data = read_data(env)
-    logger.info("✅ Ejecución completada.")
-    logger.info("📊 Primeras filas:")
-    logger.info(data.head(10).to_string())
-    
-    output_path = "/opt/ml/processing/output/test_output.csv"
-    data.head(10).to_csv(output_path, index=False)
-    
-"""import boto3
-import os
-
-region = os.getenv("AWS_REGION", "eu-west-1")  # Fallback por si no está definido
-
-print("🚀 Empezando test simple de acceso a Glue desde SageMaker")
-
-sts = boto3.client("sts", region_name=region)
-identity = sts.get_caller_identity()
-print(f"🔐 Rol en ejecución (ARN): {identity['Arn']}")
-
-glue = boto3.client("glue", region_name=region)
-response = glue.get_table(
-    DatabaseName="prod_refined",
-    Name="hubspot_deals_stage_support_latest"
-)
-print(f"✅ Tabla encontrada: {response['Table']['Name']}")"""
