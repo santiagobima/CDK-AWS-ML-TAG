@@ -2,6 +2,7 @@ import os
 import sys
 import subprocess
 import logging
+import boto3
 
 # Instalar directamente como paquete desde la carpeta descomprimida
 if os.path.exists("/opt/ml/processing/source_code"):
@@ -60,12 +61,36 @@ if __name__ == "__main__":
     logger.info(f" Environment is = {env}")
     print(f"✅ Ejecutando: {__file__}")
     print(f"🔧 Argumento recibido: env = {env}")
+    
+    sts = boto3.client("sts")
+    identity = sts.get_caller_identity()
+    logger.info(f"🔐 Rol en ejecución:")
+    logger.info(f"  ARN: {identity['Arn']}")
+    logger.info(f"  Cuenta: {identity['Account']}")
+    logger.info(f"  Usuario: {identity['UserId']}")
+    
     data = read_data(env)
     logger.info("✅ Ejecución completada.")
     logger.info("📊 Primeras filas:")
     logger.info(data.head(10).to_string())
     
-    
-
     output_path = "/opt/ml/processing/output/test_output.csv"
     data.head(10).to_csv(output_path, index=False)
+    
+"""import boto3
+import os
+
+region = os.getenv("AWS_REGION", "eu-west-1")  # Fallback por si no está definido
+
+print("🚀 Empezando test simple de acceso a Glue desde SageMaker")
+
+sts = boto3.client("sts", region_name=region)
+identity = sts.get_caller_identity()
+print(f"🔐 Rol en ejecución (ARN): {identity['Arn']}")
+
+glue = boto3.client("glue", region_name=region)
+response = glue.get_table(
+    DatabaseName="prod_refined",
+    Name="hubspot_deals_stage_support_latest"
+)
+print(f"✅ Tabla encontrada: {response['Table']['Name']}")"""

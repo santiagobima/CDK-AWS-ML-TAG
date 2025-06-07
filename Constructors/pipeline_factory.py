@@ -8,6 +8,8 @@ from abc import ABC, abstractmethod
 from sagemaker.workflow.pipeline import Pipeline
 from sagemaker.workflow.pipeline_context import LocalPipelineSession, PipelineSession
 from sagemaker.sklearn.processing import SKLearnProcessor
+from sagemaker.processing import ScriptProcessor
+from sagemaker.image_uris import retrieve
 from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
@@ -59,14 +61,38 @@ def create_sagemaker_session(default_bucket: str, local_mode=False) -> sagemaker
     return sagemaker_session
 
 
-def get_processor(role: str, instance_type: str, image_uri: str = None) -> SKLearnProcessor:
-    """
-    Retorna un SKLearnProcessor usando la imagen oficial de SageMaker (sin Docker personalizado).
-    """
+"""def get_processor(role: str, instance_type: str, image_uri: str = None) -> SKLearnProcessor:
+    
+   
+   
     return SKLearnProcessor(
         framework_version="1.2-1",
         role=role,
         instance_type=instance_type,
         instance_count=1
     )
-    
+    """
+
+
+
+
+
+
+def get_processor(role: str, instance_type: str, image_uri: str = None) -> ScriptProcessor:
+    if not image_uri:
+        image_uri = retrieve(
+            framework="pytorch",
+            region=os.getenv("CDK_DEFAULT_REGION"),
+            version="2.4.0",
+            py_version="py311",
+            image_scope="training",
+            instance_type=instance_type  # ✅ Obligatorio en este contexto
+        )
+
+    return ScriptProcessor(
+        image_uri=image_uri,
+        command=["python3"],
+        role=role,
+        instance_type=instance_type,
+        instance_count=1
+    )
