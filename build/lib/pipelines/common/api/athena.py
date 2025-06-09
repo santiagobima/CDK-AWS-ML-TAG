@@ -101,7 +101,7 @@ def read_from_athena(database, table, stage='dev', columns=None, filter_key=None
     if filter_key and filter_values and where_clause:
         raise ValueError("You can only use one of filter_key/filter_values or where_clause")
     if filter_key and filter_values:
-        logger.info(f"{filter_key}: {filter_values}")
+        logger.info(f"📌 WHERE {filter_key} IN ({len(filter_values)} valores)") #I DID a change here it was: logger.info(f"{filter_key}: {filter_values}")
         sql += f" WHERE {filter_key} IN ({', '.join(list(map(str, filter_values)))})"
     if where_clause:
         sql += f" {where_clause}"

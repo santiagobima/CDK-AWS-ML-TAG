@@ -94,5 +94,6 @@ def get_processor(role: str, instance_type: str, image_uri: str = None) -> Scrip
         command=["python3"],
         role=role,
         instance_type=instance_type,
-        instance_count=1
+        instance_count=1,
+        max_runtime_in_seconds=7200
     )
