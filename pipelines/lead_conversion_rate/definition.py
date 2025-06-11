@@ -25,7 +25,7 @@ class LeadConversionFactory(SagemakerPipelineFactory):
         """
         instance_type_var = ParameterString(
             name="InstanceType",
-            default_value="local" if self.local_mode else "ml.m5.large"
+            default_value="local" if self.local_mode else "ml.m5.4xlarge"
         )
         logger.info(f"Modo local: {self.local_mode}")
 

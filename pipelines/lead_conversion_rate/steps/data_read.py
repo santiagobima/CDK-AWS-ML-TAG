@@ -55,18 +55,22 @@ def save_data_to_output(data: pd.DataFrame, output_dir: str = "/opt/ml/processin
             os.makedirs(output_dir)
 
         logger.info(f"📁 Contenido antes de guardar CSV: {os.listdir(output_dir)}")
+        logger.info(f"🔍 Shape del DataFrame: {data.shape}")
+        logger.info(f"🔍 Columnas: {data.columns.tolist()}")
 
-        output_path = os.path.join(output_dir, "test_output.csv")
-        data.head(10).to_csv(output_path, index=False)
+        pickle_path = os.path.join(output_dir, "test_output.pkl")
+        logger.info(f"💾 Guardando Pickle en: {pickle_path}")
+        data.to_pickle(pickle_path)
+        logger.info(f"✅ Pickle guardado correctamente en: {pickle_path}")
 
-        if os.path.exists(output_path):
-            logger.info(f"✅ Archivo CSV guardado correctamente en: {output_path}")
+        if os.path.exists(pickle_path):
+            logger.info(f"✅ Archivo Pickle guardado correctamente en: {pickle_path}")
         else:
-            logger.error("❌ Error: El archivo no fue creado.")
+            logger.error("❌ Error: El archivo Pickle no fue creado.")
             sys.exit(1)
 
     except Exception as e:
-        logger.exception(f"❌ Excepción al guardar el CSV: {e}")
+        logger.exception(f"❌ Excepción al guardar el Pickle: {e}")
         sys.exit(1)
 
 

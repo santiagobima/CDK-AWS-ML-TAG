@@ -414,7 +414,9 @@ def rename_time_in_stage_columns(df: pd.DataFrame, mapping_df: pd.DataFrame) -> 
         col_name = f"{stage}_{suffix}"
         pipeline_col_name = f"{stage}_{pipeline}_{suffix}"
         if col_name in column_list and pipeline_col_name in column_list:
+            logger.info(f"🔄 Rellenando '{col_name}' con '{pipeline_col_name}'")
             df[col_name] = df[col_name].fillna(df[pipeline_col_name]).infer_objects()
+            logger.info(f"✅ Relleno completado para '{col_name}'")
             if suffix == 'time_in':
                 df[col_name] = np.where(
                     df[col_name].fillna(0) == 0, pd.NA, df[col_name]
@@ -426,6 +428,7 @@ def rename_time_in_stage_columns(df: pd.DataFrame, mapping_df: pd.DataFrame) -> 
                     df[f'{col_name}_days'].fillna(0) == 0, pd.NA, df[f'{col_name}_days']
                 )
                 df[f'{col_name}_days_string'] = df[col_name].apply(format_duration)
+                logger.info(f"✅ Duración calculada para '{col_name}_days'")
 
     df.drop(
         columns=[
