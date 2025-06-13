@@ -32,7 +32,7 @@ from pipelines.lead_conversion_rate.common.utils.feature_engineering import (
 from pipelines.lead_conversion_rate.common.constants import CLOSED_WIN
 
 
-def read_data(env, pickle=False, target=True):
+def read_data(env, pickle=True, target=True):
     baseline_df = get_features(stage=env)
     if target:
         if 'target' not in baseline_df.columns:
