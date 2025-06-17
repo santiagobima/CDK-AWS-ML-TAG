@@ -1,0 +1,335 @@
+,Column,Missing,Missing_p,Count,Type,Distinct,Most Popular,Mean,Std,Min,Max,Feat_type,T-stat,P-value,significance,Chi-square,D.Freedom,stage,class,In use
+60,brand_awareness_boolean,0,0,57237,bool,2,FALSE,0.006097454,0.077848451,FALSE,TRUE,numerical,,,,,,,interaction ,FALSE
+322,time_since_hs_sales_email_last_clicked,56508,0.99,729,float64,6,0,1.334705075,1.540805752,0,5,numerical,,,No,,,,interaction ,FALSE
+321,time_since_hs_sales_email_last_replied,56377,0.98,860,float64,6,0,1.147674419,1.470804484,0,5,numerical,,,No,,,,interaction ,FALSE
+323,time_since_hs_sales_email_last_opened,56057,0.98,1180,float64,6,0,1.124576271,1.510687762,0,5,numerical,,,No,,,,interaction ,FALSE
+324,time_since_hs_last_sales_activity_date,54358,0.95,2879,float64,1,1,1,0,1,1,numerical,,,No,,,,interaction ,FALSE
+327,industry_popularity,54250,0.95,2987,float64,8,0.005464481,0.039193518,0.044914801,0.005464481,0.142076503,numerical,,,No,,,2,contact,FALSE
+320,time_since_hs_email_last_click_date,53991,0.94,3246,float64,6,0,1.422057917,1.745942305,0,5,numerical,,,No,,,,interaction ,FALSE
+328,industry_popularity_all,53358,0.93,3879,float64,53,0.107501933,0.027882436,0.033201016,0.000257798,0.107501933,numerical,,,No,,,2,contact,FALSE
+4,years_of_education,53248,0.93,3989,Int32,13,18,17.77463023,1.705527666,9,24,numerical,,,No,,,1,contact,FALSE
+6,current_company_size,53286,0.93,3951,Int32,1330,1,17383.29613,78128.12811,0,770241,numerical,,,No,,,1,contact,FALSE
+85,combined_profile_boolean,0,0,57237,bool,2,FALSE,0.056135018,0.230184281,FALSE,TRUE,numerical,,,,,,,interaction ,FALSE
+319,time_since_hs_email_last_open_date,52415,0.92,4822,float64,6,0,0.886146827,1.593162025,0,5,numerical,,,No,,,,interaction ,FALSE
+78,feat_init_currently_employed,51894,0.91,5343,boolean,2,TRUE,0.878345499,0.326916941,FALSE,TRUE,numerical,,,,,,1,contact,FALSE
+79,feat_final_currently_employed,51890,0.91,5347,boolean,2,TRUE,0.87432205,0.331517054,FALSE,TRUE,numerical,,,,,,3,contact,FALSE
+19,hs_email_last_open_date,52415,0.92,4822,datetime64[ns],3419,25:52.5,,,,,date,,,,,,1,interaction ,FALSE
+20,hs_email_last_click_date,53991,0.94,3246,datetime64[ns],2039,22:00.1,,,,,date,,,,,,1,interaction ,FALSE
+21,hs_sales_email_last_replied,56377,0.98,860,datetime64[ns],391,04/04/2024 16:34,,,,,date,,,,,,1,interaction ,FALSE
+22,hs_sales_email_last_clicked,56508,0.99,729,datetime64[ns],327,12:03.4,,,,,date,,,,,,1,interaction ,FALSE
+23,hs_sales_email_last_opened,56057,0.98,1180,datetime64[ns],558,49:36.8,,,,,date,,,,,,1,interaction ,FALSE
+27,hs_social_last_engagement,57173,1,64,datetime64[ns],17,36:00.9,,,,,date,,,,,,1,interaction ,FALSE
+29,hs_last_sales_activity_date,54358,0.95,2879,datetime64[ns],1561,37:28.5,,,,,date,,,,,,1,interaction ,FALSE
+35,start_date,0,0,57237,datetime64[ns],99,10/07/2023 00:00,,,,,date,,,,,,1,class,FALSE
+26,hs_predictivecontactscore_v2,52268,0.91,4969,float64,1229,1.06,6.514101429,9.353047068,0.27,81.01,numerical,,,No,,,1,interaction ,FALSE
+1,number_of_jobs_had,51661,0.9,5576,Int32,27,1,5.034791966,3.856605779,0,31,numerical,,,No,,,1,interaction ,FALSE
+329,field_of_study_popularity,342,0.01,56895,float64,13,0.889687019,0.832062636,0.218060421,0.000513084,0.889687019,numerical,,,No,,,2,contact,FALSE
+45,brand_awareness,56888,0.99,349,string,2,Yes,,,,,categorical,,,,,,3,contact,FALSE
+52,interview_cancelled,47396,0.83,9841,float64,1,0,0,0,0,0,numerical,,,No,,,,interaction ,FALSE
+5,max_education_school,53252,0.93,3985,string,926,sapienza università di roma,,,,,categorical,,,,,,1,contact,FALSE
+7,current_company_industry,53358,0.93,3879,string,213,it services and it consulting,,,,,categorical,,,,,,1,contact,FALSE
+67,feat_init_educational_level,53252,0.93,3985,string,7,master's degree,,,,,categorical,,,,,,1,contact,FALSE
+68,feat_final_educational_level,53185,0.93,4052,string,12,master's degree,,,,,categorical,,,,,,3,contact,FALSE
+70,feat_init_education_field,53248,0.93,3989,string,34,Business and Economics,,,,,categorical,,,,,,1,contact,FALSE
+84,combined_profile,0,0,57237,float64,16,0,0.410407603,1.72502379,0,10,numerical,-47.9659579,0,No,,,,interaction ,FALSE
+80,feat_init_company,53286,0.93,3951,string,2440,Accenture,,,,,categorical,,,,,,1,contact,FALSE
+81,feat_final_company,53221,0.93,4016,string,2486,accenture,,,,,categorical,,,,,,3,contact,FALSE
+73,feat_init_current_job,51898,0.91,5339,string,2873,Project Manager,,,,,categorical,,,,,,1,contact,FALSE
+76,feat_final_country_name,51661,0.9,5576,object,73,italy,,,,,categorical,,,,,,3,contact,FALSE
+75,feat_init_country_name,51661,0.9,5576,string,72,italy,,,,,categorical,,,,,,1,contact,FALSE
+61,motivation_boolean,0,0,57237,bool,2,FALSE,0.055803064,0.229543031,FALSE,TRUE,numerical,,,,,,2,contact,TRUE
+62,current_position_boolean,0,0,57237,bool,2,FALSE,0.093278823,0.290825312,FALSE,TRUE,numerical,,,,,,1,contact,TRUE
+63,region_enrichment_boolean,0,0,57237,bool,2,FALSE,0.079459091,0.270456322,FALSE,TRUE,numerical,,,,,,1,contact,TRUE
+64,is_employed_boolean,0,0,57237,bool,2,FALSE,0.093348708,0.290923023,FALSE,TRUE,numerical,,,,,,1,contact,TRUE
+65,current_company_boolean,0,0,57237,bool,2,FALSE,0.069028775,0.253505278,FALSE,TRUE,numerical,,,,,,1,contact,TRUE
+66,years_of_experience_enrichment_boolean,0,0,57237,bool,2,FALSE,0.093278823,0.290825312,FALSE,TRUE,numerical,,,,,,1,contact,TRUE
+69,max_education_level_boolean,0,0,57237,bool,2,FALSE,0.069622796,0.254512464,FALSE,TRUE,numerical,,,,,,1,contact,TRUE
+72,max_education_field_of_study_boolean,0,0,57237,bool,2,FALSE,0.069692681,0.254630604,FALSE,TRUE,numerical,,,,,,1,contact,TRUE
+77,country_enrichment_boolean,0,0,57237,bool,2,FALSE,0.097419501,0.296530738,FALSE,TRUE,numerical,,,,,,1,contact,TRUE
+43,is_referred,0,0,57237,boolean,2,FALSE,0.001065744,0.032628622,FALSE,TRUE,numerical,,,,,,3,contact,TRUE
+33,tuition_fee_amount,0,0,57237,float64,59,2900,2988.838473,2086.805619,0,10500,numerical,8.545245341,1.31E-17,No,,,1,class,TRUE
+39,amount,0,0,57237,float64,275,0.0232,0.023995072,0.018657772,0,1,numerical,5.948651038,2.72E-09,No,,,1,class,TRUE
+41,motivation,0,0,57237,Float64,10,0,0.201381973,0.855261254,0,5,numerical,-49.66317322,0,No,,,2,contact,TRUE
+53,n_calls,0,0,57237,float64,18,0,0.328948058,1.017738456,0,18,numerical,-6.906965444,5.00E-12,No,,,2,interaction ,TRUE
+54,n_calls_positive_outcome,0,0,57237,float64,11,0,0.111745899,0.480511113,0,11,numerical,-9.610362123,7.51E-22,No,,,2,interaction ,TRUE
+55,n_calls_negative_outcome,0,0,57237,float64,16,0,0.217202159,0.776378126,0,17,numerical,-3.107500847,0.001887688,No,,,2,interaction ,TRUE
+56,n_inbound_calls,0,0,57237,float64,12,0,0.026888202,0.239738712,0,11,numerical,-4.864873839,1.15E-06,No,,,2,interaction ,TRUE
+57,n_outbound_calls,0,0,57237,float64,16,0,0.302059856,0.920172199,0,17,numerical,-6.371173647,1.89E-10,No,,,2,interaction ,TRUE
+86,intake_Fall,0,0,57237,float64,2,0,0.352778797,0.477838787,0,1,numerical,-3.204513109,0.001353653,No,,,1,class,TRUE
+87,intake_Spring,0,0,57237,float64,2,0,0.313084194,0.463752346,0,1,numerical,-1.977940112,0.047940251,No,,,1,class,TRUE
+88,intake_Summer,0,0,57237,float64,2,0,0.00401838,0.063263752,0,1,numerical,-0.425567073,0.670424938,Yes,,,1,class,TRUE
+89,intake_Winter,0,0,57237,float64,2,0,0.33011863,0.470259698,0,1,numerical,5.264896369,1.41E-07,No,,,1,class,TRUE
+90,source_of_awareness_onboarding_event,0,0,57237,float64,2,0,0.000174712,0.013216834,0,1,numerical,-4.638367709,3.52E-06,No,,,3,interaction ,TRUE
+91,source_of_awareness_onboarding_facebook,0,0,57237,float64,2,0,5.24E-05,0.007239601,0,1,numerical,-6.043633569,1.52E-09,No,,,3,interaction ,TRUE
+92,source_of_awareness_onboarding_google,0,0,57237,float64,2,0,0.000384367,0.019601677,0,1,numerical,-10.88809512,1.40E-27,No,,,3,interaction ,TRUE
+93,source_of_awareness_onboarding_instagram,0,0,57237,float64,2,0,0.000594021,0.024365526,0,1,numerical,-19.78161323,8.37E-87,No,,,3,interaction ,TRUE
+94,source_of_awareness_onboarding_linkedin,0,0,57237,float64,2,0,0.000524136,0.022888227,0,1,numerical,-11.06640625,1.95E-28,No,,,3,interaction ,TRUE
+95,source_of_awareness_onboarding_others,0,0,57237,float64,2,0,0.00071632,0.026754799,0,1,numerical,-16.92928208,3.92E-64,No,,,3,interaction ,TRUE
+96,source_of_awareness_onboarding_unknown,0,0,57237,float64,2,1,0.995789437,0.064752664,0,1,numerical,38.86926277,0,No,,,3,interaction ,TRUE
+97,source_of_awareness_onboarding_word_of_mouth,0,0,57237,float64,2,0,0.001764593,0.041970345,0,1,numerical,-23.48350249,2.26E-121,No,,,3,interaction ,TRUE
+98,current_position_job_type__NA>,0,0,57237,float64,2,1,0.906651292,0.290923023,0,1,numerical,3.332585978,0.000860974,No,,,1,contact,TRUE
+99,current_position_job_type_False,0,0,57237,float64,2,0,0.079686217,0.270809167,0,1,numerical,-2.101431579,0.035607458,No,,,1,contact,TRUE
+100,current_position_job_type_True,0,0,57237,float64,2,0,0.013662491,0.116086445,0,1,numerical,-3.449227512,0.000562597,No,,,1,contact,TRUE
+101,previous_position_job_type__NA>,0,0,57237,float64,2,1,0.902580499,0.296530738,0,1,numerical,2.808239404,0.004983004,No,,,1,contact,TRUE
+102,previous_position_job_type_False,0,0,57237,float64,2,0,0.091112392,0.287771387,0,1,numerical,-2.516649835,0.011850362,No,,,1,contact,TRUE
+103,previous_position_job_type_True,0,0,57237,float64,2,0,0.006307109,0.079167158,0,1,numerical,-1.37044167,0.170554447,Yes,,,1,contact,TRUE
+104,delivery_format_blended,0,0,57237,float64,2,1,0.694707969,0.460535028,0,1,numerical,11.7236001,1.05E-31,No,,,1,class,TRUE
+105,delivery_format_offline,0,0,57237,float64,2,0,0.003267117,0.057065754,0,1,numerical,-8.337787251,7.74E-17,No,,,1,class,TRUE
+106,delivery_format_online,0,0,57237,float64,2,0,0.302024914,0.45914001,0,1,numerical,-10.7202119,8.68E-27,No,,,1,class,TRUE
+107,type_Full Time,0,0,57237,float64,2,0,0.271327987,0.444648811,0,1,numerical,9.431283859,4.20E-21,No,,,1,class,TRUE
+108,type_Masterclass,0,0,57237,float64,2,0,0.145412932,0.352519762,0,1,numerical,-16.7508151,7.89E-63,No,,,1,class,TRUE
+109,type_Part Time,0,0,57237,float64,2,1,0.583259081,0.493023501,0,1,numerical,3.44891137,0.000563256,No,,,1,class,TRUE
+110,current_company_location__NA>,0,0,57237,float64,2,1,0.944319234,0.229306208,0,1,numerical,3.66675352,0.000245872,No,,,1,contact,TRUE
+111,current_company_location_germany,0,0,57237,float64,2,0,0.001030802,0.03208983,0,1,numerical,-0.711716676,0.47664314,Yes,,,1,contact,TRUE
+112,current_company_location_italy,0,0,57237,float64,2,0,0.049792966,0.217518857,0,1,numerical,-3.915887618,9.02E-05,No,,,1,contact,TRUE
+113,current_company_location_united states,0,0,57237,float64,2,0,0.00459493,0.067630588,0,1,numerical,0.325618837,0.744713949,Yes,,,1,contact,TRUE
+114,current_company_location_worldwide,0,0,57237,float64,2,0,0.000262068,0.016186542,0,1,numerical,0.727256217,0.467071988,Yes,,,1,contact,TRUE
+115,hs_last_sales_activity_type__NA>,0,0,57237,float64,2,1,0.949962437,0.218024393,0,1,numerical,11.48006782,1.79E-30,No,,,1,interaction ,TRUE
+116,hs_last_sales_activity_type_EMAIL_CLICK,0,0,57237,float64,2,0,0.001397697,0.03735998,0,1,numerical,-2.637906255,0.00834422,No,,,1,interaction ,TRUE
+117,hs_last_sales_activity_type_EMAIL_OPEN,0,0,57237,float64,2,0,0.009696525,0.097993215,0,1,numerical,-15.57927732,1.30E-54,No,,,1,interaction ,TRUE
+118,hs_last_sales_activity_type_EMAIL_REPLY,0,0,57237,float64,2,0,0.002708039,0.051968762,0,1,numerical,-17.21673302,2.92E-66,No,,,1,interaction ,TRUE
+119,hs_last_sales_activity_type_FORM_SUBMITTED,0,0,57237,float64,2,0,0.023673498,0.152031139,0,1,numerical,-3.010939818,0.00260554,No,,,1,interaction ,TRUE
+120,hs_last_sales_activity_type_MEETING_BOOKED,0,0,57237,float64,2,0,0.012561804,0.111374244,0,1,numerical,4.239252942,2.25E-05,No,,,1,interaction ,TRUE
+121,hs_sa_first_engagement_object_type__NA>,0,0,57237,float64,2,1,0.977601901,0.147975697,0,1,numerical,8.469607652,2.52E-17,No,,,1,interaction ,TRUE
+122,hs_sa_first_engagement_object_type_CALL,0,0,57237,float64,2,0,0.008525953,0.091942424,0,1,numerical,-1.850709647,0.064216485,Yes,,,1,interaction ,TRUE
+123,hs_sa_first_engagement_object_type_CONVERSATION_SESSION,0,0,57237,float64,2,0,0.000104827,0.010238073,0,1,numerical,-1.79123266,0.073261249,Yes,,,1,interaction ,TRUE
+124,hs_sa_first_engagement_object_type_EMAIL,0,0,57237,float64,2,0,0.002917693,0.053937288,0,1,numerical,-6.973543478,3.12E-12,No,,,1,interaction ,TRUE
+125,hs_sa_first_engagement_object_type_MEETING_EVENT,0,0,57237,float64,2,0,0.010727327,0.103016681,0,1,numerical,-6.510984347,7.53E-11,No,,,1,interaction ,TRUE
+126,hs_sa_first_engagement_object_type_TASK,0,0,57237,float64,2,0,0.000122299,0.011058286,0,1,numerical,-1.587394499,0.112428848,Yes,,,1,interaction ,TRUE
+127,hs_predictivescoringtier_0,0,0,57237,float64,2,1,0.902580499,0.296530738,0,1,numerical,2.808239404,0.004983004,No,,,1,interaction ,TRUE
+128,hs_predictivescoringtier_1,0,0,57237,float64,2,0,0.047416881,0.212530725,0,1,numerical,9.704236156,3.01E-22,No,,,1,interaction ,TRUE
+129,hs_predictivescoringtier_2,0,0,57237,float64,2,0,0.018799029,0.135815858,0,1,numerical,5.709965628,1.14E-08,No,,,1,interaction ,TRUE
+130,hs_predictivescoringtier_3,0,0,57237,float64,2,0,0.012194909,0.109756109,0,1,numerical,4.9919416,6.00E-07,No,,,1,interaction ,TRUE
+131,hs_predictivescoringtier_4,0,0,57237,float64,2,0,0.008403655,0.091286248,0,1,numerical,4.135736442,3.54E-05,No,,,1,interaction ,TRUE
+132,hs_predictivescoringtier_5,0,0,57237,float64,2,0,0.010605028,0.1024341,0,1,numerical,-45.65742291,0,No,,,1,interaction ,TRUE
+133,vertical_name_Career DHR,0,0,57237,float64,2,0,0.10243374,0.303220507,0,1,numerical,-11.82263227,3.25E-32,No,,,1,contact,TRUE
+134,vertical_name_Data,0,0,57237,float64,2,0,0.141918689,0.348969773,0,1,numerical,5.456522452,4.88E-08,No,,,1,contact,TRUE
+135,vertical_name_Deep Cybersecurity,0,0,57237,float64,2,0,0.101053514,0.301402204,0,1,numerical,9.715578662,2.69E-22,No,,,1,contact,TRUE
+136,vertical_name_Design,0,0,57237,float64,2,0,0.164596328,0.370819065,0,1,numerical,-11.71101695,1.22E-31,No,,,1,contact,TRUE
+137,vertical_name_Digital Marketing,0,0,57237,float64,2,0,0.174502507,0.379544331,0,1,numerical,1.160143472,0.245995237,Yes,,,1,contact,TRUE
+138,vertical_name_Digital Product Management,0,0,57237,float64,2,0,0.004228034,0.064886297,0,1,numerical,-60.35441232,0,No,,,1,contact,TRUE
+139,vertical_name_GEDI DT,0,0,57237,float64,2,0,0.311267187,0.463015843,0,1,numerical,13.94388541,4.05E-44,No,,,1,contact,TRUE
+140,hs_analytics_source__NA>,0,0,57237,float64,2,1,0.902580499,0.296530738,0,1,numerical,2.808239404,0.004983004,No,,,1,interaction ,TRUE
+141,hs_analytics_source_DIRECT_TRAFFIC,0,0,57237,float64,2,0,0.011845485,0.108191375,0,1,numerical,-11.9254148,9.54E-33,No,,,1,interaction ,TRUE
+142,hs_analytics_source_EMAIL_MARKETING,0,0,57237,float64,2,0,0.000297011,0.017231589,0,1,numerical,-0.563250283,0.573266674,Yes,,,1,interaction ,TRUE
+143,hs_analytics_source_OFFLINE,0,0,57237,float64,2,0,0.009644111,0.097730596,0,1,numerical,-4.52943276,5.93E-06,No,,,1,interaction ,TRUE
+144,hs_analytics_source_ORGANIC_SEARCH,0,0,57237,float64,2,0,0.005101595,0.071243649,0,1,numerical,-6.166882756,7.01E-10,No,,,1,interaction ,TRUE
+145,hs_analytics_source_OTHER_CAMPAIGNS,0,0,57237,float64,2,0,0.004822056,0.069274002,0,1,numerical,-0.532912655,0.594096114,Yes,,,1,interaction ,TRUE
+146,hs_analytics_source_PAID_SEARCH,0,0,57237,float64,2,0,0.001712179,0.041343409,0,1,numerical,-1.484500836,0.137681609,Yes,,,1,interaction ,TRUE
+147,hs_analytics_source_PAID_SOCIAL,0,0,57237,float64,2,0,0.062267414,0.241642719,0,1,numerical,6.044881263,1.50E-09,No,,,1,interaction ,TRUE
+148,hs_analytics_source_REFERRALS,0,0,57237,float64,2,0,0.000489194,0.022112514,0,1,numerical,0.993738022,0.320354628,Yes,,,1,interaction ,TRUE
+149,hs_analytics_source_SOCIAL_MEDIA,0,0,57237,float64,2,0,0.001240456,0.035198569,0,1,numerical,-1.036084204,0.300167238,Yes,,,1,interaction ,TRUE
+150,hs_latest_source__NA>,0,0,57237,float64,2,1,0.902580499,0.296530738,0,1,numerical,2.808239404,0.004983004,No,,,1,interaction ,TRUE
+151,hs_latest_source_DIRECT_TRAFFIC,0,0,57237,float64,2,0,0.018135122,0.133441189,0,1,numerical,-19.17269669,1.13E-81,No,,,1,interaction ,TRUE
+152,hs_latest_source_EMAIL_MARKETING,0,0,57237,float64,2,0,0.012142495,0.109522895,0,1,numerical,-3.22709066,0.001251262,No,,,1,interaction ,TRUE
+153,hs_latest_source_OFFLINE,0,0,57237,float64,2,0,0.001100687,0.033158624,0,1,numerical,-4.069947886,4.71E-05,No,,,1,interaction ,TRUE
+154,hs_latest_source_ORGANIC_SEARCH,0,0,57237,float64,2,0,0.004647344,0.068013429,0,1,numerical,-2.01368055,0.044047754,No,,,1,interaction ,TRUE
+155,hs_latest_source_OTHER_CAMPAIGNS,0,0,57237,float64,2,0,0.00431539,0.065550308,0,1,numerical,2.605693267,0.009171226,No,,,1,interaction ,TRUE
+156,hs_latest_source_PAID_SEARCH,0,0,57237,float64,2,0,0.001030802,0.03208983,0,1,numerical,1.442914998,0.14904989,Yes,,,1,interaction ,TRUE
+157,hs_latest_source_PAID_SOCIAL,0,0,57237,float64,2,0,0.051784685,0.221593973,0,1,numerical,9.464424812,3.06E-21,No,,,1,interaction ,TRUE
+158,hs_latest_source_REFERRALS,0,0,57237,float64,2,0,0.000663906,0.025758048,0,1,numerical,-4.211374363,2.54E-05,No,,,1,interaction ,TRUE
+159,hs_latest_source_SOCIAL_MEDIA,0,0,57237,float64,2,0,0.003599071,0.059884722,0,1,numerical,2.314853385,0.020624477,No,,,1,interaction ,TRUE
+160,deal_cooking_state_1,0,0,57237,float64,2,0,0.002253787,0.047420951,0,1,numerical,1.162850293,0.244895096,Yes,,,2,interaction ,TRUE
+161,deal_cooking_state_2,0,0,57237,float64,2,0,0.016929608,0.129008866,0,1,numerical,-49.24655093,0,No,,,2,interaction ,TRUE
+162,deal_cooking_state_3,0,0,57237,float64,2,0,0.458951378,0.498316515,0,1,numerical,32.27107362,1.94E-226,No,,,2,interaction ,TRUE
+163,deal_cooking_state_4,0,0,57237,float64,2,0,0.011897898,0.108427596,0,1,numerical,1.953243305,0.050795638,Yes,,,2,interaction ,TRUE
+164,deal_cooking_state__NA>,0,0,57237,float64,2,1,0.509967329,0.499905009,0,1,numerical,-20.03573463,5.44E-89,No,,,2,interaction ,TRUE
+165,industry_enrichment_3D Printing,0,0,57237,float64,2,0,5.24E-05,0.007239601,0,1,numerical,0.325203568,0.745028197,Yes,,,1,contact,TRUE
+166,industry_enrichment__NA>,0,0,57237,float64,2,1,0.911910128,0.283428033,0,1,numerical,3.929086602,8.54E-05,No,,,1,contact,TRUE
+167,industry_enrichment_Accounting and Finance,0,0,57237,float64,2,0,3.49E-05,0.005911161,0,1,numerical,0.2655252,0.790605856,Yes,,,1,contact,TRUE
+168,industry_enrichment_Advertising and Marketing,0,0,57237,float64,2,0,8.74E-05,0.009346121,0,1,numerical,0.419843596,0.674601291,Yes,,,1,contact,TRUE
+169,industry_enrichment_Aerospace and Aviation,0,0,57237,float64,2,0,0.000209655,0.014478063,0,1,numerical,-2.533389344,0.011299186,No,,,1,contact,TRUE
+170,industry_enrichment_Aerospace and Defense,0,0,57237,float64,2,0,0.000314482,0.017731003,0,1,numerical,-0.503124904,0.614878395,Yes,,,1,contact,TRUE
+171,"industry_enrichment_Aerospace and Defense
+",0,0,57237,float64,2,0,1.75E-05,0.004179858,0,1,numerical,0.187752972,0.851070969,Yes,,,1,contact,TRUE
+172,industry_enrichment_Agriculture Technology (AgTech),0,0,57237,float64,2,0,0.000157241,0.012538699,0,1,numerical,0.563299671,0.573233049,Yes,,,1,contact,TRUE
+173,industry_enrichment_Agriculture and Farming,0,0,57237,float64,2,0,0.000646435,0.025417089,0,1,numerical,-0.671086527,0.502168117,Yes,,,1,contact,TRUE
+174,industry_enrichment_Architecture and Engineering,0,0,57237,float64,2,0,0.001554938,0.03940238,0,1,numerical,-1.151954667,0.249344514,Yes,,,1,contact,TRUE
+175,industry_enrichment_Artificial Intelligence and Machine Learning,0,0,57237,float64,2,0,0.000262068,0.016186542,0,1,numerical,-0.696583576,0.486066266,Yes,,,1,contact,TRUE
+176,industry_enrichment_Arts and Crafts,0,0,57237,float64,2,0,1.75E-05,0.004179858,0,1,numerical,0.187752972,0.851070969,Yes,,,1,contact,TRUE
+177,industry_enrichment_Augmented Reality (AR) and Virtual Reality (VR),0,0,57237,float64,2,0,8.74E-05,0.009346121,0,1,numerical,0.419843596,0.674601291,Yes,,,1,contact,TRUE
+178,industry_enrichment_Automotive,0,0,57237,float64,2,0,0.001485053,0.038508102,0,1,numerical,1.732313359,0.083223172,Yes,,,1,contact,TRUE
+179,industry_enrichment_Banking and Finance,0,0,57237,float64,2,0,0.003459301,0.058714515,0,1,numerical,-0.886258926,0.37548174,Yes,,,1,contact,TRUE
+180,industry_enrichment_Biotechnology,0,0,57237,float64,2,0,0.000227126,0.015069114,0,1,numerical,0.677026444,0.498391913,Yes,,,1,contact,TRUE
+181,industry_enrichment_Chemicals,0,0,57237,float64,2,0,0.000611493,0.02472103,0,1,numerical,0.178810576,0.858087073,Yes,,,1,contact,TRUE
+182,industry_enrichment_Communications,0,0,57237,float64,2,0,0.001065744,0.032628622,0,1,numerical,1.467193935,0.142328801,Yes,,,1,contact,TRUE
+183,industry_enrichment_Construction and Real Estate,0,0,57237,float64,2,0,0.001519996,0.038957823,0,1,numerical,1.160986441,0.245652255,Yes,,,1,contact,TRUE
+184,industry_enrichment_Consulting,0,0,57237,float64,2,0,0.002760452,0.052467896,0,1,numerical,-0.711547758,0.476747767,Yes,,,1,contact,TRUE
+185,industry_enrichment_Consumer Goods,0,0,57237,float64,2,0,0.002533326,0.050268805,0,1,numerical,-1.404122352,0.160287845,Yes,,,1,contact,TRUE
+186,industry_enrichment_Cosmetics,0,0,57237,float64,2,0,1.75E-05,0.004179858,0,1,numerical,0.187752972,0.851070969,Yes,,,1,contact,TRUE
+187,industry_enrichment_Cryptocurrency and Blockchain,0,0,57237,float64,2,0,0.000122299,0.011058286,0,1,numerical,0.496774628,0.619349897,Yes,,,1,contact,TRUE
+188,industry_enrichment_Customer Service Ambassador,0,0,57237,float64,2,0,3.49E-05,0.005911161,0,1,numerical,0.2655252,0.790605856,Yes,,,1,contact,TRUE
+189,industry_enrichment_Cybersecurity,0,0,57237,float64,2,0,0.000454252,0.021308524,0,1,numerical,-0.124018223,0.901301282,Yes,,,1,contact,TRUE
+190,industry_enrichment_Design and Creative Services,0,0,57237,float64,2,0,8.74E-05,0.009346121,0,1,numerical,0.419843596,0.674601291,Yes,,,1,contact,TRUE
+191,industry_enrichment_Design and User Experience,0,0,57237,float64,2,0,1.75E-05,0.004179858,0,1,numerical,0.187752972,0.851070969,Yes,,,1,contact,TRUE
+192,industry_enrichment_E-commerce,0,0,57237,float64,2,0,0.001659766,0.040706752,0,1,numerical,-0.433186957,0.664880586,Yes,,,1,contact,TRUE
+193,industry_enrichment_Education,0,0,57237,float64,2,0,0.003249646,0.056913466,0,1,numerical,0.540022755,0.589183441,Yes,,,1,contact,TRUE
+194,industry_enrichment_Education and E-Learning,0,0,57237,float64,2,0,0.002131488,0.046119218,0,1,numerical,-0.422632922,0.672564691,Yes,,,1,contact,TRUE
+195,industry_enrichment_Electronics,0,0,57237,float64,2,0,1.75E-05,0.004179858,0,1,numerical,0.187752972,0.851070969,Yes,,,1,contact,TRUE
+196,industry_enrichment_Energy,0,0,57237,float64,2,0,0.001240456,0.035198569,0,1,numerical,-0.38130573,0.702977817,Yes,,,1,contact,TRUE
+197,"industry_enrichment_Energy (including Oil and Gas, Renewable Energy)",0,0,57237,float64,2,0,0.000227126,0.015069114,0,1,numerical,-2.38192586,0.017225612,No,,,1,contact,TRUE
+198,industry_enrichment_Entertainment and Media,0,0,57237,float64,2,0,0.004717228,0.068520494,0,1,numerical,0.401562716,0.688007373,Yes,,,1,contact,TRUE
+199,industry_enrichment_Environmental Services,0,0,57237,float64,2,0,0.001030802,0.03208983,0,1,numerical,-0.711716676,0.47664314,Yes,,,1,contact,TRUE
+200,industry_enrichment_Event Management,0,0,57237,float64,2,0,6.99E-05,0.008359498,0,1,numerical,0.375516132,0.707278043,Yes,,,1,contact,TRUE
+201,industry_enrichment_Exhibition and Event Services,0,0,57237,float64,2,0,1.75E-05,0.004179858,0,1,numerical,0.187752972,0.851070969,Yes,,,1,contact,TRUE
+202,industry_enrichment_Fashion and Apparel,0,0,57237,float64,2,0,0.002742981,0.052302053,0,1,numerical,1.91516041,0.055477028,Yes,,,1,contact,TRUE
+203,industry_enrichment_Food and Beverage,0,0,57237,float64,2,0,0.00186942,0.043196736,0,1,numerical,-1.790858145,0.073321344,Yes,,,1,contact,TRUE
+204,industry_enrichment_Furniture Manufacturing,0,0,57237,float64,2,0,1.75E-05,0.004179858,0,1,numerical,0.187752972,0.851070969,Yes,,,1,contact,TRUE
+205,industry_enrichment_Gambling and Betting Activities,0,0,57237,float64,2,0,1.75E-05,0.004179858,0,1,numerical,0.187752972,0.851070969,Yes,,,1,contact,TRUE
+206,industry_enrichment_Gaming,0,0,57237,float64,2,0,0.000524136,0.022888227,0,1,numerical,0.021691388,0.982694209,Yes,,,1,contact,TRUE
+207,industry_enrichment_Government and Public Administration,0,0,57237,float64,2,0,0.001222985,0.034950118,0,1,numerical,0.252953812,0.800304814,Yes,,,1,contact,TRUE
+208,"industry_enrichment_Graphic Design Artist's industry can be aligned with various sectors, but without specific context, the most applicable general industry would be:
+
+Marketing and Advertising",0,0,57237,float64,2,0,1.75E-05,0.004179858,0,1,numerical,0.187752972,0.851070969,Yes,,,1,contact,TRUE
+209,industry_enrichment_Healthcare and Medical Devices,0,0,57237,float64,2,0,0.00043678,0.02089491,0,1,numerical,-1.267042426,0.205145276,Yes,,,1,contact,TRUE
+210,industry_enrichment_Healthcare and Pharmaceuticals,0,0,57237,float64,2,0,0.002708039,0.051968762,0,1,numerical,0.56675033,0.570886043,Yes,,,1,contact,TRUE
+211,industry_enrichment_Hospitality and Tourism,0,0,57237,float64,2,0,0.003511714,0.059156094,0,1,numerical,-0.060647743,0.951639962,Yes,,,1,contact,TRUE
+212,industry_enrichment_Human Resources and Staffing,0,0,57237,float64,2,0,0.003074934,0.05536725,0,1,numerical,-2.084252669,0.037141613,No,,,1,contact,TRUE
+213,"industry_enrichment_I'm sorry, but the information provided does not give enough context or specific details to determine the industry accurately. Could you please provide more specific details about the job responsibilities or the sector they worked in?",0,0,57237,float64,2,0,1.75E-05,0.004179858,0,1,numerical,0.187752972,0.851070969,Yes,,,1,contact,TRUE
+214,industry_enrichment_Information Technology (IT),0,0,57237,float64,2,0,0.01306847,0.113568966,0,1,numerical,-4.775884251,1.79E-06,No,,,1,contact,TRUE
+215,industry_enrichment_Insurance,0,0,57237,float64,2,0,0.000908503,0.030127956,0,1,numerical,-0.175428143,0.860743849,Yes,,,1,contact,TRUE
+216,industry_enrichment_Interior Design,0,0,57237,float64,2,0,1.75E-05,0.004179858,0,1,numerical,0.187752972,0.851070969,Yes,,,1,contact,TRUE
+217,industry_enrichment_International Trade and Development,0,0,57237,float64,2,0,6.99E-05,0.008359498,0,1,numerical,0.375516132,0.707278043,Yes,,,1,contact,TRUE
+218,industry_enrichment_Internet of Things (IoT),0,0,57237,float64,2,0,1.75E-05,0.004179858,0,1,numerical,0.187752972,0.851070969,Yes,,,1,contact,TRUE
+219,industry_enrichment_Language Services,0,0,57237,float64,2,0,5.24E-05,0.007239601,0,1,numerical,0.325203568,0.745028197,Yes,,,1,contact,TRUE
+220,industry_enrichment_Legal Services,0,0,57237,float64,2,0,0.001502525,0.038733619,0,1,numerical,-1.232629588,0.217719056,Yes,,,1,contact,TRUE
+221,industry_enrichment_Luxury Goods,0,0,57237,float64,2,0,6.99E-05,0.008359498,0,1,numerical,0.375516132,0.707278043,Yes,,,1,contact,TRUE
+222,industry_enrichment_Luxury Goods and Jewelry,0,0,57237,float64,2,0,5.24E-05,0.007239601,0,1,numerical,0.325203568,0.745028197,Yes,,,1,contact,TRUE
+223,industry_enrichment_Manufacturing,0,0,57237,float64,2,0,0.002428499,0.049220359,0,1,numerical,-1.529703577,0.126095644,Yes,,,1,contact,TRUE
+224,industry_enrichment_Marine and Boat Services,0,0,57237,float64,2,0,5.24E-05,0.007239601,0,1,numerical,-2.858455411,0.004258626,No,,,1,contact,TRUE
+225,industry_enrichment_Maritime and Naval,0,0,57237,float64,2,0,1.75E-05,0.004179858,0,1,numerical,0.187752972,0.851070969,Yes,,,1,contact,TRUE
+226,industry_enrichment_Marketing and Advertising,0,0,57237,float64,2,0,0.010150777,0.100239283,0,1,numerical,-2.348999599,0.018827308,No,,,1,contact,TRUE
+227,industry_enrichment_Media and Advertising,0,0,57237,float64,2,0,1.75E-05,0.004179858,0,1,numerical,0.187752972,0.851070969,Yes,,,1,contact,TRUE
+228,industry_enrichment_Mining and Metals,0,0,57237,float64,2,0,1.75E-05,0.004179858,0,1,numerical,0.187752972,0.851070969,Yes,,,1,contact,TRUE
+229,industry_enrichment_Nanotechnology,0,0,57237,float64,2,0,5.24E-05,0.007239601,0,1,numerical,0.325203568,0.745028197,Yes,,,1,contact,TRUE
+230,industry_enrichment_Nonprofit and Philanthropy,0,0,57237,float64,2,0,0.001799535,0.042383114,0,1,numerical,0.819635963,0.412427079,Yes,,,1,contact,TRUE
+231,industry_enrichment_Oil and Gas,0,0,57237,float64,2,0,3.49E-05,0.005911161,0,1,numerical,0.2655252,0.790605856,Yes,,,1,contact,TRUE
+232,industry_enrichment_Packaging and Container Manufacturing,0,0,57237,float64,2,0,5.24E-05,0.007239601,0,1,numerical,-2.858455411,0.004258626,No,,,1,contact,TRUE
+233,industry_enrichment_Packaging and Containers,0,0,57237,float64,2,0,5.24E-05,0.007239601,0,1,numerical,0.325203568,0.745028197,Yes,,,1,contact,TRUE
+234,industry_enrichment_Paper and Forest Products,0,0,57237,float64,2,0,1.75E-05,0.004179858,0,1,numerical,0.187752972,0.851070969,Yes,,,1,contact,TRUE
+235,industry_enrichment_Pharmaceuticals and Biomedical Research,0,0,57237,float64,2,0,0.000594021,0.024365526,0,1,numerical,-0.796676753,0.425642093,Yes,,,1,contact,TRUE
+236,industry_enrichment_Photography,0,0,57237,float64,2,0,8.74E-05,0.009346121,0,1,numerical,0.419843596,0.674601291,Yes,,,1,contact,TRUE
+237,industry_enrichment_Publishing,0,0,57237,float64,2,0,0.000279539,0.016717243,0,1,numerical,0.751113786,0.452587268,Yes,,,1,contact,TRUE
+238,industry_enrichment_Real Estate,0,0,57237,float64,2,0,0.00043678,0.02089491,0,1,numerical,0.938968683,0.347750786,Yes,,,1,contact,TRUE
+239,industry_enrichment_Real Estate and Construction,0,0,57237,float64,2,0,8.74E-05,0.009346121,0,1,numerical,0.419843596,0.674601291,Yes,,,1,contact,TRUE
+240,industry_enrichment_Renewable Energy,0,0,57237,float64,2,0,3.49E-05,0.005911161,0,1,numerical,0.2655252,0.790605856,Yes,,,1,contact,TRUE
+241,industry_enrichment_Research and Development,0,0,57237,float64,2,0,0.000821147,0.028644148,0,1,numerical,-1.126111017,0.260123253,Yes,,,1,contact,TRUE
+242,industry_enrichment_Retail,0,0,57237,float64,2,0,0.002323672,0.048148861,0,1,numerical,-0.225527409,0.82156981,Yes,,,1,contact,TRUE
+243,industry_enrichment_Security Services,0,0,57237,float64,2,0,8.74E-05,0.009346121,0,1,numerical,0.419843596,0.674601291,Yes,,,1,contact,TRUE
+244,industry_enrichment_Semiconductor,0,0,57237,float64,2,0,5.24E-05,0.007239601,0,1,numerical,0.325203568,0.745028197,Yes,,,1,contact,TRUE
+245,industry_enrichment_Semiconductors,0,0,57237,float64,2,0,1.75E-05,0.004179858,0,1,numerical,0.187752972,0.851070969,Yes,,,1,contact,TRUE
+246,industry_enrichment_Social Media,0,0,57237,float64,2,0,1.75E-05,0.004179858,0,1,numerical,0.187752972,0.851070969,Yes,,,1,contact,TRUE
+247,industry_enrichment_Social Services,0,0,57237,float64,2,0,0.000314482,0.017731003,0,1,numerical,0.796690892,0.42563388,Yes,,,1,contact,TRUE
+248,industry_enrichment_Space Exploration,0,0,57237,float64,2,0,0.000227126,0.015069114,0,1,numerical,-0.852397449,0.393997102,Yes,,,1,contact,TRUE
+249,industry_enrichment_Sports and Recreation,0,0,57237,float64,2,0,0.000646435,0.025417089,0,1,numerical,1.142428746,0.253280627,Yes,,,1,contact,TRUE
+250,industry_enrichment_Telecommunications,0,0,57237,float64,2,0,0.000908503,0.030127956,0,1,numerical,0.5895423,0.555499872,Yes,,,1,contact,TRUE
+251,industry_enrichment_Textiles and Apparel,0,0,57237,float64,2,0,1.75E-05,0.004179858,0,1,numerical,0.187752972,0.851070969,Yes,,,1,contact,TRUE
+252,industry_enrichment_Tobacco,0,0,57237,float64,2,0,1.75E-05,0.004179858,0,1,numerical,0.187752972,0.851070969,Yes,,,1,contact,TRUE
+253,industry_enrichment_Tourism and Hospitality,0,0,57237,float64,2,0,6.99E-05,0.008359498,0,1,numerical,0.375516132,0.707278043,Yes,,,1,contact,TRUE
+254,industry_enrichment_Toys and Games,0,0,57237,float64,2,0,5.24E-05,0.007239601,0,1,numerical,0.325203568,0.745028197,Yes,,,1,contact,TRUE
+255,industry_enrichment_Transportation and Logistics,0,0,57237,float64,2,0,0.001362755,0.03689067,0,1,numerical,-2.089192047,0.036694844,No,,,1,contact,TRUE
+256,industry_enrichment_Travel Photography,0,0,57237,float64,2,0,1.75E-05,0.004179858,0,1,numerical,0.187752972,0.851070969,Yes,,,1,contact,TRUE
+257,industry_enrichment_Travel and Tourism,0,0,57237,float64,2,0,0.000104827,0.010238073,0,1,numerical,-1.79123266,0.073261249,Yes,,,1,contact,TRUE
+258,"industry_enrichment_Utilities (Water, Electricity, Gas)",0,0,57237,float64,2,0,0.000611493,0.02472103,0,1,numerical,1.111103261,0.266528572,Yes,,,1,contact,TRUE
+259,industry_enrichment_Venture Capital and Private Equity,0,0,57237,float64,2,0,6.99E-05,0.008359498,0,1,numerical,0.375516132,0.707278043,Yes,,,1,contact,TRUE
+260,industry_enrichment_Wellness and Fitness,0,0,57237,float64,2,0,1.75E-05,0.004179858,0,1,numerical,0.187752972,0.851070969,Yes,,,1,contact,TRUE
+261,location__NA>,0,0,57237,float64,2,1,0.991875884,0.089767784,0,1,numerical,36.66610816,6.09E-291,No,,,3,contact,TRUE
+262,location__italy,0,0,57237,float64,2,0,0.000419309,0.020472926,0,1,numerical,0.919989339,0.357582208,Yes,,,3,contact,TRUE
+263,location__switzerland,0,0,57237,float64,2,0,1.75E-05,0.004179858,0,1,numerical,0.187752972,0.851070969,Yes,,,3,contact,TRUE
+264,location_abruzzo_italy,0,0,57237,float64,2,0,8.74E-05,0.009346121,0,1,numerical,-4.512832661,6.41E-06,No,,,3,contact,TRUE
+265,location_calabria_italy,0,0,57237,float64,2,0,0.000314482,0.017731003,0,1,numerical,-5.703985387,1.18E-08,No,,,3,contact,TRUE
+266,location_campania_italy,0,0,57237,float64,2,0,0.000698849,0.026426738,0,1,numerical,-6.66368715,2.69E-11,No,,,3,contact,TRUE
+267,location_emilia-romagna_italy,0,0,57237,float64,2,0,0.000419309,0.020472926,0,1,numerical,-11.47620371,1.88E-30,No,,,3,contact,TRUE
+268,location_emilia-romagna_san marino,0,0,57237,float64,2,0,1.75E-05,0.004179858,0,1,numerical,-5.32737632,1.00E-07,No,,,3,contact,TRUE
+269,location_emiliaromagna_italy,0,0,57237,float64,2,0,8.74E-05,0.009346121,0,1,numerical,0.419843596,0.674601291,Yes,,,3,contact,TRUE
+270,location_estero_mexico,0,0,57237,float64,2,0,1.75E-05,0.004179858,0,1,numerical,-5.32737632,1.00E-07,No,,,3,contact,TRUE
+271,location_estero_switzerland,0,0,57237,float64,2,0,1.75E-05,0.004179858,0,1,numerical,-5.32737632,1.00E-07,No,,,3,contact,TRUE
+272,location_friuli venezia giulia_italy,0,0,57237,float64,2,0,0.000174712,0.013216834,0,1,numerical,-6.383523964,1.74E-10,No,,,3,contact,TRUE
+273,location_latium_italy,0,0,57237,float64,2,0,0.000401838,0.020042044,0,1,numerical,-0.249325344,0.803110023,Yes,,,3,contact,TRUE
+274,location_lazio_italy,0,0,57237,float64,2,0,0.000908503,0.030127956,0,1,numerical,-14.73771624,4.54E-49,No,,,3,contact,TRUE
+275,location_liguria_italy,0,0,57237,float64,2,0,0.000104827,0.010238073,0,1,numerical,-6.295563863,3.08E-10,No,,,3,contact,TRUE
+276,location_lombardia_italy,0,0,57237,float64,2,0,0.001380226,0.037126071,0,1,numerical,-22.01211753,6.14E-107,No,,,3,contact,TRUE
+277,location_lombardy_italy,0,0,57237,float64,2,0,0.000227126,0.015069114,0,1,numerical,0.677026444,0.498391913,Yes,,,3,contact,TRUE
+278,location_marche_italy,0,0,57237,float64,2,0,0.000209655,0.014478063,0,1,numerical,-4.125713162,3.70E-05,No,,,3,contact,TRUE
+279,location_molise_italy,0,0,57237,float64,2,0,0.000122299,0.011058286,0,1,numerical,-1.587394499,0.112428848,Yes,,,3,contact,TRUE
+280,location_piedmont_italy,0,0,57237,float64,2,0,0.000349424,0.018689792,0,1,numerical,-4.093322424,4.26E-05,No,,,3,contact,TRUE
+281,location_piemonte_italy,0,0,57237,float64,2,0,0.000419309,0.020472926,0,1,numerical,-11.47620371,1.88E-30,No,,,3,contact,TRUE
+282,location_puglia_italy,0,0,57237,float64,2,0,0.000122299,0.011058286,0,1,numerical,-5.757292165,8.59E-09,No,,,3,contact,TRUE
+283,location_quebec_italy,0,0,57237,float64,2,0,1.75E-05,0.004179858,0,1,numerical,0.187752972,0.851070969,Yes,,,3,contact,TRUE
+284,location_sicilia_italy,0,0,57237,float64,2,0,0.000471723,0.021714248,0,1,numerical,-12.84050419,1.10E-37,No,,,3,contact,TRUE
+285,location_sicily_italy,0,0,57237,float64,2,0,0.00013977,0.011821702,0,1,numerical,0.531079219,0.595365945,Yes,,,3,contact,TRUE
+286,location_toscana_italy,0,0,57237,float64,2,0,0.00043678,0.02089491,0,1,numerical,-8.994325746,2.45E-19,No,,,3,contact,TRUE
+287,location_trentino-alto adige_italy,0,0,57237,float64,2,0,8.74E-05,0.009346121,0,1,numerical,-4.512832661,6.41E-06,No,,,3,contact,TRUE
+288,location_tuscany_italy,0,0,57237,float64,2,0,1.75E-05,0.004179858,0,1,numerical,0.187752972,0.851070969,Yes,,,3,contact,TRUE
+289,location_umbria_italy,0,0,57237,float64,2,0,0.000122299,0.011058286,0,1,numerical,-3.671925097,0.000240949,No,,,3,contact,TRUE
+290,location_veneto_italy,0,0,57237,float64,2,0,0.000314482,0.017731003,0,1,numerical,-14.82944425,1.17E-49,No,,,3,contact,TRUE
+325,average_recency_score,0,0,57237,float64,22,0,0.263029159,1.33311191,0,21,numerical,-7.772602571,7.82E-15,No,,,1,interaction ,TRUE
+3,number_of_educational_degrees,0,0,57237,Int32,5,0,0.140154096,0.557913167,0,4,numerical,-5.034211983,4.81E-07,No,,,1,contact,TRUE
+9,hs_analytics_num_page_views,0,0,57237,Int32,103,0,0.797368835,8.457872364,0,447,numerical,-11.99355121,4.21E-33,No,,,1,interaction ,TRUE
+10,hs_analytics_num_visits,0,0,57237,Int32,61,0,0.54145046,3.927341946,0,210,numerical,-12.04951615,2.14E-33,No,,,1,interaction ,TRUE
+11,hs_analytics_num_event_completions,0,0,57237,Int32,4,0,0.010045949,0.121377093,0,3,numerical,-39.33629758,0,No,,,1,interaction ,TRUE
+14,hs_email_bounce,0,0,57237,Int32,2,0,0.000559079,0.023638446,0,1,numerical,-2.837728926,0.004545172,No,,,1,interaction ,TRUE
+15,hs_email_click,0,0,57237,Int32,40,0,0.236088544,1.80784555,0,87,numerical,-8.608923498,7.56E-18,No,,,1,interaction ,TRUE
+16,hs_email_open,0,0,57237,Int32,123,0,1.40353268,9.547894327,0,518,numerical,-5.711564376,1.12E-08,No,,,1,interaction ,TRUE
+0,contact_id,6022,0.11,51215,Int64,40639,98333501,1252211196,3582546420,4202,21143670380,numerical,,,No,,,,contact,FALSE
+17,hs_email_replied,0,0,57237,int32,5,0,0.009504342,0.122637692,0,4,numerical,-8.551636054,1.24E-17,No,,,1,interaction ,TRUE
+37,deal_id,0,0,57237,Int64,56193,12714593920,15786321686,1897899058,6838661036,19357972106,numerical,6.331288142,2.45E-10,No,,,,,FALSE
+18,hs_email_sends_since_last_engagement,0,0,57237,Int32,36,0,0.404808079,2.246593763,0,43,numerical,3.754817386,0.000173639,No,,,1,interaction ,TRUE
+24,num_conversion_events,0,0,57237,Int32,28,0,0.349721334,1.739110706,0,51,numerical,-12.22636653,2.48E-34,No,,,1,interaction ,TRUE
+25,num_unique_conversion_events,0,0,57237,Int32,23,0,0.307475933,1.447763372,0,28,numerical,-9.458961103,3.22E-21,No,,,1,interaction ,TRUE
+49,interview_not_needed,47396,0.83,9841,Int64,2,0,0.00589371,0.076547826,0,1,numerical,,,No,,,,interaction ,FALSE
+28,hs_social_num_broadcast_clicks,0,0,57237,Int32,2,0,0.000104827,0.010238073,0,1,numerical,0.459919776,0.645575552,Yes,,,1,interaction ,TRUE
+32,class_size,0,0,57237,Int32,14,30,31.25328022,6.618062328,5,65,numerical,4.777603957,1.78E-06,No,,,1,class,TRUE
+40,num_associated_courses,0,0,57237,Int32,2,1,1.036514842,0.187568981,1,2,numerical,-9.447916226,3.58E-21,No,,,1,interaction ,TRUE
+59,target,0,0,57237,int64,2,0,0.0340514,0.181362833,0,1,numerical,#NAME?,0,No,,,0,,FALSE
+44,review_analysis,0,0,57237,int32,2,0,0.00272551,0.052135677,0,1,numerical,-23.40225814,1.50E-120,No,,,3,interaction ,TRUE
+82,feat_init_years_of_topic_experience,0,0,57237,int32,10,0,0.28228244,1.175852525,0,9,numerical,-4.368269637,1.25E-05,No,,,1,contact,TRUE
+83,feat_final_years_of_topic_experience,0,0,57237,int32,10,0,0.268794661,1.14479984,0,9,numerical,1.728984538,0.083817255,Yes,,,3,,TRUE
+330,career_progression,0,0,57237,int32,2,0,0.087024128,0.281872874,0,1,numerical,-3.466320663,0.00052802,No,,,2,contact,TRUE
+30,course_id,0,0,57237,Int64,128,7630797209,8007767417,2525072322,4563140897,13068540521,numerical,3.350308587,0.000807737,No,,,1,,TRUE
+46,interview_canceled,0,0,57237,Int64,4,0,0.03347485,0.184098734,0,3,numerical,4.16218757,3.16E-05,No,,,2,interaction ,TRUE
+47,interview_done,0,0,57237,Int64,4,0,0.07254049,0.262130134,0,3,numerical,-46.17060807,0,No,,,2,interaction ,TRUE
+48,interview_deleted,0,0,57237,Int64,8,0,0.019061097,0.152906723,0,10,numerical,-0.429556614,0.66751982,Yes,,,2,interaction ,TRUE
+50,interview_no_show,0,0,57237,Int64,4,0,0.040463337,0.204271892,0,3,numerical,6.643772865,3.08E-11,No,,,2,interaction ,TRUE
+51,interview_scheduled,0,0,57237,Int64,3,0,0.017768227,0.135245905,0,2,numerical,-3.471523065,0.000517896,No,,,2,interaction ,TRUE
+58,total_call_duration,0,0,57237,Int64,801,0,17556.10881,98300.52637,0,3395000,numerical,-17.45545025,4.70E-68,No,,,2,interaction ,TRUE
+291,reason_to_buy_short_Language,0,0,57237,int64,2,0,0.000244597,0.015637822,0,1,numerical,-9.621748875,6.72E-22,No,,,3,contact,TRUE
+292,reason_to_buy_short_Location,0,0,57237,int64,2,0,0.000349424,0.018689792,0,1,numerical,-11.50478223,1.35E-30,No,,,3,contact,TRUE
+293,reason_to_buy_short_Other,0,0,57237,int64,2,0,0.000454252,0.021308524,0,1,numerical,-13.12271274,2.78E-39,No,,,3,contact,TRUE
+294,reason_to_buy_short_Career Opportunities,0,0,57237,int64,2,0,0.003965966,0.062851461,0,1,numerical,-32.2912591,1.02E-226,No,,,3,contact,TRUE
+295,reason_to_buy_short_Flexibility,0,0,57237,int64,2,0,0.002131488,0.046119218,0,1,numerical,-26.06190156,7.33E-149,No,,,3,contact,TRUE
+296,reason_to_buy_short_Learning Methodology,0,0,57237,int64,2,0,0.00214896,0.04630744,0,1,numerical,-24.4195085,4.99E-131,No,,,3,contact,TRUE
+297,reason_to_buy_short_Environment,0,0,57237,int64,2,0,0.001519996,0.038957823,0,1,numerical,-17.22267903,2.64E-66,No,,,3,contact,TRUE
+298,reason_to_buy_short_Post-course Support,0,0,57237,int64,2,0,0.00143264,0.037823435,0,1,numerical,-18.46122009,7.04E-76,No,,,3,contact,TRUE
+299,reason_to_buy_short_Class Size,0,0,57237,int64,2,0,0.000454252,0.021308524,0,1,numerical,-13.12271274,2.78E-39,No,,,3,contact,TRUE
+300,reason_to_buy_short_Professors,0,0,57237,int64,2,0,0.001712179,0.041343409,0,1,numerical,-21.07658905,3.09E-98,No,,,3,contact,TRUE
+301,reason_to_buy_short_Community,0,0,57237,int64,2,0,0.002358614,0.048508682,0,1,numerical,-25.03312391,1.47E-137,No,,,3,contact,TRUE
+302,reason_to_buy_short_Price,0,0,57237,int64,2,0,0.000908503,0.030127956,0,1,numerical,-17.04785631,5.25E-65,No,,,3,contact,TRUE
+303,candidate_s_needs_Other,0,0,57237,int64,2,0,0.000244597,0.015637822,0,1,numerical,-0.771211929,0.440584508,Yes,,,2,contact,TRUE
+304,candidate_s_needs_Acquisition of new skills,0,0,57237,int64,2,0,0.033649562,0.180327029,0,1,numerical,-33.60978746,2.99E-245,No,,,2,contact,TRUE
+305,candidate_s_needs_Change of professional field,0,0,57237,int64,2,0,0.008543425,0.092035768,0,1,numerical,-11.62003456,3.53E-31,No,,,2,contact,TRUE
+306,candidate_s_needs_Networking,0,0,57237,int64,2,0,0.008263885,0.090530308,0,1,numerical,-18.87006458,3.50E-79,No,,,2,contact,TRUE
+307,candidate_s_needs_Change within the same professional field,0,0,57237,int64,2,0,0.003005049,0.054736379,0,1,numerical,-10.17474952,2.70E-24,No,,,2,contact,TRUE
+308,candidate_s_needs_Skill structuring,0,0,57237,int64,2,0,0.022048675,0.146843139,0,1,numerical,-31.02394861,1.41E-209,No,,,2,contact,TRUE
+309,candidate_s_needs_Basics of career development,0,0,57237,int64,2,0,0.009539284,0.097203144,0,1,numerical,-13.87182686,1.10E-43,No,,,2,contact,TRUE
+38,dealstage,0,0,57237,object,7,Closed Lost,,,,,categorical,,,,,,,,FALSE
+310,source_of_awareness_playbook_word_of_mouth,0,0,57237,int64,2,0,0.009574226,0.097379291,0,1,numerical,-23.62530654,8.23E-123,No,,,2,interaction ,TRUE
+311,source_of_awareness_playbook_facebook,0,0,57237,int64,2,0,0.003668955,0.060461211,0,1,numerical,-6.043415681,1.52E-09,No,,,2,interaction ,TRUE
+312,source_of_awareness_playbook_event,0,0,57237,int64,2,0,0.000821147,0.028644148,0,1,numerical,-7.566640879,3.89E-14,No,,,2,interaction ,TRUE
+313,source_of_awareness_playbook_others,0,0,57237,int64,2,0,0.001886891,0.043397741,0,1,numerical,-6.546447842,5.94E-11,No,,,2,interaction ,TRUE
+8,lifecyclestage,51661,0.9,5576,string,4,marketingqualifiedlead,,,,,categorical,,,,,,,,FALSE
+12,hs_analytics_last_referrer,52039,0.91,5198,string,232,https://www.facebook.com/,,,,,categorical,,,,,,,interaction ,FALSE
+13,hs_analytics_first_referrer,52648,0.92,4589,string,146,https://www.facebook.com/,,,,,categorical,,,,,,,interaction ,FALSE
+31,erogation_language,0,0,57237,string,1,italian,,,,,categorical,,,,,,,class,FALSE
+314,source_of_awareness_playbook_instagram,0,0,57237,int64,2,0,0.01637053,0.126896874,0,1,numerical,-18.04851092,1.29E-72,No,,,2,interaction ,TRUE
+42,italian_region,0,0,57237,string,143,,,,,,categorical,,,,,,0,contact,FALSE
+315,source_of_awareness_playbook_google,0,0,57237,int64,2,0,0.009993536,0.099467772,0,1,numerical,-18.94814948,8.04E-80,No,,,2,interaction ,TRUE
+316,source_of_awareness_playbook_linkedin,0,0,57237,int64,2,0,0.004193092,0.06461875,0,1,numerical,-10.29119054,8.12E-25,No,,,2,interaction ,TRUE
+317,source_of_awareness_playbook_external_partners,0,0,57237,int64,2,0,0.0011531,0.033938043,0,1,numerical,-5.2659832,1.40E-07,No,,,2,interaction ,TRUE
+318,source_of_awareness_playbook_tiktok,0,0,57237,int64,2,0,6.99E-05,0.008359498,0,1,numerical,-2.381579027,0.01724184,No,,,2,interaction ,TRUE
+326,company_size_category,0,0,57237,int64,4,-1,-0.788178975,0.812555679,-1,3,numerical,-4.316519172,1.59E-05,No,,,2,contact,TRUE
+36,end_date,0,0,57237,object,93,12/16/2023,,,,,categorical,,,,,,1,class,TRUE
+2,previous_position,0,0,57237,string,2486,,,,,,categorical,,,,,,1,contact,TRUE
+34,sku_tuition,191,0,57046,string,124,ITDMFT1815,,,,,categorical,,,,,,1,class,TRUE
+71,feat_final_education_field,0,0,57237,string,45,,,,,,categorical,,,,,,3,contact,TRUE
+74,feat_final_current_job,0,0,57237,string,2765,,,,,,categorical,,,,,,3,contact,TRUE

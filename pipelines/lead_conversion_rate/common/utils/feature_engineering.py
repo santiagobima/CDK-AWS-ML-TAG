@@ -4,6 +4,7 @@ import logging
 import re
 from itertools import product
 from pipelines.common.api.athena import read_from_athena
+from sklearn.preprocessing import OneHotEncoder
 
 
 logger = logging.getLogger(__name__)

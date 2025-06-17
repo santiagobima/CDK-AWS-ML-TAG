@@ -48,15 +48,15 @@ def read_data(env, pickle=False, target=True):
     return baseline_df
 
 
-def save_data_to_output(data: pd.DataFrame, output_dir: str = "/opt/ml/processing/output"):
+
+def save_data_to_output(data: pd.DataFrame):
+    IN_SAGEMAKER = os.path.exists("/opt/ml/processing/input")
+    output_dir = "/opt/ml/processing/output" if IN_SAGEMAKER else "./pickles"
+
     try:
         if not os.path.exists(output_dir):
             logger.warning(f"📁 El directorio '{output_dir}' no existe. Se crea...")
-            os.makedirs(output_dir)
-
-        logger.info(f"📁 Contenido antes de guardar CSV: {os.listdir(output_dir)}")
-        logger.info(f"🔍 Shape del DataFrame: {data.shape}")
-        logger.info(f"🔍 Columnas: {data.columns.tolist()}")
+            os.makedirs(output_dir, exist_ok=True)
 
         pickle_path = os.path.join(output_dir, "test_output.pkl")
         logger.info(f"💾 Guardando Pickle en: {pickle_path}")
@@ -64,7 +64,7 @@ def save_data_to_output(data: pd.DataFrame, output_dir: str = "/opt/ml/processin
         logger.info(f"✅ Pickle guardado correctamente en: {pickle_path}")
 
         if os.path.exists(pickle_path):
-            logger.info(f"✅ Archivo Pickle guardado correctamente en: {pickle_path}")
+            logger.info(f"📁 Archivo generado correctamente: {pickle_path}")
         else:
             logger.error("❌ Error: El archivo Pickle no fue creado.")
             sys.exit(1)
@@ -72,6 +72,7 @@ def save_data_to_output(data: pd.DataFrame, output_dir: str = "/opt/ml/processin
     except Exception as e:
         logger.exception(f"❌ Excepción al guardar el Pickle: {e}")
         sys.exit(1)
+
 
 
 if __name__ == "__main__":

@@ -53,32 +53,48 @@ class LeadConversionFactory(SagemakerPipelineFactory):
             outputs=outputs,
             code="pipelines/lead_conversion_rate/steps/data_read.py",  #here I did a change
             job_arguments=["--environment", os.getenv('ENV', 'dev')], 
+            
         ) 
         
+        prep_data_step = ProcessingStep(
+            name='PreprocessDataStep',
+            processor=processor,
+            inputs=inputs,
+            outputs=outputs,
+            code="pipelines/lead_conversion_rate/steps/data_prep.py",
+            job_arguments=[
+                "--input_path", "/opt/ml/processing/output/test_output.pkl",
+                "--output_path", "/opt/ml/processing/output/data_processed.pkl"]
+        )
+        
         retrieve_data_step.add_depends_on([data_prep_step])
-        steps = [data_prep_step, retrieve_data_step]
+        prep_data_step.add_depends_on([retrieve_data_step])
+        steps = [data_prep_step, retrieve_data_step, prep_data_step]
 
         logger.info(f"Pipeline '{pipeline_name}' configurado con {len(steps)} paso(s).")
         return Pipeline(name=pipeline_name, steps=steps, sagemaker_session=sm_session)
+    
 
     def _configure_io(self, data_bucket_name: str):
-            logger.info(f"Configurando inputs/outputs con bucket {data_bucket_name}")
-            inputs = [
-                ProcessingInput(
-                    source=f"s3://{data_bucket_name}/input-data",
-                    destination="/opt/ml/processing/input"
-                ),
-                
-                ProcessingInput(
-                    source=f"s3://{data_bucket_name}/code/source_code",
-                    destination="/opt/ml/processing/source_code"
-                    )
-              
-            ]
-            outputs = [
-                ProcessingOutput(
-                    source="/opt/ml/processing/output",
-                    destination=f"s3://{data_bucket_name}/output-data"
-                )
-            ]
-            return inputs, outputs
+        logger.info(f"Configurando inputs/outputs con bucket {data_bucket_name}")
+        inputs = [
+            ProcessingInput(
+                source=f"s3://{data_bucket_name}/input-data",
+                destination="/opt/ml/processing/input"
+            ),
+            ProcessingInput(
+                source=f"s3://{data_bucket_name}/code/source_code",
+                destination="/opt/ml/processing/source_code"
+            ),
+            ProcessingInput(
+                source=f"s3://{data_bucket_name}/code/source_code/summaries",
+                destination="/opt/ml/processing/summaries"
+            )
+        ]
+        outputs = [
+            ProcessingOutput(
+                source="/opt/ml/processing/output",
+                destination=f"s3://{data_bucket_name}/output-data"
+            )
+        ]
+        return inputs, outputs

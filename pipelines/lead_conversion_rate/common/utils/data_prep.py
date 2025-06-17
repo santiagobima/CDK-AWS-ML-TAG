@@ -6,9 +6,13 @@ import logging
 
 from itertools import product
 
-from sklearn.preprocessing import OneHotEncoder
+from pipelines.lead_conversion_rate.common.constants import (
+    ONEHOT_COLUMNS as onehot_columns,
+    MULTIPLE_CATEGORIES as multiple_categories
+)
 
 # Importar módulos internos
+from pipelines.lead_conversion_rate.common.constants import ONEHOT_COLUMNS as onehot_columns
 from pipelines.common.api.athena import read_from_athena
 from pipelines.common.utils.general import sanitize_string, format_duration
 from pipelines.lead_conversion_rate.common.utils.feature_engineering import (
@@ -378,10 +382,20 @@ class SummaryProcessor:
     A class for processing summary data including merging, cleaning, and rearranging columns.
     """
 
-    def __init__(self, baseline_file_path="./summaries/baseline.csv",
-                 backup_file_path="./summaries/baseline_backup.csv"):
-        self.baseline_file_path = baseline_file_path
-        self.backup_file_path = backup_file_path
+    def __init__(self, baseline_file_path=None, backup_file_path=None):
+        # Detectar entorno solo si no se pasan rutas explícitas
+        if baseline_file_path is None or backup_file_path is None:
+            if os.path.exists("/opt/ml/processing/summaries"):
+                base_dir = "/opt/ml/processing/summaries"
+            else:
+                base_dir = "./summaries"
+
+            self.baseline_file_path = os.path.join(base_dir, "baseline.csv")
+            self.backup_file_path = os.path.join(base_dir, "baseline_backup.csv")
+        else:
+            self.baseline_file_path = baseline_file_path
+            self.backup_file_path = backup_file_path
+
         self.old_summary_df = None
         self.new_summary_df = None
         self.updated_summary = None
@@ -474,21 +488,29 @@ class SummaryProcessor:
         Returns:
             DataFrame: Merged summary DataFrame.
         """
-        updated_summary = pd.merge(old_summary_df, summary_df, on='Column', how='outer',
-                                   suffixes=('_old', ''))
+        if old_summary_df.empty or 'Column' not in old_summary_df.columns:
+            return summary_df
 
-        # Preserve 'stage' and 'In use' columns from the existing old_summary_df
+        updated_summary = pd.merge(
+            old_summary_df,
+            summary_df,
+            on='Column',
+            how='outer',
+            suffixes=('_old', '')
+        )
+
+        # Resto igual...
         if 'stage_old' in updated_summary.columns:
             updated_summary['stage'] = updated_summary['stage_old']
-        # If 'In use' exists in the old summary, merge it into updated_summary
         if 'In use_old' in updated_summary.columns:
             updated_summary['In use'] = updated_summary['In use_old']
 
-        # Drop the '_old' columns used for merging
         updated_summary = updated_summary.drop(
             columns=[col for col in updated_summary.columns if col.endswith('_old')])
 
         return updated_summary
+
+        
 
     def features_only_in_old_summary(self):
         """

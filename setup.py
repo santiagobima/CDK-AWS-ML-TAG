@@ -3,6 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name="TalentGardenSharedServices",
     version="0.1",
+    include_package_data=True,
     packages=find_packages(),
     install_requires=[
         "python-dotenv==1.0.0",
