@@ -89,7 +89,7 @@ source_of_awareness_onboarding_facebook,91.0,0.0,0.0,57237.0,float64,2.0,0,5.24e
 source_of_awareness_onboarding_google,92.0,0.0,0.0,57237.0,float64,2.0,0,0.000384367,0.019601677,0,1,numerical,-10.88809512,1.4000000000000002e-27,No,,,3.0,interaction ,True
 source_of_awareness_onboarding_instagram,93.0,0.0,0.0,57237.0,float64,2.0,0,0.000594021,0.024365526,0,1,numerical,-19.78161323,8.37e-87,No,,,3.0,interaction ,True
 source_of_awareness_onboarding_linkedin,94.0,0.0,0.0,57237.0,float64,2.0,0,0.000524136,0.022888227,0,1,numerical,-11.06640625,1.95e-28,No,,,3.0,interaction ,True
-source_of_awareness_onboarding_others,95.0,0.0,0.0,57237.0,float64,2.0,0,0.00071632,0.026754799,0,1,numerical,-16.92928208,3.9200000000000004e-64,No,,,3.0,interaction ,True
+source_of_awareness_onboarding_others,95.0,0.0,0.0,57237.0,float64,2.0,0,0.00071632,0.026754799,0,1,numerical,-16.92928208,3.92e-64,No,,,3.0,interaction ,True
 source_of_awareness_onboarding_tiktok,,,,,,,,,,,,,,,,,,3.0,interaction ,True
 source_of_awareness_onboarding_unknown,96.0,0.0,0.0,57237.0,float64,2.0,1,0.995789437,0.064752664,0,1,numerical,38.86926277,0.0,No,,,3.0,interaction ,True
 source_of_awareness_onboarding_word_of_mouth,97.0,0.0,0.0,57237.0,float64,2.0,0,0.001764593,0.041970345,0,1,numerical,-23.48350249,2.26e-121,No,,,3.0,interaction ,True
@@ -132,7 +132,7 @@ hs_predictivescoringtier_tier_5,,,,,,,,,,,,,,,,,,1.0,interaction ,True
 vertical_name_Career_DHR,,,,,,,,,,,,,,,,,,1.0,contact,True
 vertical_name_Data,134.0,0.0,0.0,57237.0,float64,2.0,0,0.141918689,0.348969773,0,1,numerical,5.456522452,4.88e-08,No,,,1.0,contact,True
 vertical_name_Deep_Cybersecurity,,,,,,,,,,,,,,,,,,1.0,contact,True
-vertical_name_Design,136.0,0.0,0.0,57237.0,float64,2.0,0,0.164596328,0.370819065,0,1,numerical,-11.71101695,1.2200000000000001e-31,No,,,1.0,contact,True
+vertical_name_Design,136.0,0.0,0.0,57237.0,float64,2.0,0,0.164596328,0.370819065,0,1,numerical,-11.71101695,1.22e-31,No,,,1.0,contact,True
 vertical_name_Digital_Marketing,,,,,,,,,,,,,,,,,,1.0,contact,True
 vertical_name_Digital_Product_Management,,,,,,,,,,,,,,,,,,1.0,contact,True
 vertical_name_GEDI_DT,,,,,,,,,,,,,,,,,,1.0,contact,True
@@ -153,7 +153,7 @@ hs_latest_source_OFFLINE,153.0,0.0,0.0,57237.0,float64,2.0,0,0.001100687,0.03315
 hs_latest_source_ORGANIC_SEARCH,154.0,0.0,0.0,57237.0,float64,2.0,0,0.004647344,0.068013429,0,1,numerical,-2.01368055,0.044047754,No,,,1.0,interaction ,True
 hs_latest_source_OTHER_CAMPAIGNS,155.0,0.0,0.0,57237.0,float64,2.0,0,0.00431539,0.065550308,0,1,numerical,2.605693267,0.009171226,No,,,1.0,interaction ,True
 hs_latest_source_PAID_SEARCH,156.0,0.0,0.0,57237.0,float64,2.0,0,0.001030802,0.03208983,0,1,numerical,1.442914998,0.14904989,Yes,,,1.0,interaction ,True
-hs_latest_source_PAID_SOCIAL,157.0,0.0,0.0,57237.0,float64,2.0,0,0.051784685,0.221593973,0,1,numerical,9.464424812,3.060000000000001e-21,No,,,1.0,interaction ,True
+hs_latest_source_PAID_SOCIAL,157.0,0.0,0.0,57237.0,float64,2.0,0,0.051784685,0.221593973,0,1,numerical,9.464424812,3.0600000000000007e-21,No,,,1.0,interaction ,True
 hs_latest_source_REFERRALS,158.0,0.0,0.0,57237.0,float64,2.0,0,0.000663906,0.025758048,0,1,numerical,-4.211374363,2.54e-05,No,,,1.0,interaction ,True
 hs_latest_source_SOCIAL_MEDIA,159.0,0.0,0.0,57237.0,float64,2.0,0,0.003599071,0.059884722,0,1,numerical,2.314853385,0.020624477,No,,,1.0,interaction ,True
 deal_cooking_state_1,160.0,0.0,0.0,57237.0,float64,2.0,0,0.002253787,0.047420951,0,1,numerical,1.162850293,0.244895096,Yes,,,2.0,interaction ,True
@@ -373,33 +373,33 @@ location_vaud_italy,,,,,,,,,,,,,,,,,,3.0,contact,True
 location_veneto_italy,290.0,0.0,0.0,57237.0,float64,2.0,0,0.000314482,0.017731003,0,1,numerical,-14.82944425,1.17e-49,No,,,3.0,contact,True
 location_veneto_japan,,,,,,,,,,,,,,,,,,3.0,contact,True
 reason_to_buy_short_Language,291.0,0.0,0.0,57237.0,int64,2.0,0,0.000244597,0.015637822,0,1,numerical,-9.621748875,6.72e-22,No,,,3.0,contact,True
-reason_to_buy_short_Flexibility,295.0,0.0,0.0,57237.0,int64,2.0,0,0.002131488,0.046119218,0,1,numerical,-26.06190156,7.33e-149,No,,,3.0,contact,True
-reason_to_buy_short_Post_course_Support,,,,,,,,,,,,,,,,,,3.0,contact,True
-reason_to_buy_short_Environment,297.0,0.0,0.0,57237.0,int64,2.0,0,0.001519996,0.038957823,0,1,numerical,-17.22267903,2.64e-66,No,,,3.0,contact,True
-reason_to_buy_short_Learning_Methodology,,,,,,,,,,,,,,,,,,3.0,contact,True
-reason_to_buy_short_Price,302.0,0.0,0.0,57237.0,int64,2.0,0,0.000908503,0.030127956,0,1,numerical,-17.04785631,5.25e-65,No,,,3.0,contact,True
-reason_to_buy_short_Other,293.0,0.0,0.0,57237.0,int64,2.0,0,0.000454252,0.021308524,0,1,numerical,-13.12271274,2.78e-39,No,,,3.0,contact,True
-reason_to_buy_short_Class_Size,,,,,,,,,,,,,,,,,,3.0,contact,True
-reason_to_buy_short_Career_Opportunities,,,,,,,,,,,,,,,,,,3.0,contact,True
-reason_to_buy_short_Location,292.0,0.0,0.0,57237.0,int64,2.0,0,0.000349424,0.018689792,0,1,numerical,-11.50478223,1.35e-30,No,,,3.0,contact,True
 reason_to_buy_short_Professors,300.0,0.0,0.0,57237.0,int64,2.0,0,0.001712179,0.041343409,0,1,numerical,-21.07658905,3.09e-98,No,,,3.0,contact,True
-reason_to_buy_short_Community,301.0,0.0,0.0,57237.0,int64,2.0,0,0.002358614,0.048508682,0,1,numerical,-25.03312391,1.4699999999999999e-137,No,,,3.0,contact,True
+reason_to_buy_short_Class_Size,,,,,,,,,,,,,,,,,,3.0,contact,True
+reason_to_buy_short_Flexibility,295.0,0.0,0.0,57237.0,int64,2.0,0,0.002131488,0.046119218,0,1,numerical,-26.06190156,7.33e-149,No,,,3.0,contact,True
+reason_to_buy_short_Career_Opportunities,,,,,,,,,,,,,,,,,,3.0,contact,True
+reason_to_buy_short_Learning_Methodology,,,,,,,,,,,,,,,,,,3.0,contact,True
+reason_to_buy_short_Environment,297.0,0.0,0.0,57237.0,int64,2.0,0,0.001519996,0.038957823,0,1,numerical,-17.22267903,2.64e-66,No,,,3.0,contact,True
+reason_to_buy_short_Other,293.0,0.0,0.0,57237.0,int64,2.0,0,0.000454252,0.021308524,0,1,numerical,-13.12271274,2.78e-39,No,,,3.0,contact,True
+reason_to_buy_short_Post_course_Support,,,,,,,,,,,,,,,,,,3.0,contact,True
+reason_to_buy_short_Price,302.0,0.0,0.0,57237.0,int64,2.0,0,0.000908503,0.030127956,0,1,numerical,-17.04785631,5.25e-65,No,,,3.0,contact,True
+reason_to_buy_short_Community,301.0,0.0,0.0,57237.0,int64,2.0,0,0.002358614,0.048508682,0,1,numerical,-25.03312391,1.47e-137,No,,,3.0,contact,True
+reason_to_buy_short_Location,292.0,0.0,0.0,57237.0,int64,2.0,0,0.000349424,0.018689792,0,1,numerical,-11.50478223,1.35e-30,No,,,3.0,contact,True
+candidate_s_needs_Change_within_the_same_professional_field,,,,,,,,,,,,,,,,,,2.0,contact,True
 candidate_s_needs_Basics_of_career_development,,,,,,,,,,,,,,,,,,2.0,contact,True
 candidate_s_needs_Skill_structuring,,,,,,,,,,,,,,,,,,2.0,contact,True
-candidate_s_needs_Networking,306.0,0.0,0.0,57237.0,int64,2.0,0,0.008263885,0.090530308,0,1,numerical,-18.87006458,3.5e-79,No,,,2.0,contact,True
 candidate_s_needs_Other,303.0,0.0,0.0,57237.0,int64,2.0,0,0.000244597,0.015637822,0,1,numerical,-0.771211929,0.440584508,Yes,,,2.0,contact,True
-candidate_s_needs_Acquisition_of_new_skills,,,,,,,,,,,,,,,,,,2.0,contact,True
 candidate_s_needs_Change_of_professional_field,,,,,,,,,,,,,,,,,,2.0,contact,True
-candidate_s_needs_Change_within_the_same_professional_field,,,,,,,,,,,,,,,,,,2.0,contact,True
-source_of_awareness_playbook_instagram,314.0,0.0,0.0,57237.0,int64,2.0,0,0.01637053,0.126896874,0,1,numerical,-18.04851092,1.29e-72,No,,,2.0,interaction ,True
-source_of_awareness_playbook_facebook,311.0,0.0,0.0,57237.0,int64,2.0,0,0.003668955,0.060461211,0,1,numerical,-6.043415681,1.52e-09,No,,,2.0,interaction ,True
+candidate_s_needs_Acquisition_of_new_skills,,,,,,,,,,,,,,,,,,2.0,contact,True
+candidate_s_needs_Networking,306.0,0.0,0.0,57237.0,int64,2.0,0,0.008263885,0.090530308,0,1,numerical,-18.87006458,3.5e-79,No,,,2.0,contact,True
+source_of_awareness_playbook_others,313.0,0.0,0.0,57237.0,int64,2.0,0,0.001886891,0.043397741,0,1,numerical,-6.546447842,5.94e-11,No,,,2.0,interaction ,True
 source_of_awareness_playbook_google,315.0,0.0,0.0,57237.0,int64,2.0,0,0.009993536,0.099467772,0,1,numerical,-18.94814948,8.04e-80,No,,,2.0,interaction ,True
 source_of_awareness_playbook_event,312.0,0.0,0.0,57237.0,int64,2.0,0,0.000821147,0.028644148,0,1,numerical,-7.566640879,3.89e-14,No,,,2.0,interaction ,True
 source_of_awareness_playbook_word_of_mouth,310.0,0.0,0.0,57237.0,int64,2.0,0,0.009574226,0.097379291,0,1,numerical,-23.62530654,8.23e-123,No,,,2.0,interaction ,True
-source_of_awareness_playbook_linkedin,316.0,0.0,0.0,57237.0,int64,2.0,0,0.004193092,0.06461875,0,1,numerical,-10.29119054,8.12e-25,No,,,2.0,interaction ,True
-source_of_awareness_playbook_external_partners,317.0,0.0,0.0,57237.0,int64,2.0,0,0.0011531,0.033938043,0,1,numerical,-5.2659832,1.4e-07,No,,,2.0,interaction ,True
-source_of_awareness_playbook_others,313.0,0.0,0.0,57237.0,int64,2.0,0,0.001886891,0.043397741,0,1,numerical,-6.546447842,5.94e-11,No,,,2.0,interaction ,True
 source_of_awareness_playbook_tiktok,318.0,0.0,0.0,57237.0,int64,2.0,0,6.99e-05,0.008359498,0,1,numerical,-2.381579027,0.01724184,No,,,2.0,interaction ,True
+source_of_awareness_playbook_facebook,311.0,0.0,0.0,57237.0,int64,2.0,0,0.003668955,0.060461211,0,1,numerical,-6.043415681,1.52e-09,No,,,2.0,interaction ,True
+source_of_awareness_playbook_linkedin,316.0,0.0,0.0,57237.0,int64,2.0,0,0.004193092,0.06461875,0,1,numerical,-10.29119054,8.12e-25,No,,,2.0,interaction ,True
+source_of_awareness_playbook_instagram,314.0,0.0,0.0,57237.0,int64,2.0,0,0.01637053,0.126896874,0,1,numerical,-18.04851092,1.29e-72,No,,,2.0,interaction ,True
+source_of_awareness_playbook_external_partners,317.0,0.0,0.0,57237.0,int64,2.0,0,0.0011531,0.033938043,0,1,numerical,-5.2659832,1.4e-07,No,,,2.0,interaction ,True
 time_since_hs_email_last_open_date,319.0,52415.0,0.92,4822.0,float64,6.0,0,0.886146827,1.593162025,0,5,numerical,,,No,,,,interaction ,False
 time_since_hs_email_last_click_date,320.0,53991.0,0.94,3246.0,float64,6.0,0,1.422057917,1.745942305,0,5,numerical,,,No,,,,interaction ,False
 time_since_hs_sales_email_last_replied,321.0,56377.0,0.98,860.0,float64,6.0,0,1.147674419,1.470804484,0,5,numerical,,,No,,,,interaction ,False
@@ -528,9 +528,9 @@ reason_to_buy_short_Career Opportunities,294.0,0.0,0.0,57237.0,int64,2.0,0,0.003
 reason_to_buy_short_Learning Methodology,296.0,0.0,0.0,57237.0,int64,2.0,0,0.00214896,0.04630744,0,1,numerical,-24.4195085,4.99e-131,No,,,3.0,contact,True
 reason_to_buy_short_Post-course Support,298.0,0.0,0.0,57237.0,int64,2.0,0,0.00143264,0.037823435,0,1,numerical,-18.46122009,7.04e-76,No,,,3.0,contact,True
 reason_to_buy_short_Class Size,299.0,0.0,0.0,57237.0,int64,2.0,0,0.000454252,0.021308524,0,1,numerical,-13.12271274,2.78e-39,No,,,3.0,contact,True
-candidate_s_needs_Acquisition of new skills,304.0,0.0,0.0,57237.0,int64,2.0,0,0.033649562,0.180327029,0,1,numerical,-33.60978746,2.990000000000001e-245,No,,,2.0,contact,True
+candidate_s_needs_Acquisition of new skills,304.0,0.0,0.0,57237.0,int64,2.0,0,0.033649562,0.180327029,0,1,numerical,-33.60978746,2.9900000000000007e-245,No,,,2.0,contact,True
 candidate_s_needs_Change of professional field,305.0,0.0,0.0,57237.0,int64,2.0,0,0.008543425,0.092035768,0,1,numerical,-11.62003456,3.5300000000000003e-31,No,,,2.0,contact,True
-candidate_s_needs_Change within the same professional field,307.0,0.0,0.0,57237.0,int64,2.0,0,0.003005049,0.054736379,0,1,numerical,-10.17474952,2.6999999999999997e-24,No,,,2.0,contact,True
+candidate_s_needs_Change within the same professional field,307.0,0.0,0.0,57237.0,int64,2.0,0,0.003005049,0.054736379,0,1,numerical,-10.17474952,2.7e-24,No,,,2.0,contact,True
 candidate_s_needs_Skill structuring,308.0,0.0,0.0,57237.0,int64,2.0,0,0.022048675,0.146843139,0,1,numerical,-31.02394861,1.41e-209,No,,,2.0,contact,True
 candidate_s_needs_Basics of career development,309.0,0.0,0.0,57237.0,int64,2.0,0,0.009539284,0.097203144,0,1,numerical,-13.87182686,1.1e-43,No,,,2.0,contact,True
 dealstage,38.0,0.0,0.0,57237.0,object,7.0,Closed Lost,,,,,categorical,,,,,,,,False

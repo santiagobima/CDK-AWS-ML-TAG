@@ -51,7 +51,7 @@ def read_data(env, pickle=False, target=True):
 
 def save_data_to_output(data: pd.DataFrame):
     IN_SAGEMAKER = os.path.exists("/opt/ml/processing/input")
-    output_dir = "/opt/ml/processing/output" if IN_SAGEMAKER else "./pickles"
+    output_dir = "/opt/ml/processing/retrieve" if IN_SAGEMAKER else "./pickles"
 
     try:
         if not os.path.exists(output_dir):

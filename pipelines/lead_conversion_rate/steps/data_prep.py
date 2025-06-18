@@ -87,8 +87,11 @@ def main(input_path, output_path):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input_path", type=str, required=True, help="Ruta al archivo de entrada .pkl")
-    parser.add_argument("--output_path", type=str, required=True, help="Ruta donde guardar el archivo procesado")
+    default_input = "/opt/ml/processing/retrieve/test_output.pkl" if os.path.exists("/opt/ml/processing/input") else "pickles/test_output.pkl"
+    default_output = "/opt/ml/processing/output/data_processed.pkl" if os.path.exists("/opt/ml/processing/input") else "pickles/data_processed.pkl"
+
+    parser.add_argument("--input_path", type=str, default=default_input)
+    parser.add_argument("--output_path", type=str, default=default_output)
 
     args = parser.parse_args()
     main(args.input_path, args.output_path)
