@@ -75,7 +75,7 @@ class LeadConversionFactory(SagemakerPipelineFactory):
             ],
             code="pipelines/lead_conversion_rate/steps/data_prep.py",
             job_arguments=[
-                "--input_path", "/opt/ml/processing/retrieve/test_output.pkl",
+                "--input_path", "/opt/ml/processing/retrieve/train.pkl",
                 "--output_path", "/opt/ml/processing/output/data_processed.pkl"
             ]
         )

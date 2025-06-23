@@ -51,14 +51,14 @@ def read_data(env, pickle=False, target=True):
 
 def save_data_to_output(data: pd.DataFrame):
     IN_SAGEMAKER = os.path.exists("/opt/ml/processing/input")
-    output_dir = "/opt/ml/processing/retrieve" if IN_SAGEMAKER else "./pickles"
+    output_dir = "/opt/ml/processing/retrieve" if IN_SAGEMAKER else "pipelines/lead_conversion_rate/model/pickles"
 
     try:
         if not os.path.exists(output_dir):
             logger.warning(f"📁 El directorio '{output_dir}' no existe. Se crea...")
             os.makedirs(output_dir, exist_ok=True)
 
-        pickle_path = os.path.join(output_dir, "test_output.pkl")
+        pickle_path = os.path.join(output_dir, "train.pkl")
         logger.info(f"💾 Guardando Pickle en: {pickle_path}")
         data.to_pickle(pickle_path)
         logger.info(f"✅ Pickle guardado correctamente en: {pickle_path}")

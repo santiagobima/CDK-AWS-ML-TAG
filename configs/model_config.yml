@@ -2,19 +2,19 @@ Read:
   stage: 'prod'
   data_source:
     local: True
-    training_data_path: './pickles/train.pkl'
-    predict_data_path: './pickles/X_test.pkl'
-    transformed_training_data_path: './pickles/baseline_features_raw.pkl'
-    transformed_predict_data_path: './pickles/transformed_X_test.pkl'
+    training_data_path: 'pipelines/lead_conversion_rate/model/pickles/train.pkl'
+    predict_data_path: 'pipelines/lead_conversion_rate/model/pickles/X_test.pkl'
+    transformed_training_data_path: 'pipelines/lead_conversion_rate/model/pickles/baseline_features_raw.pkl'
+    transformed_predict_data_path: 'pipelines/lead_conversion_rate/model/pickles/transformed_X_test.pkl'
 
 Model:
   name: 'Model'
   classifier: 'LGBMClassifier' # 'XGBClassifier' # LGBMClassifier
   random_state: 42
   test_split: 0.2
-  save_model_path: './pickles/models/'
-  save_features_path: './pickles/features/'
-  save_model_results: './results/'
+  save_model_path: 'pipelines/lead_conversion_rate/model/pickles/models/'
+  save_features_path: 'pipelines/lead_conversion_rate/model/pickles/features/'
+  save_model_results: 'pipelines/lead_conversion_rate/model/results/'
   Sampling:
     apply: False
     sampling_strategy: 'RandomUnderSampler'
@@ -62,7 +62,7 @@ Training:
 
 Utls:
   get_stage_features:
-    summary_file: './summaries/baseline.csv'
+    summary_file: 'pipelines/lead_conversion_rate/model/summaries/baseline.csv'
     exclude_type: 'datetime64[ns]'
 
 Logger:
