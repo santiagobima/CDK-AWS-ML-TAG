@@ -1,22 +1,20 @@
 import logging
 import os
 import warnings
-
-from scipy.stats import chi2_contingency, ttest_ind, ks_2samp, levene
-
-warnings.filterwarnings('ignore')
-import awswrangler as wr
-import boto3
 import re
 import base64
 import json
 import yaml
-from data_prep.lists import onehot_columns, multiple_categories
-
 import pandas as pd
+import awswrangler as wr
+import boto3
+
+from scipy.stats import chi2_contingency, ttest_ind, ks_2samp, levene
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score
-from utls.evaluation import Evaluation
+from pipelines.lead_conversion_rate.common.constants import ONEHOT_COLUMNS as onehot_columns, MULTIPLE_CATEGORIES as multiple_categories
+
+from pipelines.lead_conversion_rate.model.utls.evaluation import Evaluation
 
 
 def load_config(config_file='configs/model_config.yml'):

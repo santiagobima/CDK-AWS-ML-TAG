@@ -1,22 +1,19 @@
+# Core
 import warnings
-
-import shap
-from sklearn.model_selection import GridSearchCV, RandomizedSearchCV, StratifiedKFold
-
 import numpy as np
-
-warnings.filterwarnings('ignore')
 import pandas as pd
+from collections import Counter
+import shap
+
+# Sklearn
+from sklearn.model_selection import GridSearchCV, RandomizedSearchCV, StratifiedKFold, train_test_split
 from imblearn.pipeline import Pipeline
 from imblearn.ensemble import BalancedBaggingClassifier
-from collections import Counter
-from sklearn.model_selection import train_test_split
 
-from model.model_transformers import AddAnomalyAttribute, Sampling, Classifier
-from utls.utls import config, logger
-from utls.evaluation import Evaluation
-from model.utls import get_stage_features, get_categorical_features
-
+# Model internals
+from pipelines.lead_conversion_rate.model.model_transformers import AddAnomalyAttribute, Sampling, Classifier
+from pipelines.lead_conversion_rate.model.utls.utls import config, logger, get_stage_features, get_categorical_features
+from pipelines.lead_conversion_rate.model.utls.evaluation import Evaluation
 
 class Model:
     """

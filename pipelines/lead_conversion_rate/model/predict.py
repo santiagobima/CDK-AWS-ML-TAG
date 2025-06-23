@@ -1,10 +1,14 @@
 import pandas as pd
 
-from data_io.features import read_data, save_data
-from data_prep.preprocess import preprocessing_pipeline
+#from data_io.features import read_data, save_data
+from pipelines.lead_conversion_rate.steps.data_read import read_data
+#from data_prep.preprocess import preprocessing_pipeline
+from pipelines.lead_conversion_rate.steps.data_prep import preprocessing_pipeline
 from model.model import Model
 from model.utls import load_model, save_models, save_features, write_prediction, load_features
-from utls.utls import config, logger
+from pipelines.lead_conversion_rate.model.utls.utls import config, logger
+import os
+import sys
 
 
 def predict(stage, data=None, transform=True):
@@ -64,11 +68,24 @@ def fit():
     and saves the selected features.
     """
     # Read transformed old data
-    data = read_data(local_source=config['Read']['data_source'].get('local'),
-                     data_path=config['Read']['data_source'].get(
-                         'training_data_path'))
+    #data = read_data(local_source=config['Read']['data_source'].get('local'),
+    #                 data_path=config['Read']['data_source'].get(
+     #                    'training_data_path'))
 
-    transformed_data = preprocessing_pipeline().fit_transform(data)
+    #transformed_data = preprocessing_pipeline().fit_transform(data)
+    
+    IN_SAGEMAKER = os.path.exists('/opt/ml/processing/input')
+    processed_data_path = "/opt/ml/processing/input/data_processed.pkl" if IN_SAGEMAKER else "pipelines/lead_conversion_rate/model/pickles/data_processed.pkl"
+    
+    if not os.path.exists (processed_data_path):
+        logger.error(f'File not found: {processed_data_path}')
+        sys.exit(1)
+
+    logger.info(f'Cargando datos procesades desde {processed_data_path}')
+    
+    transformed_data = pd.read_pickle(processed_data_path)        
+    
+    
 
     # Initialize model and fit
     model = Model()

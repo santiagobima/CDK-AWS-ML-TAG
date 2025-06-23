@@ -11,7 +11,7 @@ from sklearn.metrics import recall_score, precision_score, accuracy_score, f1_sc
     classification_report, roc_auc_score
 from xgboost import plot_importance
 
-from data_prep.lists import onehot_columns, multiple_categories
+from pipelines.lead_conversion_rate.common.constants import ONEHOT_COLUMNS as onehot_columns, MULTIPLE_CATEGORIES as multiple_categories
 
 
 class Evaluation:
