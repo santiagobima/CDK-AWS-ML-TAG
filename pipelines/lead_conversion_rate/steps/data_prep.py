@@ -1,6 +1,8 @@
 import os
 import sys
 import subprocess
+import pandas as pd
+import numpy as np
 
 # Instalación del paquete en ejecución dentro de SageMaker
 if os.path.exists("/opt/ml/processing/source_code"):
@@ -76,6 +78,11 @@ def main(input_path, output_path):
     logger.info("⚙️ Aplicando pipeline de preprocesamiento...")
     processed_df = preprocessing_pipeline(prediction=False).fit_transform(baseline_df)
 
+    if isinstance(processed_df, np.ndarray):
+        processed_df = pd.DataFrame(processed_df)
+
+    
+
     output_dir = os.path.dirname(output_path)
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
@@ -87,8 +94,8 @@ def main(input_path, output_path):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    default_input = "/opt/ml/processing/retrieve/test_output.pkl" if os.path.exists("/opt/ml/processing/input") else "pipelines/lead_conversion_rate/model/pickles/train.pkl"
-    default_output = "/opt/ml/processing/output/train.pkl" if os.path.exists("/opt/ml/processing/input") else "pipelines/lead_conversion_rate/model/pickles/data_processed.pkl"
+    default_input = "/opt/ml/processing/retrieve/train.pkl" if os.path.exists("/opt/ml/processing/input") else "pipelines/lead_conversion_rate/model/pickles/train.pkl"
+    default_output = "/opt/ml/processing/output/baseline_features_raw" if os.path.exists("/opt/ml/processing/input") else "pipelines/lead_conversion_rate/model/pickles/baseline_features_raw"
 
     parser.add_argument("--input_path", type=str, default=default_input)
     parser.add_argument("--output_path", type=str, default=default_output)
