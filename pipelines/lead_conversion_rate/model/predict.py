@@ -77,7 +77,7 @@ def fit():
     #transformed_data = preprocessing_pipeline().fit_transform(data)
     
     IN_SAGEMAKER = os.path.exists('/opt/ml/processing/input')
-    processed_data_path = "/opt/ml/processing/input/data_processed.pkl" if IN_SAGEMAKER else "pipelines/lead_conversion_rate/model/pickles/data_processed.pkl"
+    processed_data_path = "/opt/ml/processing/input/baseline_features_raw.pkl" if IN_SAGEMAKER else "pipelines/lead_conversion_rate/model/pickles/baseline_features_raw.pkl"
     
     if not os.path.exists (processed_data_path):
         logger.error(f'File not found: {processed_data_path}')
