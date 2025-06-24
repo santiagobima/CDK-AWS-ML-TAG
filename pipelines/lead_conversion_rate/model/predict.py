@@ -4,8 +4,10 @@ import pandas as pd
 from pipelines.lead_conversion_rate.steps.data_read import read_data
 #from data_prep.preprocess import preprocessing_pipeline
 from pipelines.lead_conversion_rate.steps.data_prep import preprocessing_pipeline
-from model.model import Model
-from model.utls import load_model, save_models, save_features, write_prediction, load_features
+from pipelines.lead_conversion_rate.model.model import Model
+from pipelines.lead_conversion_rate.model.utilities import load_model, save_models, save_features, write_prediction, load_features
+
+
 from pipelines.lead_conversion_rate.model.utls.utls import config, logger
 import os
 import sys

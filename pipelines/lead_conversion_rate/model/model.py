@@ -12,7 +12,8 @@ from imblearn.ensemble import BalancedBaggingClassifier
 
 # Model internals
 from pipelines.lead_conversion_rate.model.model_transformers import AddAnomalyAttribute, Sampling, Classifier
-from pipelines.lead_conversion_rate.model.utls.utls import config, logger, get_stage_features, get_categorical_features
+from pipelines.lead_conversion_rate.model.utls.utls import config, logger
+from pipelines.lead_conversion_rate.model.utilities import get_stage_features, get_categorical_features
 from pipelines.lead_conversion_rate.model.utls.evaluation import Evaluation
 
 class Model:
