@@ -42,8 +42,8 @@ def read_data(env, pickle=True, target=True):
     else:
         baseline_df['target'] = -1
 
-    if pickle:
-        baseline_df.to_pickle("./pickles/baseline_features_raw.pkl")
+    #if pickle:
+    #    baseline_df.to_pickle("./pickles/baseline_features_raw.pkl")
 
     return baseline_df
 

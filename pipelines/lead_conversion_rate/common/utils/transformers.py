@@ -317,6 +317,7 @@ class FeatureNamesSanitizerTransformer(BaseEstimator, TransformerMixin):
 class PreprocessSummary(BaseEstimator, TransformerMixin):
     def __init__(self):
         summaries_path = "/opt/ml/processing/summaries" if os.path.exists("/opt/ml/processing/summaries") else "./summaries"
+        os.makedirs(summaries_path, exist_ok=True)
         self.processor = SummaryProcessor(
             baseline_file_path=os.path.join(summaries_path, "baseline.csv"),
             backup_file_path=os.path.join(summaries_path, "baseline_backup.csv")
