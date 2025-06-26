@@ -10,6 +10,7 @@ setup(
         "pycountry",
         "awswrangler>=3.4.0,<4.0.0",
         "numpy>=1.22.0,<2.0.0",
-        "pandas>=2.2.0,<2.3.0"
+        "pandas>=2.2.0,<2.3.0",
+        "imbalanced-learn>=0.11.0"
     ],
 )

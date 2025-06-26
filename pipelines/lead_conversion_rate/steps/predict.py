@@ -1,13 +1,22 @@
-import pandas as pd
-#from data_io.features import read_data, save_data
-from pipelines.lead_conversion_rate.steps.data_read import read_data
-#from data_prep.preprocess import preprocessing_pipeline
-from pipelines.lead_conversion_rate.steps.data_prep import preprocessing_pipeline
-from pipelines.lead_conversion_rate.model.model import Model
-from pipelines.lead_conversion_rate.model.utilities import load_model, save_models, save_features, write_prediction, load_features
-from pipelines.lead_conversion_rate.model.utls.utls import config, logger
 import os
 import sys
+import subprocess
+import pandas as pd
+
+if os.path.exists("/opt/ml/processing/source_code"):
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "/opt/ml/processing/source_code"])
+    sys.path.insert(0, "/opt/ml/processing/source_code")
+
+
+from pipelines.lead_conversion_rate.steps.data_read import read_data
+from pipelines.lead_conversion_rate.steps.data_prep import preprocessing_pipeline
+from pipelines.lead_conversion_rate.model.model import Model
+from pipelines.lead_conversion_rate.model.utilities import (
+    load_model, save_models, save_features, write_prediction, load_features
+)
+from pipelines.lead_conversion_rate.model.utls.utls import config, logger
+
+
 
 
 def predict(stage, data=None, transform=True):
