@@ -23,3 +23,6 @@ cdk.out/
 cdk.context.json
 .idea
 awsenv/
+
+pickles/
+*.pkl

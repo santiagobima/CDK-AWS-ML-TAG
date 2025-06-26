@@ -1,0 +1,69 @@
+Read:
+  stage: 'prod'
+  data_source:
+    local: True
+    training_data_path: 'pipelines/lead_conversion_rate/model/pickles/train.pkl'
+    predict_data_path: 'pipelines/lead_conversion_rate/model/pickles/X_test.pkl'
+    transformed_training_data_path: 'pipelines/lead_conversion_rate/model/pickles/baseline_features_raw.pkl'
+    transformed_predict_data_path: 'pipelines/lead_conversion_rate/model/pickles/transformed_X_test.pkl'
+
+Model:
+  name: 'Model'
+  classifier: 'LGBMClassifier' # 'XGBClassifier' # LGBMClassifier
+  random_state: 42
+  test_split: 0.2
+  save_model_path: 'pipelines/lead_conversion_rate/model/pickles/models/'
+  save_features_path: 'pipelines/lead_conversion_rate/model/pickles/features/'
+  save_model_results: 'pipelines/lead_conversion_rate/model/results/'
+  Sampling:
+    apply: False
+    sampling_strategy: 'RandomUnderSampler'
+
+  Balanced_bagging:
+    apply: False
+    n_estimators: 40
+    warm_start: true
+    sampling_strategy: 'not majority'
+
+  Anomaly_attribute:
+    apply: False
+    lofActivation: 'tanh'
+    n_neighbors: 10
+    novelty: True
+
+Training:
+  stages: [ 'init_stage', 'mid_stage', 'final_stage' ]
+  parameter_tuning: True
+  feature_selection: True
+  recursive_feature_elimination:
+    threshold: 0.05 # if 0.0 get features with the highest score otherwise percentage of accepted decrease of score
+    metric: 'F1-score'
+    step: 0.1 # Number of lowest importance features removed each round. If it is an int, then each round such a number of features are discarded. If float, such a percentage of remaining features is removed each iteratio
+    min_features_to_select: 20
+  grid_search:
+    search: 'Randomized' # or Grid
+    folds: 3
+    kfolds_shuffle: True
+    num_iterations: 5
+    scoring: 'f1_micro'
+    params:
+      XGBClassifier:
+        model__scale_pos_weight: [ 0.1, 0.15, 0.3, 0.5, 1 ]
+        model__min_child_weight: [ 1, 5, 10 ]
+        model__gamma: [ 0.5, 1, 1.5, 2, 5 ]
+        model__subsample: [ 0.6, 0.8, 1.0 ]
+        model__colsample_bytree: [ 0.6, 0.8, 1.0 ]
+        model__max_depth: [ 3, 4, 5 ]
+      LGBMClassifier:
+        model__num_leaves: [ 64 ]
+        model__n_estimators: [ 10, 1000 ]
+        model__max_depth: [ 3 ]
+
+
+Utls:
+  get_stage_features:
+    summary_file: 'pipelines/lead_conversion_rate/model/summaries/baseline.csv'
+    exclude_type: 'datetime64[ns]'
+
+Logger:
+  level: 'INFO'

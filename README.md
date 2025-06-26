@@ -150,6 +150,16 @@ In order to exectute the pipeline: python pipelines/executions/trigger_pipeline_
 
 In order to delete: cdk destroy --all --profile sandbox --context env=dev
 
+In order to execute data_ready.py in local : PYTHONPATH=. python pipelines/lead_conversion_rate/steps/data_read.py --environment dev
+
+In order to execute data_prep.py en local: 
+
+PYTHONPATH=. python pipelines/lead_conversion_rate/steps/data_prep.py \
+  --input_path pickles/test_output.pkl \
+  --output_path pickles/data_processed.pkl
+
+
+
 
 
 Branch base: main : Funciona todo sin meter nada del proyecto de George. Es la base del proyecto funciona.

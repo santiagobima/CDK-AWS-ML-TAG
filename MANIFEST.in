@@ -1,0 +1,4 @@
+include requirements.txt
+include setup.py
+recursive-include pipelines *
+recursive-include summaries *
