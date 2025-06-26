@@ -1,10 +1,17 @@
 import json
 import os
-
 import joblib
 import pandas as pd
+from pipelines.lead_conversion_rate.model.utls.utls import config, save_config
+import sys
+import subprocess
 
-from utls.utls import config, save_config
+# Instalación del paquete durante ejecución en SageMaker
+if os.path.exists("/opt/ml/processing/source_code"):
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "/opt/ml/processing/source_code"])
+    sys.path.insert(0, "/opt/ml/processing/source_code")
+
+
 
 
 def get_stage_features(stage, summary_file=None, exclude_type=None, get_categorical=False):

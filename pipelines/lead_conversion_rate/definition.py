@@ -1,6 +1,7 @@
 import os
 import logging
 from sagemaker.processing import ProcessingInput, ProcessingOutput
+from sagemaker.workflow.steps import CacheConfig
 from sagemaker.workflow.pipeline import Pipeline
 from sagemaker.session import Session
 from sagemaker.workflow.parameters import ParameterString
@@ -41,7 +42,8 @@ class LeadConversionFactory(SagemakerPipelineFactory):
                     destination=f"s3://{data_bucket_name}/output-data/simple_step"
                 )
             ],
-            code="pipelines/lead_conversion_rate/steps/simple_step.py"
+            code="pipelines/lead_conversion_rate/steps/simple_step.py",
+            cache_config=CacheConfig(enable_caching=True, expire_after="7d")
         )
 
         retrieve_data_step = ProcessingStep(
@@ -55,7 +57,8 @@ class LeadConversionFactory(SagemakerPipelineFactory):
                 )
             ],
             code="pipelines/lead_conversion_rate/steps/data_read.py",
-            job_arguments=["--environment", os.getenv('ENV', 'dev')]
+            job_arguments=["--environment", os.getenv('ENV', 'dev')],
+            cache_config=CacheConfig(enable_caching=True, expire_after="7d")
         )
 
         prep_data_step = ProcessingStep(
@@ -77,12 +80,45 @@ class LeadConversionFactory(SagemakerPipelineFactory):
             job_arguments=[
                 "--input_path", "/opt/ml/processing/retrieve/train.pkl",
                 "--output_path", "/opt/ml/processing/output/baseline_features_raw.pkl"
-            ]
+            ],
+            cache_config=CacheConfig(enable_caching=True, expire_after="7d")
         )
-
+        
+        predict_step = ProcessingStep(
+            name='PredictStep',
+            processor=processor,
+            inputs=inputs + [
+                ProcessingInput(
+                    source=f"s3://{data_bucket_name}/output-data",
+                    destination="/opt/ml/processing/predict_input_data"
+                ),
+                ProcessingInput(
+                    source=f"s3://{data_bucket_name}/configs/model_config.yml",
+                    destination="/opt/ml/processing/configs"
+                )
+            ],
+            outputs=[
+                ProcessingOutput(  # modelos entrenados
+                    source="/opt/ml/processing/source_code/pipelines/lead_conversion_rate/model/pickles/models",
+                    destination=f"s3://{data_bucket_name}/output-data/predict/models"
+                ),
+                ProcessingOutput(  # features seleccionadas
+                    source="/opt/ml/processing/source_code/pipelines/lead_conversion_rate/model/pickles/features",
+                    destination=f"s3://{data_bucket_name}/output-data/predict/features"
+                ),
+                ProcessingOutput(  # métricas y resultados
+                    source="/opt/ml/processing/source_code/pipelines/lead_conversion_rate/model/results",
+                    destination=f"s3://{data_bucket_name}/output-data/predict/results"
+                )
+            ],
+            code="pipelines/lead_conversion_rate/steps/predict.py",
+            cache_config=CacheConfig(enable_caching=True, expire_after="7d")
+        )
+            
         retrieve_data_step.add_depends_on([data_prep_step])
         prep_data_step.add_depends_on([retrieve_data_step])
-        steps = [data_prep_step, retrieve_data_step, prep_data_step]
+        predict_step.add_depends_on([prep_data_step])
+        steps = [data_prep_step, retrieve_data_step, prep_data_step, predict_step]
 
         logger.info(f"Pipeline '{pipeline_name}' configurado con {len(steps)} paso(s).")
         return Pipeline(name=pipeline_name, steps=steps, sagemaker_session=sm_session)

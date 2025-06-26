@@ -1,13 +1,10 @@
 import pandas as pd
-
 #from data_io.features import read_data, save_data
 from pipelines.lead_conversion_rate.steps.data_read import read_data
 #from data_prep.preprocess import preprocessing_pipeline
 from pipelines.lead_conversion_rate.steps.data_prep import preprocessing_pipeline
 from pipelines.lead_conversion_rate.model.model import Model
 from pipelines.lead_conversion_rate.model.utilities import load_model, save_models, save_features, write_prediction, load_features
-
-
 from pipelines.lead_conversion_rate.model.utls.utls import config, logger
 import os
 import sys
@@ -77,7 +74,7 @@ def fit():
     #transformed_data = preprocessing_pipeline().fit_transform(data)
     
     IN_SAGEMAKER = os.path.exists('/opt/ml/processing/input')
-    processed_data_path = "/opt/ml/processing/input/baseline_features_raw.pkl" if IN_SAGEMAKER else "pipelines/lead_conversion_rate/model/pickles/baseline_features_raw.pkl"
+    processed_data_path = "/opt/ml/processing/predict_input_data/baseline_features_raw.pkl" if IN_SAGEMAKER else "pipelines/lead_conversion_rate/model/pickles/baseline_features_raw.pkl"
     
     if not os.path.exists (processed_data_path):
         logger.error(f'File not found: {processed_data_path}')
