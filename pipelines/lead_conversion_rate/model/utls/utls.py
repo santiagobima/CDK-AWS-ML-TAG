@@ -8,6 +8,7 @@ import yaml
 import pandas as pd
 import awswrangler as wr
 import boto3
+from pathlib import Path
 
 from scipy.stats import chi2_contingency, ttest_ind, ks_2samp, levene
 from sklearn.linear_model import LogisticRegression
@@ -16,15 +17,23 @@ from pipelines.lead_conversion_rate.common.constants import ONEHOT_COLUMNS as on
 
 from pipelines.lead_conversion_rate.model.utls.evaluation import Evaluation
 
-def load_config(config_file='configs/model_config.yml'):
-    repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../../'))
-    config_path = os.path.join(repo_root, config_file)
 
-    print("DEBUG CONFIG PATH:", config_path)  
+def load_config():
+ 
 
-    with open(config_path, 'r') as f:
-        config = yaml.safe_load(f)
-    return config
+    IN_SAGEMAKER = os.path.exists('/opt/ml/processing/input')
+    if IN_SAGEMAKER:
+        config_path = Path("/opt/ml/processing/configs/model_config.yml")
+    else:
+        project_root = Path(__file__).resolve().parents[4]  # 🔥 RAÍZ del proyecto
+        config_path = project_root / "configs" / "model_config.yml"
+
+    print(f"DEBUG CONFIG PATH: {config_path}")
+    if not config_path.exists():
+        raise FileNotFoundError(f"❌ Config file not found: {config_path}")
+
+    with open(config_path, "r") as f:
+        return yaml.safe_load(f)
 
 
 def save_config(config, filename):
