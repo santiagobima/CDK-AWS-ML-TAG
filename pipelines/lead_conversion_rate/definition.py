@@ -95,7 +95,14 @@ class LeadConversionFactory(SagemakerPipelineFactory):
                 ProcessingInput(
                     source=f"s3://{data_bucket_name}/configs/model_config.yml",
                     destination="/opt/ml/processing/configs"
+                ),
+                
+                ProcessingInput(
+                    source=f"s3://{data_bucket_name}/code/source_code/pipelines/lead_conversion_rate/model/summaries",
+                    destination="/opt/ml/processing/source_code/pipelines/lead_conversion_rate/model/summaries"
                 )
+
+                
             ],
             outputs=[
                 ProcessingOutput(  # modelos entrenados

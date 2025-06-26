@@ -12,6 +12,15 @@ if os.path.exists("/opt/ml/processing/source_code"):
     sys.path.insert(0, "/opt/ml/processing/source_code")
 
 
+def get_path_from_config(relative_path):
+    """
+    Devuelve el path absoluto válido tanto en local como en SageMaker.
+    """
+    sagemaker_prefix = "/opt/ml/processing/source_code"
+    if os.path.exists(sagemaker_prefix):
+        return os.path.join(sagemaker_prefix, relative_path)
+    return relative_path
+
 
 
 def get_stage_features(stage, summary_file=None, exclude_type=None, get_categorical=False):
