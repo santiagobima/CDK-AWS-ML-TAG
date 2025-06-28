@@ -67,3 +67,12 @@ Utls:
 
 Logger:
   level: 'INFO'
+
+
+Evaluation_Paths:
+  graphs_dir: 'pipelines/lead_conversion_rate/model/summaries/graphs/'
+  graphs_dir_report: 'pipelines/lead_conversion_rate/model/summaries/report31_05/'
+  subset_shap_dir: 'pipelines/lead_conversion_rate/model/summaries/report31_05/subset_shap/'
+  pickles_dir: 'pipelines/lead_conversion_rate/model/pickles/'
+  results_dir: 'pipelines/lead_conversion_rate/model/results/'
+  metrics_dir: 'pipelines/lead_conversion_rate/model/summaries/'

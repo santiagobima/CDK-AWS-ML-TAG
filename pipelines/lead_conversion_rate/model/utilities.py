@@ -12,17 +12,6 @@ if os.path.exists("/opt/ml/processing/source_code"):
     sys.path.insert(0, "/opt/ml/processing/source_code")
 
 
-def get_path_from_config(relative_path):
-    """
-    Devuelve el path absoluto válido tanto en local como en SageMaker.
-    """
-    sagemaker_prefix = "/opt/ml/processing/source_code"
-    if os.path.exists(sagemaker_prefix):
-        return os.path.join(sagemaker_prefix, relative_path)
-    return relative_path
-
-
-
 def get_stage_features(stage, summary_file=None, exclude_type=None, get_categorical=False):
     """
     Extracts features from the summary DataFrame based on the specified stage and type.
@@ -188,11 +177,9 @@ def write_prediction(probabilities, name, stage, locally=True):
         pd.DataFrame: DataFrame containing the saved predictions.
     """
     if locally:
-        results_df = pd.DataFrame(probabilities, columns=["probabilities"])
         filename_path = os.path.join(config['Model'].get('save_model_results'), stage)
         os.makedirs(filename_path, exist_ok=True)
         filename = os.path.join(filename_path, name + ".csv")
-
+        results_df = pd.DataFrame(probabilities, columns=["probabilities"])
         results_df.to_csv(filename, index=False)
-
         return results_df

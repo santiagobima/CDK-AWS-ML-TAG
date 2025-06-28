@@ -6,73 +6,44 @@ import pandas as pd
 import seaborn as sns
 import shap
 from matplotlib import pyplot as plt
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import recall_score, precision_score, accuracy_score, f1_score, \
-    classification_report, roc_auc_score
+from sklearn.metrics import confusion_matrix, recall_score, precision_score, accuracy_score, f1_score, classification_report, roc_auc_score
 from xgboost import plot_importance
 
 from pipelines.lead_conversion_rate.common.constants import ONEHOT_COLUMNS as onehot_columns, MULTIPLE_CATEGORIES as multiple_categories
-
+from pipelines.lead_conversion_rate.model.utls.utls import config  # Ajusta este import si tu loader es distinto
 
 class Evaluation:
     def __init__(self):
-        self.path = 'summaries/graphs'
-        if not os.path.exists(self.path):
-            os.makedirs(self.path)
+        # Paths centralizados por config
+        self.graphs_dir = config['Evaluation_Paths']['graphs_dir']
+        self.graphs_dir_report = config['Evaluation_Paths']['graphs_dir_report']
+        self.subset_shap_dir = config['Evaluation_Paths']['subset_shap_dir']
+        self.pickles_dir = config['Evaluation_Paths']['pickles_dir']
+        self.results_dir = config['Evaluation_Paths']['results_dir']
+        self.metrics_dir = config['Evaluation_Paths']['metrics_dir']
+
+        # Crear carpetas si no existen
+        for d in [self.graphs_dir, self.graphs_dir_report, self.subset_shap_dir, self.results_dir, self.metrics_dir]:
+            os.makedirs(d, exist_ok=True)
 
     def classes_distribution(self, y_pred_proba, y_test, name):
-        """
-        Plot the distribution of predicted probabilities for positive and negative classes.
-
-        Parameters:
-        y_pred_proba (array-like): Predicted probabilities.
-        y_test (array-like): True labels.
-
-        Returns:
-        None
-        """
         y_pred_proba_positive = y_pred_proba[y_test == 1]
         y_pred_proba_negative = y_pred_proba[y_test == 0]
 
         plt.figure(figsize=(10, 6))
-
-        # Plot KDE for y_pred_proba where y_test = 1
         sns.kdeplot(y_pred_proba_positive, shade=True, color='b', label='y_test = 1')
-
-        # Plot KDE for y_pred_proba where y_test = 0
         sns.kdeplot(y_pred_proba_negative, shade=True, color='r', label='y_test = 0')
-
-        # Add labels and legend
         plt.xlabel('Predicted Probabilities')
         plt.ylabel('Density')
         plt.title(f'Density Plot of Predicted Probabilities of {name}')
         plt.grid()
         plt.legend()
-
-        # Show plot
         plt.show()
 
     def prediction_vs_error(self, shap_values, y_test, y_pred, features):
-        """
-        Compute the prediction contribution and error contribution based on SHAP values.
-
-        Args:
-        - shap_values (numpy.ndarray or pandas.DataFrame): SHAP values for each feature.
-        - y_test (pandas.Series or numpy.ndarray): True target values.
-        - y_pred (pandas.Series or numpy.ndarray): Predicted target values.
-
-        Returns:
-        - prediction_contribution (pandas.Series): Mean absolute SHAP values
-        representing prediction contribution.
-        - error_contribution (pandas.Series): Mean absolute difference between true and predicted
-        values representing error contribution.
-        """
         shap_values = pd.DataFrame(data=shap_values)
-
         abs_error = (y_test - y_pred).abs()
-
         prediction_contribution = shap_values.abs().mean()
-
         y_pred_wo_feature = shap_values.apply(lambda feature: y_pred - feature)
         abs_error_wo_feature = y_pred_wo_feature.apply(lambda feature: (y_test - feature).abs())
         error_contribution = abs_error_wo_feature.apply(lambda feature: abs_error - feature).mean()
@@ -80,71 +51,34 @@ class Evaluation:
         plt.figure(figsize=(8, 6))
         plt.scatter(prediction_contribution, error_contribution, color='b', alpha=0.5)
         for i in range(prediction_contribution.shape[0]):
-            plt.annotate(features[i], (prediction_contribution[i], error_contribution[i]),
-                         fontsize=8)
+            plt.annotate(features[i], (prediction_contribution[i], error_contribution[i]), fontsize=8)
         plt.xlabel('Prediction Contribution')
         plt.ylabel('Error Contribution')
         plt.title('Error vs. Prediction Contribution')
         plt.grid(True)
         plt.show()
-
         return prediction_contribution, error_contribution
 
     def evaluate_model(self, model, X_test, y_test, features=None, name=""):
-        """
-        Evaluate a classification model and display evaluation metrics and feature importances.
-
-        Parameters:
-        model: Trained classification model.
-        X_test (DataFrame): Test features.
-        y_test (Series): True labels.
-        features (list): List of feature names.
-        show_features (list): List of features to show in plots.
-        name (str): Name of the model.
-
-        Returns:
-        list: List of evaluation metrics.
-        """
-
-        # Predict classes
         y_pred = model.predict(X_test)
         try:
-
             y_pred_proba = model.predict_proba(X_test)[:, 1]
-            # threshold = 0.80
-            # threshold = 1 - self.calculate_threshold(y_pred_proba, y_test)
-            # y_pred = [0 if prob < threshold else 1 for prob in y_pred_proba]
         except (AttributeError, ValueError):
             print("Unable to run y_pred_proba")
             y_pred = (y_pred > 0).astype(int)
             y_pred_proba = y_pred
 
-        # Calculate evaluation metrics
-
-        # Plot feature importance's
         if features:
-            # X_test = model['anomaly_attribute'].transform_data(X_test)
-            accuracy, precision, recall, f1, roc_auc, \
-                tn, fp, fn, tp, report, explainer, shap_values = (
-                    self.calculate_metrics(model, X_test, y_test,
-                                           y_pred, y_pred_proba, shap_flag=True))
-            # self.classes_distribution(y_pred_proba, y_test, name)
+            accuracy, precision, recall, f1, roc_auc, tn, fp, fn, tp, report, explainer, shap_values = (
+                self.calculate_metrics(model, X_test, y_test, y_pred, y_pred_proba, shap_flag=True)
+            )
             self.plot_summary(shap_values, X_test, title=f'Summary Plot for {name}')
-
-            # prediction_contribution, error_contribution\
-            #   = self.prediction_vs_error(shap_values, y_test, y_pred, features)
-            # self.classes_distribution(y_pred_proba, y_test, name)
-            # self.plot_shap_by_category(model, X_test)
-            # self.export_metrics(features, shap_values, model, name)
-
-            # self.plot_feature_importance(model, features, show_features,name, max_feat=20)
         else:
-            accuracy, precision, recall, f1, roc_auc, tn, \
-                fp, fn, tp, report, explainer, shap_values =\
+            accuracy, precision, recall, f1, roc_auc, tn, fp, fn, tp, report, explainer, shap_values = (
                 self.calculate_metrics(model, X_test, y_test, y_pred, y_pred_proba, shap_flag=False)
+            )
 
         Evaluation.top_bottom_score(y_test, y_pred_proba, top=200, show=True)
-
         metrics = {
             'accuracy': accuracy,
             'precision': precision,
@@ -161,10 +95,8 @@ class Evaluation:
         return metrics
 
     def confision_martix(self, y_test, y_pred):
-
         cm = confusion_matrix(y_test, y_pred)
-        sns.heatmap(cm, annot=True, fmt='.0f', xticklabels=["0", "1"],
-                    yticklabels=["0", "1"])
+        sns.heatmap(cm, annot=True, fmt='.0f', xticklabels=["0", "1"], yticklabels=["0", "1"])
         plt.ylabel('ACTUAL')
         plt.xlabel('PREDICTED')
         plt.show()
@@ -174,14 +106,12 @@ class Evaluation:
             'Feature': features,
             'Mean_SHAP': np.mean(shap_values, axis=0),
             'Abs_Mean_SHAP': np.mean(np.abs(shap_values), axis=0),
-            'Weight': [model.get_booster().get_score(importance_type='weight').get(f, 0) for f
-                       in features],
-            'Gain': [model.get_booster().get_score(importance_type='gain').get(f, 0) for f in
-                     features],
-            'Cover': [model.get_booster().get_score(importance_type='cover').get(f, 0) for f in
-                      features]
+            'Weight': [model.get_booster().get_score(importance_type='weight').get(f, 0) for f in features],
+            'Gain': [model.get_booster().get_score(importance_type='gain').get(f, 0) for f in features],
+            'Cover': [model.get_booster().get_score(importance_type='cover').get(f, 0) for f in features]
         })
-        importance_df.to_csv(f'./summaries/feature_importance_and_shap_{name}.csv', index=False)
+        out_path = os.path.join(self.metrics_dir, f'feature_importance_and_shap_{name}.csv')
+        importance_df.to_csv(out_path, index=False)
         return importance_df
 
     def calculate_metrics(self, model, X_test, y_test, y_pred, y_pred_proba, shap_flag):
@@ -191,8 +121,6 @@ class Evaluation:
         f1 = f1_score(y_test, y_pred)
         roc_auc = roc_auc_score(y_test, y_pred_proba)
         report = classification_report(y_test, y_pred)
-
-        # Compute confusion matrix to extract FP, FN, TP, TN
         tn, fp, fn, tp = confusion_matrix(y_test, y_pred).ravel()
 
         if shap_flag:
@@ -202,20 +130,17 @@ class Evaluation:
             explainer = None
             shap_values = []
 
-        return (accuracy, precision, recall, f1, roc_auc, tn, fp, fn, tp,
-                report, explainer, shap_values)
+        return (accuracy, precision, recall, f1, roc_auc, tn, fp, fn, tp, report, explainer, shap_values)
 
     def calculate_threshold(self, pred_prob, y_test):
         step_factor = 0.05
         threshold_value = 0.2
         roc_score = 0
-        while threshold_value <= 0.8:  # continue to check best threshold upto probability 0.8
+        while threshold_value <= 0.8:
             temp_thresh = threshold_value
-            predicted = (pred_prob >= temp_thresh).astype(
-                'int')  # change the class boundary for prediction
+            predicted = (pred_prob >= temp_thresh).astype('int')
             print('Threshold', temp_thresh, '--', roc_auc_score(y_test, predicted))
-            if roc_score < roc_auc_score(y_test,
-                                         predicted):  # store the threshold for best classification
+            if roc_score < roc_auc_score(y_test, predicted):
                 roc_score = roc_auc_score(y_test, predicted)
                 thrsh_score = threshold_value
             threshold_value = threshold_value + step_factor
@@ -223,144 +148,106 @@ class Evaluation:
         return threshold_value
 
     def plot_summary_subset(self, shap_values, X_test, title):
+        # Guardar los gráficos en graphs_dir_report para mantener orden
         summed_shap_df = pd.DataFrame(shap_values, columns=X_test.columns, index=X_test.index)
-
-        list_feat_to_show = ['career_progression', 'company_size_category',
-                             'industry_popularity', 'field_of_study_popularity',
-                             "feat_final_company",
-                             "max_education_school",
-                             "current_company_industry",
-                             "feat_final_education_field",
-                             "previous_position",
-                             "feat_final_current_job"]
+        list_feat_to_show = [
+            'career_progression', 'company_size_category', 'industry_popularity', 'field_of_study_popularity',
+            "feat_final_company", "max_education_school", "current_company_industry", "feat_final_education_field",
+            "previous_position", "feat_final_current_job"
+        ]
         shap.summary_plot(summed_shap_df[list_feat_to_show].to_numpy(), X_test[list_feat_to_show],
                           max_display=len(list_feat_to_show), show=False)
         plt.title(title)
+        plt_path = os.path.join(self.graphs_dir_report, f'summary_subset_{title}.png')
+        plt.savefig(plt_path)
         plt.show()
 
     def plot_summary_per_category(self, shap_values, X_test, title):
         summed_shap_df = pd.DataFrame(shap_values, columns=X_test.columns, index=X_test.index)
-        summed_shap_abs_df = pd.DataFrame(np.abs(shap_values), columns=X_test.columns,
-                                          index=X_test.index)
+        summed_shap_abs_df = pd.DataFrame(np.abs(shap_values), columns=X_test.columns, index=X_test.index)
 
         for initial_column in onehot_columns + multiple_categories:
-            # Get the one-hot encoded column names related to the initial column
             related_columns = [col for col in X_test.columns if col.startswith(initial_column)]
+
+            abs_png_path = os.path.join(self.subset_shap_dir, f'subset_shap_{initial_column}_abs.png')
+            csv_path = os.path.join(self.subset_shap_dir, f'subset_shap_{initial_column}.csv')
+            bar_png_path = os.path.join(self.subset_shap_dir, f'subset_shap_{initial_column}_bar.png')
+            png_path = os.path.join(self.subset_shap_dir, f'subset_shap_{initial_column}.png')
 
             shap.summary_plot(summed_shap_abs_df[related_columns].to_numpy(),
                               X_test[related_columns],
                               max_display=len(related_columns), show=False)
             plt.title(title + f"(bar):{initial_column}")
-            plt.savefig(f"./summaries/report31_05/subset_shap/subset_shap_{initial_column}_abs.png")
+            plt.savefig(abs_png_path)
             plt.show()
-            summed_shap_df[related_columns].to_csv(
-                f"./summaries/report31_05/subset_shap/subset_shap_{initial_column}.csv")
+            summed_shap_df[related_columns].to_csv(csv_path)
             shap.summary_plot(summed_shap_df[related_columns].to_numpy(), X_test[related_columns],
                               max_display=len(related_columns), show=False, plot_type='bar')
             plt.title(title + f"(bar):{initial_column}")
-            plt.savefig(f"./summaries/report31_05/subset_shap/subset_shap_{initial_column}_bar.png")
+            plt.savefig(bar_png_path)
             plt.show()
 
             shap.summary_plot(summed_shap_df[related_columns].to_numpy(), X_test[related_columns],
                               max_display=len(related_columns), show=False)
             plt.title(title + f"(bar):{initial_column}")
-            plt.savefig(f"./summaries/report31_05/subset_shap/subset_shap_{initial_column}.png")
+            plt.savefig(png_path)
             plt.show()
 
     def plot_summary(self, shap_values, X_test, title):
-        fig, ax = plt.subplots(figsize=(10, 6))  # Create a Figure and Axes object
-        shap.summary_plot(shap_values, X_test, max_display=40, show=False)  # Plot on the Axes
-        ax.set_title(title)  # Set the title on the Axes
+        fig, ax = plt.subplots(figsize=(10, 6))
+        shap.summary_plot(shap_values, X_test, max_display=40, show=False)
+        ax.set_title(title)
+        plt_path = os.path.join(self.graphs_dir, f'summary_{title}.png')
+        plt.savefig(plt_path)
+        plt.show()
 
-        plt.show()  # Show the plot
-
-    def plot_shap_by_category(self, model, X_test, summary_file="./summaries/baseline.csv"):
-        """
-        Plot SHAP summary and scatter plots based on feature categories.
-
-        Parameters:
-        - model: The trained model to explain.
-        - X_test: The test DataFrame.
-        - summary_file: Path to the CSV file with feature summary.
-        """
-        # Read the summary file
+    def plot_shap_by_category(self, model, X_test, summary_file=None):
+        if summary_file is None:
+            summary_file = os.path.join(self.metrics_dir, 'baseline.csv')
         summary_baseline = pd.read_csv(summary_file, index_col=False, delimiter=',')
-
-        # Extract feature categories
         feature_categories = summary_baseline[['Column', 'class']]
-
-        # Compute SHAP values
         explainer = shap.TreeExplainer(model)
         shap_values = explainer(X_test)
         shap_values_array = explainer.shap_values(X_test)
         summed_shap_df = pd.DataFrame(shap_values_array, columns=X_test.columns, index=X_test.index)
-
-        # Initialize a dictionary to store summed SHAP values per category
         category_shap_values = {}
 
-        # Sum SHAP values per category
         for category in feature_categories['class'].unique():
-            columns_in_category = feature_categories[feature_categories['class'] == category][
-                'Column']
-            columns_in_category = list(
-                set(columns_in_category.tolist()) & set(summed_shap_df.columns))
+            columns_in_category = feature_categories[feature_categories['class'] == category]['Column']
+            columns_in_category = list(set(columns_in_category.tolist()) & set(summed_shap_df.columns))
             category_shap_values[category] = summed_shap_df[columns_in_category].values.sum(axis=1)
-
-        # Convert the dictionary to a DataFrame for plotting
         category_shap_df = pd.DataFrame(category_shap_values)
-
-        # Plot SHAP summary plot
-        shap.summary_plot(category_shap_df.values, features=category_shap_df.columns, show=False,
-                          plot_type='bar')
+        shap.summary_plot(category_shap_df.values, features=category_shap_df.columns, show=False, plot_type='bar')
         plt.title("SHAP Summary Plot by Feature Category")
+        plt_path = os.path.join(self.graphs_dir, 'shap_summary_by_category.png')
+        plt.savefig(plt_path)
         plt.show()
 
-        # Plot SHAP scatter plots for each category
         for category in category_shap_values.keys():
             try:
-                shap.plots.scatter(shap_values[:,
-                                   feature_categories[feature_categories['class'] == category][
-                                       'Column']].mean(axis=1), show=False)
+                shap.plots.scatter(shap_values[:, feature_categories[feature_categories['class'] == category]['Column']].mean(axis=1), show=False)
                 plt.title(f'SHAP Scatter Plot for {category}')
+                plt_path = os.path.join(self.graphs_dir, f'shap_scatter_{category}.png')
+                plt.savefig(plt_path)
                 plt.show()
             except Exception as e:
                 print(f"Failed to plot SHAP scatter for {category}: {str(e)}")
 
-    def plot_shap_scatter(self, model, X_test, summary_file="./summaries/baseline.csv"):
-        """
-        Plot SHAP scatter plots for all numerical columns not in onehot_columns or
-        multiple_categories.
-
-        Parameters:
-        - model: The trained model to explain.
-        - X_test: The test DataFrame.
-        - summary_file: Path to the CSV file with feature summary.
-        """
-        # Read the summary file
+    def plot_shap_scatter(self, model, X_test, summary_file=None):
+        if summary_file is None:
+            summary_file = os.path.join(self.metrics_dir, 'baseline.csv')
         summary_baseline = pd.read_csv(summary_file)
-
-        # Filter numerical columns
-        numerical_columns = summary_baseline[summary_baseline['Feat_type'] == 'numerical'][
-            'Column'].tolist()
+        numerical_columns = summary_baseline[summary_baseline['Feat_type'] == 'numerical']['Column'].tolist()
         related_columns = []
-        # for initial_column in onehot_columns + multiple_categories:
-        #     related_columns += [col for col in numerical_columns if
-        #     col.startswith(initial_column)]
-
-        # Remove columns that are in onehot_columns or multiple_categories
-        valid_columns = [col for col in numerical_columns if
-                         col not in related_columns]
-
-        # Compute SHAP values
+        valid_columns = [col for col in numerical_columns if col not in related_columns]
         explainer = shap.TreeExplainer(model)
         shap_values = explainer(X_test)
-
-        # Plot SHAP scatter plots
         for col in valid_columns:
             try:
+                plt_path = os.path.join(self.graphs_dir_report, f'scatter_shap_{col}.png')
                 shap.plots.scatter(shap_values[:, col], show=False)
                 plt.title(f'SHAP Scatter Plot for {col}')
-                plt.savefig(f"./summaries/report31_05/scatter_shap_{col}.png")
+                plt.savefig(plt_path)
                 plt.show()
             except Exception as e:
                 print(f"Failed to plot SHAP scatter for {col}: {str(e)}")
@@ -371,74 +258,51 @@ class Evaluation:
                           feature_names=summed_shap_df.columns.to_list(),
                           max_display=40, show=False)
         plt.title(title)
+        plt_path = os.path.join(self.graphs_dir, f'summary_before_onehot_{title}.png')
+        plt.savefig(plt_path)
         plt.show()
 
-    def plot_feature_importance(self, model, features, show_features, name,
-                                max_feat=20):
+    def plot_feature_importance(self, model, features, show_features, name, max_feat=20):
         feature_importances = model.feature_importances_
         sorted_indices = feature_importances.argsort()[::-1]
-
         sorted_features = [features[i] for i in sorted_indices]
         if show_features and False:
-            sorted_features_filtered = [item for item in sorted_features if
-                                        item in show_features]
+            sorted_features_filtered = [item for item in sorted_features if item in show_features]
             sorted_features = sorted_features_filtered
-            # max_feat = len(show_features)
 
-        # Plotting the bar plot for the fourth graph
         fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(20, 12))
-
         ax3 = axes[1, 1]
         for i in range(max_feat):
             feature = sorted_features[i]
             importance = feature_importances[sorted_indices[i]]
-            # Color red for items in irrelevant_list
             color = 'red' if feature in show_features else 'blue'
             ax3.bar(i, importance, color=color)
-
         ax3.set_xticks(range(max_feat), sorted_features[:max_feat], rotation=90)
         ax3.set_xlabel('Features')
         ax3.set_ylabel('Importance')
         ax3.set_title(f'Top {max_feat} Feature Importances for {name}')
-
-        # Plotting feature importance for the first graph (importance_type='weight')
         plot_importance(model, max_num_features=max_feat, xlabel='Feature Importance',
                         ylabel='Features', importance_type='weight', ax=axes[0, 0])
         axes[0, 0].set_title('Feature Importance (Weight)')
-
-        # Plotting feature importance for the second graph (importance_type='gain')
         plot_importance(model, max_num_features=max_feat, xlabel='Feature Importance',
                         ylabel='Features', importance_type='gain', ax=axes[0, 1])
         axes[0, 1].set_title('Feature Importance (Gain)')
-
-        # Plotting feature importance for the third graph (importance_type='cover')
         plot_importance(model, max_num_features=max_feat, xlabel='Feature Importance',
                         ylabel='Features', importance_type='cover', ax=axes[1, 0])
         axes[1, 0].set_title('Feature Importance (Cover)')
-        fig.suptitle(f'Feature Importances for {name}',
-                     fontsize=16)  # Add title to the entire figure
-
+        fig.suptitle(f'Feature Importances for {name}', fontsize=16)
         plt.tight_layout()
+        plt_path = os.path.join(self.graphs_dir, f'feature_importances_{name}.png')
+        plt.savefig(plt_path)
         plt.show()
 
     def sum_onehot_shap_values(self, shap_values, X_test, onehot_columns):
-        # Create a DataFrame to store the summed SHAP values
         summed_shap_df = pd.DataFrame(shap_values, columns=X_test.columns, index=X_test.index)
-
-        # Iterate over the initial column names that were one-hot encoded
         for initial_column in onehot_columns:
-            # Get the one-hot encoded column names related to the initial column
             related_columns = [col for col in X_test.columns if col.startswith(initial_column)]
-
-            # Sum the SHAP values of the related one-hot encoded columns
             summed_shap_values = summed_shap_df[related_columns].sum(axis=1)
-
-            # Replace the initial SHAP values with the summed values
             summed_shap_df[initial_column] = summed_shap_values
-
-            # Drop the one-hot encoded columns from the DataFrame
             summed_shap_df.drop(columns=related_columns, inplace=True)
-
         return summed_shap_df
 
     def plot_roc_pr_curves(self, results, name):

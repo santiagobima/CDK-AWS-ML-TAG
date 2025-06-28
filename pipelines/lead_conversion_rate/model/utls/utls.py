@@ -15,7 +15,6 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score
 from pipelines.lead_conversion_rate.common.constants import ONEHOT_COLUMNS as onehot_columns, MULTIPLE_CATEGORIES as multiple_categories
 
-from pipelines.lead_conversion_rate.model.utls.evaluation import Evaluation
 
 
 def load_config():
@@ -23,10 +22,10 @@ def load_config():
 
     IN_SAGEMAKER = os.path.exists('/opt/ml/processing/input')
     if IN_SAGEMAKER:
-        config_path = Path("/opt/ml/processing/configs/model_config.yml")
+        config_path = Path("/opt/ml/processing/configs/model_config_aws.yml")
     else:
         project_root = Path(__file__).resolve().parents[4]  # 🔥 RAÍZ del proyecto
-        config_path = project_root / "configs" / "model_config.yml"
+        config_path = project_root / "configs" / "model_config_local.yml"
 
     print(f"DEBUG CONFIG PATH: {config_path}")
     if not config_path.exists():
@@ -56,6 +55,7 @@ def setup_logging():
 logger = setup_logging()
 
 def print_metrics(eval_result, name):
+    from pipelines.lead_conversion_rate.model.utls.evaluation import Evaluation
     models_data = [pair[0] for pair in eval_result]
     results = [pair[1] for pair in eval_result]
     models_df = pd.DataFrame(models_data, columns=["Model", "Accuracy", "Precision",
