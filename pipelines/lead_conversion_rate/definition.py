@@ -1,11 +1,10 @@
 import os
 import logging
 from sagemaker.processing import ProcessingInput, ProcessingOutput
-from sagemaker.workflow.steps import CacheConfig
+from sagemaker.workflow.steps import CacheConfig, ProcessingStep
 from sagemaker.workflow.pipeline import Pipeline
 from sagemaker.session import Session
 from sagemaker.workflow.parameters import ParameterString
-from sagemaker.workflow.steps import ProcessingStep
 from Constructors.pipeline_factory import SagemakerPipelineFactory, get_processor
 
 logger = logging.getLogger(__name__)
@@ -24,7 +23,10 @@ class LeadConversionFactory(SagemakerPipelineFactory):
         )
         logger.info(f"Modo local: {self.local_mode}")
 
-        data_bucket_name = os.getenv("DATA_BUCKET").rstrip('/')
+        data_bucket_name = os.getenv("DATA_BUCKET")
+        if not data_bucket_name:
+            raise ValueError("❌ DATA_BUCKET env variable is not set.")
+        data_bucket_name = data_bucket_name.rstrip('/')
         inputs, _ = self._configure_io(data_bucket_name)
 
         processor = get_processor(
@@ -32,8 +34,9 @@ class LeadConversionFactory(SagemakerPipelineFactory):
             instance_type=instance_type_var.default_value
         )
 
-        data_prep_step = ProcessingStep(
-            name='Temporary_Simple_Check_Step',
+        # Paso 1: Simple Check
+        simple_step = ProcessingStep(
+            name='SimpleCheckStep',
             processor=processor,
             inputs=inputs,
             outputs=[
@@ -46,6 +49,7 @@ class LeadConversionFactory(SagemakerPipelineFactory):
             cache_config=CacheConfig(enable_caching=True, expire_after="7d")
         )
 
+        # Paso 2: Retrieve data
         retrieve_data_step = ProcessingStep(
             name='RetrieveDataStep',
             processor=processor,
@@ -61,6 +65,7 @@ class LeadConversionFactory(SagemakerPipelineFactory):
             cache_config=CacheConfig(enable_caching=True, expire_after="7d")
         )
 
+        # Paso 3: Preprocesamiento
         prep_data_step = ProcessingStep(
             name='PreprocessDataStep',
             processor=processor,
@@ -84,6 +89,7 @@ class LeadConversionFactory(SagemakerPipelineFactory):
             cache_config=CacheConfig(enable_caching=True, expire_after="7d")
         )
         
+        # Paso 4: Predict
         predict_step = ProcessingStep(
             name='PredictStep',
             processor=processor,
@@ -93,16 +99,13 @@ class LeadConversionFactory(SagemakerPipelineFactory):
                     destination="/opt/ml/processing/predict_input_data"
                 ),
                 ProcessingInput(
-                    source=f"s3://{data_bucket_name}/configs/model_config.yml",
-                    destination="/opt/ml/processing/configs"
+                    source=f"s3://{data_bucket_name}/code/source_code/configs/",
+                    destination="/opt/ml/processing/configs/"
                 ),
-                
                 ProcessingInput(
                     source=f"s3://{data_bucket_name}/code/source_code/pipelines/lead_conversion_rate/model/summaries",
                     destination="/opt/ml/processing/source_code/pipelines/lead_conversion_rate/model/summaries"
                 )
-
-                
             ],
             outputs=[
                 ProcessingOutput(  # modelos entrenados
@@ -122,10 +125,11 @@ class LeadConversionFactory(SagemakerPipelineFactory):
             cache_config=CacheConfig(enable_caching=True, expire_after="7d")
         )
             
-        retrieve_data_step.add_depends_on([data_prep_step])
+        # Definición de dependencias correcta
+        retrieve_data_step.add_depends_on([simple_step])
         prep_data_step.add_depends_on([retrieve_data_step])
         predict_step.add_depends_on([prep_data_step])
-        steps = [data_prep_step, retrieve_data_step, prep_data_step, predict_step]
+        steps = [simple_step, retrieve_data_step, prep_data_step, predict_step]
 
         logger.info(f"Pipeline '{pipeline_name}' configurado con {len(steps)} paso(s).")
         return Pipeline(name=pipeline_name, steps=steps, sagemaker_session=sm_session)
