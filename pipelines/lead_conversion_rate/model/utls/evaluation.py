@@ -148,7 +148,6 @@ class Evaluation:
         return threshold_value
 
     def plot_summary_subset(self, shap_values, X_test, title):
-        # Guardar los gráficos en graphs_dir_report para mantener orden
         summed_shap_df = pd.DataFrame(shap_values, columns=X_test.columns, index=X_test.index)
         list_feat_to_show = [
             'career_progression', 'company_size_category', 'industry_popularity', 'field_of_study_popularity',
@@ -306,25 +305,6 @@ class Evaluation:
         return summed_shap_df
 
     def plot_roc_pr_curves(self, results, name):
-        """
-        Plots the ROC and Precision-Recall curves based on the results provided.
-        Example usage:
-        results = [
-            {"fpr": fpr1, "tpr": tpr1, "precision": precision1,
-             "recall": recall1, "label": "Model 1"},
-            {"fpr": fpr2, "tpr": tpr2, "precision": precision2,
-             "recall": recall2, "label": "Model 2"},
-            # Add more models if needed
-        ]
-
-        Parameters:
-        results (list of dict): List containing dictionaries with keys 'fpr', 'tpr',
-        'precision', 'recall', and 'label'.
-
-
-        Returns:
-        None
-        """
         plt.figure(figsize=(16, 6))
 
         # ROC Curve subplot
@@ -333,12 +313,9 @@ class Evaluation:
             plt.plot(re["fpr"], re["tpr"], lw=2, label=re["label"])
 
         plt.plot([0, 1], [0, 1], color='gray', linestyle='--', lw=2)
-        plt.plot([0, 1], [0.95, 0.95], color='green', linestyle=':',
-                 lw=2)  # Additional line at y=0.95
-        plt.plot([0, 1], [0.90, 0.90], color='green', linestyle=':',
-                 lw=2)  # Additional line at y=0.90
-        plt.plot([0, 1], [0.85, 0.85], color='green', linestyle=':',
-                 lw=2)  # Additional line at y=0.85
+        plt.plot([0, 1], [0.95, 0.95], color='green', linestyle=':', lw=2)
+        plt.plot([0, 1], [0.90, 0.90], color='green', linestyle=':', lw=2)
+        plt.plot([0, 1], [0.85, 0.85], color='green', linestyle=':', lw=2)
         plt.ylim(0.8, 1.0)
 
         plt.xlabel('False Positive Rate')
@@ -353,12 +330,9 @@ class Evaluation:
             plt.plot(re["precision"], re["recall"], lw=2, label=re["label"])
 
         plt.plot([0, 1], [0, 1], color='gray', linestyle='--', lw=2)
-        plt.plot([0, 1], [0.95, 0.95], color='green', linestyle=':',
-                 lw=2)  # Additional line at y=0.95
-        plt.plot([0, 1], [0.90, 0.90], color='green', linestyle=':',
-                 lw=2)  # Additional line at y=0.90
-        plt.plot([0, 1], [0.85, 0.85], color='green', linestyle=':',
-                 lw=2)  # Additional line at y=0.85
+        plt.plot([0, 1], [0.95, 0.95], color='green', linestyle=':', lw=2)
+        plt.plot([0, 1], [0.90, 0.90], color='green', linestyle=':', lw=2)
+        plt.plot([0, 1], [0.85, 0.85], color='green', linestyle=':', lw=2)
 
         plt.xlabel('Recall')
         plt.ylabel('Precision')
@@ -366,8 +340,8 @@ class Evaluation:
         plt.legend(loc='lower left')
         plt.grid(True)
 
-        plt.tight_layout()  # Adjust layout to prevent overlapping
-        plt.savefig(f"./{self.path}/PR_and_ROC_{name}.png")
+        plt.tight_layout()
+        plt.savefig(os.path.join(self.results_dir, f'PR_and_ROC_{name}.png'))
         plt.show()
 
     @staticmethod
@@ -393,9 +367,6 @@ class Evaluation:
         minPDS = (len(bottom10) - sorted_df['gt'].sum()) / len(bottom10)
         maxPDS = 1
 
-        # sorted_df.loc[:top, 'pred_class'] = 1
-        # sorted_df['pred_class'] = 0
-
         PLS = top10['gt'].sum() / len(top10)
         PDS = (len(bottom10) - bottom10['gt'].sum()) / len(bottom10)
         score = 0.7 * PLS + 0.3 * PDS
@@ -416,17 +387,14 @@ class Evaluation:
         return score
 
     def boxplot(self, scores, names, n, name):
-        # Boxplot for the top n
         plt.figure(figsize=(12, 8))
         box = plt.boxplot(scores, labels=names, patch_artist=True, notch=False, showmeans=True)
 
-        # Customize boxplot appearance
         colors = ['skyblue', 'lightgreen', 'lightcoral', 'lightpink', 'lightyellow', 'lightgray',
                   'lightblue', 'lightcyan', 'lightgoldenrodyellow', 'lightsteelblue']
         for patch, color in zip(box['boxes'], colors[:n]):
             patch.set_facecolor(color)
 
-        # Customizing the whiskers, caps, medians, and means
         for whisker in box['whiskers']:
             whisker.set(color='black', linewidth=1.5, linestyle='-')
         for cap in box['caps']:
@@ -436,42 +404,31 @@ class Evaluation:
         for mean in box['means']:
             mean.set(marker='o', markerfacecolor='white', markeredgecolor='blue', markersize=8)
 
-        # Add individual data points
         for i in range(n):
             y = scores[i]
-            x = np.random.normal(i + 1, 0.04,
-                                 size=len(y))  # adding some jitter for better visibility
+            x = np.random.normal(i + 1, 0.04, size=len(y))
             plt.plot(x, y, 'r.', alpha=0.5)
 
         plt.xlabel('Sampling Methods', fontsize=12)
         plt.ylabel('Scores', fontsize=12)
         plt.title('Comparison of Models', fontsize=14)
-
-        # Add grid and rotate x-axis labels for better readability
         plt.grid(True, linestyle='--', linewidth=0.7, alpha=0.7)
         plt.xticks(rotation=45, ha='right', fontsize=10)
         plt.yticks(fontsize=10)
-
-        # Tight layout to ensure everything fits well
         plt.tight_layout()
-
-        # Save the figure
-        plt.savefig(f"./{self.path}/models_boxplot_{name}.png")
+        plt.savefig(os.path.join(self.results_dir, f'models_boxplot_{name}.png'))
         plt.show()
 
     def create_classification_report(self, name, y_test, y_pred_proba, show_save=False):
         y_pred = [0 if prob < 0.5 else 1 for prob in y_pred_proba]
-        # Calculate the confusion matrix
         tn, fp, fn, tp = confusion_matrix(y_test, y_pred).ravel()
 
-        # Calculate each metric
         accuracy = accuracy_score(y_test, y_pred)
         precision = precision_score(y_test, y_pred)
         recall = recall_score(y_test, y_pred)
         f1 = f1_score(y_test, y_pred)
         roc_auc = roc_auc_score(y_test, y_pred)
 
-        # Create a dictionary with all metrics
         metrics = {
             "Accuracy": [accuracy],
             "Precision": [precision],
@@ -484,7 +441,6 @@ class Evaluation:
             'False Negative': [fn]
         }
 
-        # Create a DataFrame
         metrics_df = pd.DataFrame(metrics)
         if show_save:
             pd.set_option('display.max_rows', None)
@@ -492,5 +448,6 @@ class Evaluation:
             pd.set_option('display.width', None)
             pd.set_option('display.max_colwidth', None)
             print(metrics_df)
-            metrics_df.to_csv(f"./summaries/metrics_{name}.csv")
+            metrics_df.to_csv(os.path.join(self.metrics_dir, f'metrics_{name}.csv'))
         return metrics_df
+
