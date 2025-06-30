@@ -53,7 +53,12 @@ class LeadConversionFactory(SagemakerPipelineFactory):
         retrieve_data_step = ProcessingStep(
             name='RetrieveDataStep',
             processor=processor,
-            inputs=inputs,
+            inputs=inputs + [
+                ProcessingInput(
+                    source=f"s3://{data_bucket_name}/code/source_code/configs/",
+                    destination="/opt/ml/processing/configs/"
+                )
+             ],
             outputs=[
                 ProcessingOutput(
                     source="/opt/ml/processing/retrieve",
@@ -73,7 +78,12 @@ class LeadConversionFactory(SagemakerPipelineFactory):
                 ProcessingInput(
                     source=f"s3://{data_bucket_name}/output-data/retrieve",
                     destination="/opt/ml/processing/retrieve"
+                ),
+                ProcessingInput(
+                    source=f"s3://{data_bucket_name}/code/source_code/configs/",
+                    destination="/opt/ml/processing/configs/"
                 )
+
             ],
             outputs=[
                 ProcessingOutput(
@@ -121,7 +131,7 @@ class LeadConversionFactory(SagemakerPipelineFactory):
                     destination=f"s3://{data_bucket_name}/output-data/predict/results"
                 )
             ],
-            code="pipelines/lead_conversion_rate/steps/predict.py",
+            code="pipelines/lead_conversion_rate/steps/model_fit.py",
             cache_config=CacheConfig(enable_caching=True, expire_after="7d")
         )
             

@@ -36,6 +36,9 @@ from pipelines.lead_conversion_rate.common.constants import (
     ONEHOT_COLUMNS, MULTIPLE_CATEGORIES, TIME_FIELDS
 )
 
+from pipelines.lead_conversion_rate.model.utls.utls import config
+
+
 # Logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -102,3 +105,9 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     main(args.input_path, args.output_path)
+    
+    
+    
+    
+    
+       
