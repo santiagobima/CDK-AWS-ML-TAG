@@ -100,8 +100,8 @@ class LeadConversionFactory(SagemakerPipelineFactory):
         )
         
         # Paso 4: Predict
-        predict_step = ProcessingStep(
-            name='PredictStep',
+        model_fit_step = ProcessingStep(
+            name='Model_Fit_Step',
             processor=processor,
             inputs=inputs + [
                 ProcessingInput(
@@ -138,8 +138,8 @@ class LeadConversionFactory(SagemakerPipelineFactory):
         # Definición de dependencias correcta
         retrieve_data_step.add_depends_on([simple_step])
         prep_data_step.add_depends_on([retrieve_data_step])
-        predict_step.add_depends_on([prep_data_step])
-        steps = [simple_step, retrieve_data_step, prep_data_step, predict_step]
+        model_fit_step.add_depends_on([prep_data_step])
+        steps = [simple_step, retrieve_data_step, prep_data_step, model_fit_step]
 
         logger.info(f"Pipeline '{pipeline_name}' configurado con {len(steps)} paso(s).")
         return Pipeline(name=pipeline_name, steps=steps, sagemaker_session=sm_session)

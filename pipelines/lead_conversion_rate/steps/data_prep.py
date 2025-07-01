@@ -70,6 +70,10 @@ def preprocessing_pipeline(prediction=True):
     return Pipeline(steps=steps, verbose=True)
 
 
+
+
+
+
 def main(input_path, output_path):
     if not os.path.exists(input_path):
         logger.error(f"❌ Archivo de entrada no encontrado: {input_path}")
