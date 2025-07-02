@@ -248,7 +248,7 @@ class Model:
                                                                                    5),
                                       scoring=config['Training']['grid_search'].get('scoring',
                                                                                     'f1_micro'),
-                                      n_jobs=-1,
+                                      n_jobs=1,
                                       cv=skf.split(self.X_train, self.y_train),
                                       verbose=3, random_state=1000 + self.random_state)
         else:
@@ -256,7 +256,7 @@ class Model:
                                 param_grid=params,
                                 scoring=config['Training']['grid_search'].get('scoring',
                                                                               'f1_micro'),
-                                n_jobs=-1,
+                                n_jobs=1,
                                 cv=skf.split(self.X_train, self.y_train),
                                 verbose=3)
         return grid
