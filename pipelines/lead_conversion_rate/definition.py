@@ -152,7 +152,8 @@ class LeadConversionFactory(SagemakerPipelineFactory):
                 image_uri=processor.image_uri,
                 role=role,
                 entry_point=entry_point_path,
-                name=f'{pipeline_name}-{stage}-Model'
+                name=f'{pipeline_name}-{stage}-Model',
+                sagemaker_session=sm_session
             )
             register_step = ModelStep(
                 name=f'RegisterModelStep_{stage}',
