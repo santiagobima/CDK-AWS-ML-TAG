@@ -5,6 +5,8 @@ from sagemaker.workflow.steps import CacheConfig, ProcessingStep
 from sagemaker.workflow.pipeline import Pipeline
 from sagemaker.session import Session
 from sagemaker.workflow.parameters import ParameterString
+from sagemaker.workflow.model_step import ModelStep
+from sagemaker.model import Model as SageMakerModel
 from Constructors.pipeline_factory import SagemakerPipelineFactory, get_processor
 
 logger = logging.getLogger(__name__)
@@ -135,11 +137,32 @@ class LeadConversionFactory(SagemakerPipelineFactory):
             cache_config=CacheConfig(enable_caching=True, expire_after="7d")
         )
             
-        # Definición de dependencias correcta
+        # Definición de dependencias correcta       
         retrieve_data_step.add_depends_on([simple_step])
         prep_data_step.add_depends_on([retrieve_data_step])
-        model_fit_step.add_depends_on([prep_data_step])
-        steps = [simple_step, retrieve_data_step, prep_data_step, model_fit_step]
+        model_fit_step.add_depends_on([prep_data_step]) 
+        
+        register_steps = []
+        for stage in ['init_stage','mid_stage','final_stage']:
+            model_artifact_s3 = f"s3://{data_bucket_name}/output-data/predict/models/{stage}/Model.joblib"
+            entry_point_path = "pipelines/lead_conversion_rate/steps/inference.py"
+            
+            sm_model = SageMakerModel(
+                model_data=model_artifact_s3,
+                image_uri=processor.image_uri,
+                role=role,
+                entry_point=entry_point_path,
+                name=f'{pipeline_name}-{stage}-Model'
+            )
+            register_step = ModelStep(
+                name=f'RegisterModelStep_{stage}',
+                step_args=sm_model.create(instance_type='ml.m5.large'),
+                depends_on=[model_fit_step]
+            )
+            register_steps.append(register_step)
+
+        # ---> usa register_steps (con S)
+        steps = [simple_step, retrieve_data_step, prep_data_step, model_fit_step] + register_steps
 
         logger.info(f"Pipeline '{pipeline_name}' configurado con {len(steps)} paso(s).")
         return Pipeline(name=pipeline_name, steps=steps, sagemaker_session=sm_session)
