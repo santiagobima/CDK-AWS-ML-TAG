@@ -1,0 +1,96 @@
+,Column,Missing,Missing_p,Count,Type,Distinct,Most Popular,Mean,Std,Min,Max,Feat_type,T-stat,P-value,significance,Chi-square,D.Freedom
+0,contact_id,5982,0.11,50633,Int64,40244,98333501,1120879521.8674579,3217961760.6682324,4202.0,19286565982.0,numerical,,,No,,
+1,country_enrichment,51156,0.9,5459,category,70,italy,,,,,categorical,,0.9999999994633607,Yes,19.404186100213977,69.0
+2,region_enrichment,52168,0.92,4447,category,126,lombardy,,,,,categorical,,0.9999685416227344,Yes,71.44757297410109,125.0
+3,years_of_experience_enrichment,51381,0.91,5234,float64,723,0.0,5317586931601176.0,9256826624355354.0,0.0,5.291666666666666e+16,numerical,,,No,,
+4,is_employed,51378,0.91,5237,category,2,True,,,,,categorical,,0.7642826870308295,Yes,0.08991700976143835,1.0
+5,number_of_jobs_had,51156,0.9,5459,Int32,27,1,5.051657812786225,3.8688520537936135,0.0,31.0,numerical,,,No,,
+6,current_position,51381,0.91,5234,category,2827,Project Manager,,,,,categorical,,0.9999999847459109,Yes,2429.2012600304506,2826.0
+7,current_position_job_type,51378,0.91,5237,category,2,False,,,,,categorical,,0.029814097013150513,No,4.71997959013693,1.0
+8,industry_enrichment,51672,0.91,4943,category,95,Information Technology (IT),,,,,categorical,,0.9466648634725392,Yes,73.00376852390127,94.0
+9,previous_position,52252,0.92,4363,category,2525,Social media manager,,,,,categorical,,0.9999998010808849,Yes,2180.098208546248,2524.0
+10,previous_position_job_type,51156,0.9,5459,category,2,False,,,,,categorical,,0.6160711417178368,Yes,0.2514283237093049,1.0
+11,number_of_educational_degrees,52714,0.93,3901,Int32,5,2,2.0107664701358625,0.841175582795192,0.0,4.0,numerical,,,No,,
+12,years_of_education,52714,0.93,3901,Int32,13,18,17.77723660599846,1.7098072024026059,9.0,24.0,numerical,,,No,,
+13,max_education_field_of_study,52714,0.93,3901,category,34,Business and Economics,,,,,categorical,,0.4494188030797801,Yes,33.36716154409537,33.0
+14,max_education_school,52718,0.93,3897,category,921,Sapienza Università di Roma,,,,,categorical,,0.999998837578584,Yes,731.4170937476105,920.0
+15,max_education_level,52718,0.93,3897,category,7,master degree,,,,,categorical,,0.02980632106937742,No,13.984808624654727,6.0
+16,current_company,52740,0.93,3875,category,2404,Accenture,,,,,categorical,,0.9999999999666684,Yes,1977.8041758625914,2403.0
+17,current_company_size,52740,0.93,3875,Int32,1301,1,17267.549935483872,77968.08349533642,0.0,770241.0,numerical,,,No,,
+18,current_company_location,53484,0.94,3131,category,4,italy,,,,,categorical,,0.5876954917329134,Yes,1.9270000050116391,3.0
+19,current_company_industry,52812,0.93,3803,category,213,IT Services and IT Consulting,,,,,categorical,,0.9994257312199804,Yes,151.35893349531185,212.0
+20,lifecyclestage,51156,0.9,5459,category,4,marketingqualifiedlead,,,,,categorical,,0.0,No,1832.0066274030273,3.0
+21,hs_analytics_num_page_views,51156,0.9,5459,Int32,103,0,7.602674482505954,23.022656806890502,0.0,445.0,numerical,,,No,,
+22,hs_analytics_num_visits,51156,0.9,5459,Int32,62,1,5.294559443121451,10.53576112311246,0.0,208.0,numerical,,,No,,
+23,hs_analytics_num_event_completions,51156,0.9,5459,Int32,4,0,0.099468767173475,0.36746296753182434,0.0,3.0,numerical,,,No,,
+24,hs_analytics_source,51156,0.9,5459,category,9,PAID_SOCIAL,,,,,categorical,,8.819334107826977e-37,No,189.83548772492767,8.0
+25,hs_latest_source,51156,0.9,5459,category,9,PAID_SOCIAL,,,,,categorical,,6.314637904955865e-90,No,439.5794450197623,8.0
+26,hs_analytics_last_referrer,51528,0.91,5087,category,226,https://www.facebook.com/,,,,,categorical,,1.4630587412741e-104,No,1038.0670976777956,225.0
+27,hs_analytics_first_referrer,52112,0.92,4503,category,144,https://www.facebook.com/,,,,,categorical,,1.0703283511837581e-31,No,438.17187998343775,143.0
+28,hs_email_bounce,56588,1.0,27,Int32,1,1,1.0,0.0,1.0,1.0,numerical,,,No,,
+29,hs_email_click,53478,0.94,3137,Int32,40,1,4.067580490914887,6.263039279194366,1.0,87.0,numerical,,,No,,
+30,hs_email_open,51913,0.92,4702,Int32,121,1,16.043598468736707,28.25873431630119,1.0,513.0,numerical,,,No,,
+31,hs_email_replied,56206,0.99,409,category,4,1,,,,,categorical,,0.08472416486791472,Yes,6.628662409267984,3.0
+32,hs_email_sends_since_last_engagement,51236,0.9,5379,Int32,38,0,4.162111916713144,5.861273372752357,0.0,43.0,numerical,,,No,,
+33,hs_email_last_open_date,51908,0.92,4707,datetime64[ns],3348,2024-05-06 14:13:55.783000,,,,,date,,,,,
+34,hs_email_last_click_date,53474,0.94,3141,datetime64[ns],1972,2024-02-28 17:22:00.099000,,,,,date,,,,,
+35,hs_sales_email_last_replied,55771,0.99,844,datetime64[ns],383,2024-04-04 16:34:12,,,,,date,,,,,
+36,hs_sales_email_last_clicked,55913,0.99,702,datetime64[ns],317,2023-09-25 18:12:03.424000,,,,,date,,,,,
+37,hs_sales_email_last_opened,55478,0.98,1137,datetime64[ns],538,2023-11-24 14:49:36.806000,,,,,date,,,,,
+38,num_conversion_events,51156,0.9,5459,Int32,28,1,3.530683275325151,4.315379591311744,0.0,51.0,numerical,,,No,,
+39,num_unique_conversion_events,51156,0.9,5459,Int32,23,1,3.108994321304268,3.463417897955429,0.0,28.0,numerical,,,No,,
+40,hs_predictivecontactscore_v2,51742,0.91,4873,float64,1209,1.06,6.7165278062795,9.578019623263954,0.27,69.47,numerical,,,No,,
+41,hs_predictivescoringtier,51156,0.9,5459,category,5,tier_1,,,,,categorical,,0.0,No,1773.7073241101261,4.0
+42,hs_social_last_engagement,56553,1.0,62,datetime64[ns],17,2024-02-01 18:36:00.914000,,,,,date,,,,,
+43,hs_social_num_broadcast_clicks,51156,0.9,5459,Int32,2,0,0.001099102399706906,0.0331375244528019,0.0,1.0,numerical,,,No,,
+44,hs_last_sales_activity_date,53813,0.95,2802,datetime64[ns],1523,1970-01-20 19:37:28.455000,,,,,date,,,,,
+45,hs_last_sales_activity_type,53828,0.95,2787,category,5,FORM_SUBMITTED,,,,,categorical,,2.3800752547072702e-42,No,200.92223488933365,4.0
+46,hs_sa_first_engagement_object_type,55366,0.98,1249,category,5,MEETING_EVENT,,,,,categorical,,0.00035913393737785495,No,20.724196512674567,4.0
+47,course_id,0,0.0,56615,Int64,126,7630797209,7961841043.732721,2499569040.7114215,4563140897.0,13068540521.0,numerical,3.820117318166391,0.0001335305254558155,No,,
+48,erogation_language,8129,0.14,48486,category,1,italian,,,,,categorical,,1.0,Yes,0.0,0.0
+49,class_size,0,0.0,56615,Int32,14,30,31.262668904000705,6.632627572863264,5.0,65.0,numerical,4.58086781939501,4.6403602094590474e-06,No,,
+50,vertical_name,0,0.0,56615,category,7,GEDI DT,,,,,categorical,,0.0,No,3903.1351225671833,6.0
+51,tuition_fee_amount,0,0.0,56615,float64,58,2900.0,2985.4496485030463,2066.118502970788,0.0,10500.0,numerical,7.973954129150943,1.5652999710778424e-15,No,,
+52,sku_tuition,189,0.0,56426,category,124,ITDMFT1815,,,,,categorical,,0.0,No,5910.59026480943,123.0
+53,start_date,0,0.0,56615,category,98,2023-10-07,,,,,categorical,,0.0,No,4716.081377983053,97.0
+54,end_date,0,0.0,56615,category,92,2023-12-16,,,,,categorical,,0.0,No,4392.006750126002,91.0
+55,delivery_format,0,0.0,56615,category,3,blended,,,,,categorical,,9.85191791657429e-41,No,184.2366453283666,2.0
+56,intake,0,0.0,56615,category,4,Fall,,,,,categorical,,1.6921017470784437e-06,No,29.579040369440712,3.0
+57,type,0,0.0,56615,category,3,Part Time,,,,,categorical,,6.913068022418629e-62,No,281.6537244578666,2.0
+58,deal_id,0,0.0,56615,Int64,55572,17505683036,15747807877.167252,1872199935.7329051,6838661036.0,19191989527.0,numerical,6.894365201645316,5.467080491898696e-12,No,,
+59,dealstage,0,0.0,56615,category,7,Closed Lost,,,,,categorical,,0.0,No,56615.0,6.0
+60,amount,0,0.0,56615,float64,267,2900.0,2989.627181312373,2294.952190477994,0.0,125000.0,numerical,6.08943572025126,1.1403606788885665e-09,No,,
+61,num_associated_courses,0,0.0,56615,Int32,3,1,1.0369160116576879,0.18883810152401592,1.0,3.0,numerical,-10.229654969891284,1.5340625679001267e-24,No,,
+62,candidate_s_needs,53931,0.95,2684,category,116,Acquisition of new skills (add notes),,,,,categorical,,0.00011167715439332932,No,179.54666471318643,115.0
+63,motivation,53475,0.94,3140,Float64,9,4.0,3.6097133757961783,0.9012139598772476,1.0,5.0,numerical,,,No,,
+64,professional_profile,53452,0.94,3163,float64,9,4.0,3.5761934871957,0.9080317297649406,1.0,5.0,numerical,,,No,,
+65,personal_profile,53455,0.94,3160,float64,9,4.0,3.733386075949367,0.8325500153211143,1.0,5.0,numerical,,,No,,
+66,source_of_awareness_playbook,54497,0.96,2118,category,87,instagram,,,,,categorical,,0.00045101163416934526,No,136.30351830323525,86.0
+67,deal_cooking_state,29080,0.51,27535,category,11,Cold Deal (MQL),,,,,categorical,,0.0,No,5336.355517033846,10.0
+68,country_code,56173,0.99,442,category,4,IT,,,,,categorical,,0.23607829881891976,Yes,4.2461858000018475,3.0
+69,italian_region,56285,0.99,330,category,18,Lombardia,,,,,categorical,,0.5122185473070539,Yes,16.164303616220984,17.0
+70,currently_employed,56285,0.99,330,category,2,True,,,,,categorical,,0.14830830425415617,Yes,2.0895648960850943,1.0
+71,jobtitle,56182,0.99,433,category,205,Department manager,,,,,categorical,,0.44441028772289337,Yes,206.165132585551,204.0
+72,education_field,56286,0.99,329,category,15,Business/Management,,,,,categorical,,0.4936038594369224,Yes,13.421910465356369,14.0
+73,educational_level,56286,0.99,329,category,5,Master's Degree,,,,,categorical,,0.8642433942238272,Yes,1.2830578369748553,4.0
+74,company,56231,0.99,384,category,198,H&M Hennes &Mauritz srl,,,,,categorical,,0.6734590683914712,Yes,187.5634800485936,197.0
+75,years_of_topic_experience,56285,0.99,330,float64,15,0.0,1.4712121212121212,3.1388711671726743,0.0,20.0,numerical,,,No,,
+76,is_referred,56375,1.0,240,category,2,False,,,,,categorical,,0.5510772123196435,Yes,0.35539091727151,1.0
+77,reason_to_buy_short,56285,0.99,330,category,100,Career Opportunities,,,,,categorical,,0.9814649331685339,Yes,71.93287560592621,99.0
+78,review_analysis,56285,0.99,330,category,2,No,,,,,categorical,,0.13016233732439778,Yes,2.2905673356528196,1.0
+79,brand_awareness,56285,0.99,330,category,2,Yes,,,,,categorical,,0.005598668557493099,No,7.675142060401979,1.0
+80,source_of_awareness_onboarding,56391,1.0,224,category,6,word_of_mouth,,,,,categorical,,0.40578212234672945,Yes,5.083440932677467,5.0
+81,interview_canceled,46895,0.83,9720,Int64,4,0,0.19578189300411522,0.40807103941405576,0.0,3.0,numerical,,,No,,
+82,interview_done,46895,0.83,9720,Int64,4,0,0.4205761316872428,0.5021493850479629,0.0,3.0,numerical,,,No,,
+83,interview_deleted,46895,0.83,9720,Int64,8,0,0.11121399176954733,0.3555706167760015,0.0,10.0,numerical,,,No,,
+84,interview_not_needed,46895,0.83,9720,Int64,2,0,0.00565843621399177,0.07501331363686922,0.0,1.0,numerical,,,No,,
+85,interview_no_show,46895,0.83,9720,Int64,4,0,0.23569958847736625,0.44412135091523175,0.0,3.0,numerical,,,No,,
+86,interview_scheduled,46895,0.83,9720,Int64,3,0,0.10308641975308643,0.31177254581151315,0.0,2.0,numerical,,,No,,
+87,interview_cancelled,46895,0.83,9720,float64,1,0.0,0.0,0.0,0.0,0.0,numerical,,,No,,
+88,n_calls,47317,0.84,9298,float64,17,1.0,1.9782748978274898,1.7139034214573985,1.0,18.0,numerical,,,No,,
+89,n_calls_positive_outcome,52536,0.93,4079,float64,10,1.0,1.5094385878891885,0.985847202566805,1.0,11.0,numerical,,,No,,
+90,n_calls_negative_outcome,49674,0.88,6941,float64,15,1.0,1.7630024492148106,1.47090608183494,1.0,17.0,numerical,,,No,,
+91,n_inbound_calls,55567,0.98,1048,float64,11,1.0,1.4274809160305344,1.0205568781624943,1.0,11.0,numerical,,,No,,
+92,n_outbound_calls,47422,0.84,9193,float64,15,1.0,1.838137713477646,1.5215005690002537,1.0,17.0,numerical,,,No,,
+93,total_call_duration,47317,0.84,9298,Int64,786,0,104272.2090772209,218071.67752493575,0.0,3395000.0,numerical,,,No,,
+94,target,0,0.0,56615,int64,2,0,0.033913273867349644,0.18100757562678518,0.0,1.0,numerical,-inf,0.0,No,,
