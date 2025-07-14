@@ -8,6 +8,7 @@ from sagemaker.workflow.parameters import ParameterString
 from Constructors.pipeline_factory import SagemakerPipelineFactory, get_processor
 from sagemaker.model import Model as SageMakerModel
 from sagemaker.workflow.model_step import ModelStep
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -156,14 +157,17 @@ class LeadConversionFactory(SagemakerPipelineFactory):
                 name=f"{pipeline_name}-{stage}-Model",
                 sagemaker_session=sm_session
             )
-            # REGISTRA el modelo en el Model Registry, crea un ModelPackage (esto crea Package Group si no existe)
+            # REGISTRA el modelo en
+            description = f"Stage:{stage} Generated on {datetime.now().strftime('%Y-%m-%d')}"
+            # el Model Registry, crea un ModelPackage (esto crea Package Group si no existe)
             model_register = sm_model.register(
                 content_types=["application/json"],
                 response_types=["application/json"],
                 inference_instances=["ml.m5.large"],
                 transform_instances=["ml.m5.large"],
                 model_package_group_name=f"{pipeline_name}-Group",
-                approval_status="PendingManualApproval",
+                approval_status="Approved",
+                description=description,
                 
             )
             register_step = ModelStep(
