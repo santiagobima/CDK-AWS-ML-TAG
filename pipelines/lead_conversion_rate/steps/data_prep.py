@@ -102,7 +102,7 @@ def main(input_path, output_path):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     default_input = "/opt/ml/processing/retrieve/train.pkl" if os.path.exists("/opt/ml/processing/input") else "pipelines/lead_conversion_rate/model/pickles/train.pkl"
-    default_output = "/opt/ml/processing/output/baseline_features_raw" if os.path.exists("/opt/ml/processing/input") else "pipelines/lead_conversion_rate/model/pickles/baseline_features_raw"
+    default_output = "/opt/ml/processing/output/baseline_features_raw.pkl" if os.path.exists("/opt/ml/processing/input") else "pipelines/lead_conversion_rate/model/pickles/baseline_features_raw"
 
     parser.add_argument("--input_path", type=str, default=default_input)
     parser.add_argument("--output_path", type=str, default=default_output)

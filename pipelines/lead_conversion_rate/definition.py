@@ -108,7 +108,7 @@ class LeadConversionFactory(SagemakerPipelineFactory):
             inputs=inputs + [
                 ProcessingInput(
                     source=f"s3://{data_bucket_name}/output-data",
-                    destination="/opt/ml/processing/predict_input_data"
+                    destination="/opt/ml/processing/output"
                 ),
                 ProcessingInput(
                     source=f"s3://{data_bucket_name}/code/source_code/configs/",

@@ -109,28 +109,22 @@ def predict(stage, data=None, transform=True):
 
 
 def fit():
+    
     print(">>>> INICIO DE FIT")
     try:
         env = os.getenv('ENV', 'dev')
         logger.info(f'Using ENV: {env}')
         print(f"🌍 Using ENV: {env}")
 
-        data_path_raw = config['Read']['data_source'].get('training_data_path')
-        data_path_transformed = config['Read']['data_source'].get('transformed_training_data_path')
+        data_path = config['Read']['data_source'].get('training_data_path')
+        logger.info(f'Reading from {data_path}')
+        print(f"📥 Reading from {data_path}")
 
-        # En SageMaker lee el archivo transformado directamente
-        if os.path.exists("/opt/ml/processing/input"):
-            logger.info(f'Loading transformed training data from: {data_path_transformed}')
-            print(f"📥 Loading transformed training data from: {data_path_transformed}")
-            transformed_data = pd.read_pickle(data_path_transformed)
-            print(f"✅ Transformed data loaded. Shape: {transformed_data.shape}")
-        else:
-            logger.info(f'Reading raw training data from: {data_path_raw}')
-            print(f"📥 Reading raw training data from: {data_path_raw}")
-            data = read_data(env=env, local_source=True, data_path=data_path_raw)
-            print(f"✅ Raw data loaded. Shape: {data.shape}")
-            transformed_data = preprocessing_pipeline().fit_transform(data)
-            print(f"✅ Data preprocessed. Shape: {transformed_data.shape}")
+        data = read_data(env=env, local_source=True, data_path=data_path)
+        print(f"✅ Data loaded. Shape: {data.shape}")
+
+        transformed_data = preprocessing_pipeline().fit_transform(data)
+        print(f"✅ Data preprocessed. Shape: {transformed_data.shape}")
 
         model = Model()
         print("⚙️ Starting training...")
@@ -141,13 +135,10 @@ def fit():
         print("✅ Models saved.")
         save_features(transformed_data, features, model.name)
         print("✅ Features saved.")
-        
     except Exception as e:
-        logger.error(f"❌ ERROR IN FIT: {e}")
-        print(f"❌ ERROR IN FIT: {e}")
-
+        print('EROR IN FIT', e)
+        
     print("🏁 END OF SCRIPT")
-
 
 if __name__ == "__main__":
     fit()
