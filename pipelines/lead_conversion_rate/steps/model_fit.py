@@ -45,7 +45,7 @@ from pipelines.lead_conversion_rate.common.constants import (
 )
 from pipelines.lead_conversion_rate.model.utls.utls import config
 
-
+subprocess.call("pip freeze > /opt/ml/processing/output/env.txt", shell=True)
 
 # Logging
 logging.basicConfig(level=logging.INFO)
