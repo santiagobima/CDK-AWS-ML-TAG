@@ -45,6 +45,22 @@ logger = logging.getLogger(__name__)
 
 
 def preprocessing_pipeline(prediction=True):
+
+    """
+    Create a preprocessing pipeline for data transformation.
+
+    Parameters:
+        prediction (bool): Indicates whether the pipeline is for prediction or training.
+                           If False, additional steps for training will be included.
+
+    Returns:
+        Pipeline: A scikit-learn pipeline object with the specified preprocessing steps.
+    """
+
+
+    
+    
+    
     steps = [
         ('boolean', BooleanTransformer(columns=BOOLEAN_COLUMNS)),
         ('replace', ReplaceTransformer(replace_dict=REPLACE_DICT)),
@@ -67,6 +83,12 @@ def preprocessing_pipeline(prediction=True):
     ]
     if not prediction:
         steps.append(('Summary', PreprocessSummary()))
+    # The two following steps are severeness ONLY if me need to make sure that we have
+    # only numbers and not nan
+    # steps.append(('numeric', NumericColumnsTransformer()))
+    # steps.append(('drop_na', DropNAColumnsTransformer()))        
+        
+
     return Pipeline(steps=steps, verbose=True)
 
 

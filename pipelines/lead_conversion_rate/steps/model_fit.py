@@ -109,6 +109,14 @@ def predict(stage, data=None, transform=True):
 
 
 def fit():
+    
+    """
+    Fit the model using the transformed old data.
+
+    This function reads the transformed old data, fits the model, saves the best models,
+    and saves the selected features.
+    """
+    
     print(">>>> INICIO DE FIT")
     try:
         env = os.getenv('ENV', 'dev')
