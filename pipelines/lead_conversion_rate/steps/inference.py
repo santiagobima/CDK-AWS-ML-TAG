@@ -49,3 +49,5 @@ def output_fn(prediction, accept):
     if accept == "application/json":
         return json.dumps({"probabilities": prediction.tolist()})
     raise Exception(f"Accept type {accept} not supported.")
+
+
