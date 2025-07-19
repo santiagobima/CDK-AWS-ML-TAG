@@ -146,7 +146,7 @@ class LeadConversionFactory(SagemakerPipelineFactory):
         # ----------- REGISTRO DE MODELOS EN EL REGISTRY -------------
         register_steps = []
         for stage in ['init_stage', 'mid_stage', 'final_stage']:
-            model_artifact_s3 = f"s3://{data_bucket_name}/output-data/predict/models/{stage}/Model.joblib"
+            model_artifact_s3 = f"s3://{data_bucket_name}/output-data/predict/models/tar_models/{stage}.tar.gz"
             entry_point_path = "pipelines/lead_conversion_rate/steps/inference.py"
 
             sm_model = SageMakerModel(

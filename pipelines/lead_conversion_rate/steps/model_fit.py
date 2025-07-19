@@ -24,7 +24,7 @@ from pipelines.lead_conversion_rate.steps.data_read import read_data
 from pipelines.lead_conversion_rate.steps.data_prep import preprocessing_pipeline
 from pipelines.lead_conversion_rate.model.model import Model
 from pipelines.lead_conversion_rate.model.utilities import (
-    load_model, save_models, save_features, write_prediction, load_features
+    load_model, save_models, save_features, write_prediction, load_features,create_model_bundle
 )
 from pipelines.lead_conversion_rate.model.utls.utls import logger
 from pipelines.lead_conversion_rate.common.utils.transformers import (
@@ -149,6 +149,20 @@ def fit():
         print("✅ Models saved.")
         save_features(transformed_data, features, model.name)
         print("✅ Features saved.")
+        
+        for stage in ['init_stage','mid_stage','final_stage']:
+            create_model_bundle(
+                stage=stage,
+                model_dir=config['Model']['save_model_path'],
+                features_dir=config['Model']['save_features_path'],
+                output_dir=os.path.join(config['Model']['save_model_path'], 'tar_models')
+            )
+        
+        
+        
+        
+        
+        
         
     except Exception as e:
         logger.error(f"❌ ERROR IN FIT: {e}")

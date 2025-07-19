@@ -5,6 +5,8 @@ import pandas as pd
 from pipelines.lead_conversion_rate.model.utls.utls import config, save_config
 import sys
 import subprocess
+import tarfile
+import shutil
 
 # Instalación del paquete durante ejecución en SageMaker
 if os.path.exists("/opt/ml/processing/source_code"):
@@ -186,3 +188,36 @@ def write_prediction(probabilities, name, stage, locally=True):
         results_df = pd.DataFrame(probabilities, columns=["probabilities"])
         results_df.to_csv(filename, index=False)
         return results_df
+
+
+
+def create_model_bundle(stage, model_dir, features_dir, output_dir):
+    """
+    Crea un archivo .tar.gz que empaqueta el modelo y los features para el stage especificado.
+
+    Args:
+        stage (str): Stage del modelo (e.g., 'init_stage').
+        model_dir (str): Ruta donde se encuentra el Model.joblib.
+        features_dir (str): Ruta donde se encuentra el Model.json.
+        output_dir (str): Ruta donde se guardará el .tar.gz.
+    """
+    os.makedirs(output_dir, exist_ok=True)
+    
+    model_path = os.path.join(model_dir, stage, "Model.joblib")
+    features_path = os.path.join(features_dir, stage, "Model.json")
+    
+    if not os.path.exists(model_path) or not os.path.exists(features_path):
+        raise FileNotFoundError(f"Faltan archivos para {stage}: {model_path}, {features_path}")
+
+    temp_dir = os.path.join(output_dir, f"{stage}_bundle")
+    os.makedirs(temp_dir, exist_ok=True)
+
+    shutil.copy(model_path, os.path.join(temp_dir, "Model.joblib"))
+    shutil.copy(features_path, os.path.join(temp_dir, "Model.json"))
+
+    tar_path = os.path.join(output_dir, f"{stage}.tar.gz")
+    with tarfile.open(tar_path, "w:gz") as tar:
+        tar.add(temp_dir, arcname=".")
+
+    shutil.rmtree(temp_dir)
+    print(f"✅ Bundle creado: {tar_path}")
