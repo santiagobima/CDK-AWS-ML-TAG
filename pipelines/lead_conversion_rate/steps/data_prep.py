@@ -36,12 +36,31 @@ from pipelines.lead_conversion_rate.common.constants import (
     ONEHOT_COLUMNS, MULTIPLE_CATEGORIES, TIME_FIELDS
 )
 
+from pipelines.lead_conversion_rate.model.utls.utls import config
+
+
 # Logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
 def preprocessing_pipeline(prediction=True):
+
+    """
+    Create a preprocessing pipeline for data transformation.
+
+    Parameters:
+        prediction (bool): Indicates whether the pipeline is for prediction or training.
+                           If False, additional steps for training will be included.
+
+    Returns:
+        Pipeline: A scikit-learn pipeline object with the specified preprocessing steps.
+    """
+
+
+    
+    
+    
     steps = [
         ('boolean', BooleanTransformer(columns=BOOLEAN_COLUMNS)),
         ('replace', ReplaceTransformer(replace_dict=REPLACE_DICT)),
@@ -64,7 +83,17 @@ def preprocessing_pipeline(prediction=True):
     ]
     if not prediction:
         steps.append(('Summary', PreprocessSummary()))
+    # The two following steps are severeness ONLY if me need to make sure that we have
+    # only numbers and not nan
+    # steps.append(('numeric', NumericColumnsTransformer()))
+    # steps.append(('drop_na', DropNAColumnsTransformer()))        
+        
+
     return Pipeline(steps=steps, verbose=True)
+
+
+
+
 
 
 def main(input_path, output_path):
@@ -95,10 +124,16 @@ def main(input_path, output_path):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     default_input = "/opt/ml/processing/retrieve/train.pkl" if os.path.exists("/opt/ml/processing/input") else "pipelines/lead_conversion_rate/model/pickles/train.pkl"
-    default_output = "/opt/ml/processing/output/baseline_features_raw" if os.path.exists("/opt/ml/processing/input") else "pipelines/lead_conversion_rate/model/pickles/baseline_features_raw"
+    default_output = "/opt/ml/processing/output/baseline_features_raw.pkl" if os.path.exists("/opt/ml/processing/input") else "pipelines/lead_conversion_rate/model/pickles/baseline_features_raw.pkl"
 
     parser.add_argument("--input_path", type=str, default=default_input)
     parser.add_argument("--output_path", type=str, default=default_output)
 
     args = parser.parse_args()
     main(args.input_path, args.output_path)
+    
+    
+    
+    
+    
+       

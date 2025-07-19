@@ -111,18 +111,21 @@ def save_models(models, name):
 
     Parameters:
         models (dict): Dictionary containing models with keys as stages.
-        name (str): Name prefix for model files.
+        name (str): Name prefix for model files.    
     """
+    IN_SAGEMAKER = os.path.exists('/opt/ml/processing/input')
+    config_filename = "model_config_aws.yml" if IN_SAGEMAKER else "model_config_local.yml"
+    
+    
     for key, value in models.items():
         model_dir = os.path.join(config['Model']['save_model_path'], key)
-        os.makedirs(model_dir, exist_ok=True)  # Create directory if it doesn't exist
+        os.makedirs(model_dir, exist_ok=True)
         model_path = os.path.join(model_dir, name + ".joblib")
         joblib.dump(value, model_path)
 
         config_dir = os.path.join(model_dir, 'config')
-        os.makedirs(config_dir, exist_ok=True)  # Create directory if it doesn't exist
-        config_path = os.path.join(config_dir, "model_config.yml")
-
+        os.makedirs(config_dir, exist_ok=True)
+        config_path = os.path.join(config_dir, config_filename)
         save_config(config, config_path)
 
 

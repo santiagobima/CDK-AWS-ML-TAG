@@ -34,24 +34,7 @@ from pipelines.lead_conversion_rate.common.constants import CLOSED_WIN
 from pipelines.lead_conversion_rate.model.utls.utls import config
 
 
-"""def read_data(env, pickle=True, target=True):
-    baseline_df = get_features(stage=env)
-    if target:
-        if 'target' not in baseline_df.columns:
-            baseline_df['target'] = 0
-            baseline_df.loc[baseline_df['dealstage'].isin(CLOSED_WIN), 'target'] = 1
-            baseline_df = Preprocess().remove_unneeded_cols(baseline_df)
-    else:
-        baseline_df['target'] = -1
-
-    #if pickle:
-    #    baseline_df.to_pickle("./pickles/baseline_features_raw.pkl")
-
-    return baseline_df
-"""
-
-
-def read_data(env, local_source=False, target=True, data_path=None):
+def read_data2(env, local_source=False, target=True, data_path=None):
     if local_source:
         baseline_df = pd.read_pickle(data_path)
     else:
@@ -65,11 +48,6 @@ def read_data(env, local_source=False, target=True, data_path=None):
         baseline_df['target'] = -1
 
     return baseline_df
-
-
-
-
-
 
 
 def save_data_to_output(data: pd.DataFrame):
@@ -115,10 +93,10 @@ if __name__ == "__main__":
     logger.info(f"🔐 Rol en ejecución: {identity['Arn']}")
 
     try:
-        data = read_data(env=env)
+        data2 = read_data2(env=env,local_source=False, data_path=config['Read']['data_source'].get('training_data_path'))
         logger.info("✅ Datos leídos correctamente. Mostrando primeras filas:")
-        logger.info("\n" + data.head(10).to_string())
-        save_data_to_output(data)
+        logger.info("\n" + data2.head(10).to_string())
+        save_data_to_output(data2)
 
     except Exception as e:
         logger.exception(f"❌ Error durante la ejecución principal: {e}")

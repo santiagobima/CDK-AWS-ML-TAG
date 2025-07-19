@@ -13,7 +13,7 @@ setup(
         "pandas>=2.2.0,<2.3.0",
         "scikit-learn==1.2.2",
         "imbalanced-learn>=0.12.0,<0.13.0",
-        "lightgbm>=4.0.0,<4.1.0",
+        "lightgbm==4.5.0",
         "xgboost>=2.0.0,<2.1.0",
         "shap",
         "seaborn",
@@ -21,3 +21,5 @@ setup(
         "probatus"
     ],
 )
+
+

@@ -2,9 +2,9 @@ Read:
   stage: 'prod'
   data_source:
     local: False
-    training_data_path: '/opt/ml/processing/source_code/pipelines/lead_conversion_rate/model/pickles/train.pkl'
+    training_data_path: '/opt/ml/processing/retrieve/train.pkl'
     predict_data_path: '/opt/ml/processing/source_code/pipelines/lead_conversion_rate/model/pickles/X_test.pkl'
-    transformed_training_data_path: '/opt/ml/processing/predict_input_data/baseline_features_raw.pkl'
+    transformed_training_data_path: '/opt/ml/processing/output/baseline_features_raw.pkl'
     transformed_predict_data_path: '/opt/ml/processing/source_code/pipelines/lead_conversion_rate/model/pickles/transformed_X_test.pkl'
 
 Model:

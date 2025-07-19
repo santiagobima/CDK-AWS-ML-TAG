@@ -127,6 +127,15 @@ class SagemakerStack(cdk.Stack):
                 f"arn:aws:glue:{self.region}:{self.account}:table/{os.getenv('DATABASE')}/*"
             ]
         ))
+        
+        role.add_to_policy(iam.PolicyStatement(
+            actions=[
+                "ecr:GetAuthorizationToken",
+                "ecr:BatchGetImage",
+                "ecr:GetDownloadUrlForLayer"
+            ],
+            resources=["*"]
+        ))
 
         return role
 

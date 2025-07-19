@@ -6,9 +6,6 @@ from sagemaker.workflow.pipeline import Pipeline
 from sagemaker.session import Session
 from sagemaker.workflow.parameters import ParameterString
 from Constructors.pipeline_factory import SagemakerPipelineFactory, get_processor
-from sagemaker.model import Model as SageMakerModel
-from sagemaker.workflow.model_step import ModelStep
-from datetime import datetime
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -102,14 +99,14 @@ class LeadConversionFactory(SagemakerPipelineFactory):
             cache_config=CacheConfig(enable_caching=True, expire_after="7d")
         )
         
-        # Paso 4: Model Fit
+        # Paso 4: Predict
         model_fit_step = ProcessingStep(
             name='Model_Fit_Step',
             processor=processor,
             inputs=inputs + [
                 ProcessingInput(
                     source=f"s3://{data_bucket_name}/output-data",
-                    destination="/opt/ml/processing/output"
+                    destination="/opt/ml/processing/predict_input_data"
                 ),
                 ProcessingInput(
                     source=f"s3://{data_bucket_name}/code/source_code/configs/",
@@ -137,48 +134,12 @@ class LeadConversionFactory(SagemakerPipelineFactory):
             code="pipelines/lead_conversion_rate/steps/model_fit.py",
             cache_config=CacheConfig(enable_caching=True, expire_after="7d")
         )
-        
+            
         # Definición de dependencias correcta
         retrieve_data_step.add_depends_on([simple_step])
         prep_data_step.add_depends_on([retrieve_data_step])
         model_fit_step.add_depends_on([prep_data_step])
-        
-        # ----------- REGISTRO DE MODELOS EN EL REGISTRY -------------
-        register_steps = []
-        for stage in ['init_stage', 'mid_stage', 'final_stage']:
-            model_artifact_s3 = f"s3://{data_bucket_name}/output-data/predict/models/{stage}/Model.joblib"
-            entry_point_path = "pipelines/lead_conversion_rate/steps/inference.py"
-
-            sm_model = SageMakerModel(
-                model_data=model_artifact_s3,
-                image_uri=processor.image_uri,
-                role=role,
-                entry_point=entry_point_path,
-                name=f"{pipeline_name}-{stage}-Model",
-                sagemaker_session=sm_session
-            )
-            # REGISTRA el modelo en
-            description = f"Stage:{stage} Generated on {datetime.now().strftime('%Y-%m-%d')}"
-            # el Model Registry, crea un ModelPackage (esto crea Package Group si no existe)
-            model_register = sm_model.register(
-                content_types=["application/json"],
-                response_types=["application/json"],
-                inference_instances=["ml.m5.large"],
-                transform_instances=["ml.m5.large"],
-                model_package_group_name=f"{pipeline_name}-Group",
-                approval_status="Approved",
-                description=description,
-                
-            )
-            register_step = ModelStep(
-                name=f"RegisterModelStep_{stage}",
-                step_args=model_register,
-                depends_on=[model_fit_step]
-            )
-            register_steps.append(register_step)
-
-        # ------------ CONSTRUCCIÓN FINAL DEL PIPELINE -------------
-        steps = [simple_step, retrieve_data_step, prep_data_step, model_fit_step] + register_steps
+        steps = [simple_step, retrieve_data_step, prep_data_step, model_fit_step]
 
         logger.info(f"Pipeline '{pipeline_name}' configurado con {len(steps)} paso(s).")
         return Pipeline(name=pipeline_name, steps=steps, sagemaker_session=sm_session)
