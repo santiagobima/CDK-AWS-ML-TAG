@@ -221,3 +221,44 @@ def create_model_bundle(stage, model_dir, features_dir, output_dir):
 
     shutil.rmtree(temp_dir)
     print(f"✅ Bundle creado: {tar_path}")
+
+
+import os
+import tarfile
+import shutil
+
+
+def create_multi_model_bundle(stages, model_dir, features_dir, output_dir, bundle_name="multiendpoint.tar.gz"):
+    """
+    Crea un único archivo .tar.gz que contiene los modelos y features de todos los stages.
+
+    Args:
+        stages (list): Lista de nombres de los stages (ej: ['init_stage', 'mid_stage', 'final_stage']).
+        model_dir (str): Ruta base donde se encuentran los modelos por stage.
+        features_dir (str): Ruta base donde se encuentran los features por stage.
+        output_dir (str): Ruta donde se guardará el archivo .tar.gz.
+        bundle_name (str): Nombre del archivo final .tar.gz.
+    """
+    os.makedirs(output_dir, exist_ok=True)
+    temp_dir = os.path.join(output_dir, "multi_bundle_temp")
+    os.makedirs(temp_dir, exist_ok=True)
+
+    for stage in stages:
+        stage_dir = os.path.join(temp_dir, stage)
+        os.makedirs(stage_dir, exist_ok=True)
+
+        model_path = os.path.join(model_dir, stage, "Model.joblib")
+        features_path = os.path.join(features_dir, stage, "Model.json")
+
+        if not os.path.exists(model_path) or not os.path.exists(features_path):
+            raise FileNotFoundError(f"❌ Faltan archivos para {stage}: {model_path}, {features_path}")
+
+        shutil.copy(model_path, os.path.join(stage_dir, "Model.joblib"))
+        shutil.copy(features_path, os.path.join(stage_dir, "Model.json"))
+
+    tar_path = os.path.join(output_dir, bundle_name)
+    with tarfile.open(tar_path, "w:gz") as tar:
+        tar.add(temp_dir, arcname=".")
+
+    shutil.rmtree(temp_dir)
+    print(f"✅ Bundle multi-modelo creado en: {tar_path}")

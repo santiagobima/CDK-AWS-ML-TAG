@@ -10,6 +10,7 @@ import boto3
 from Stack.sagemaker_stack import SagemakerStack
 from Stack.pipeline_stack import PipelineStack
 from pipelines.lead_conversion_rate.definition import LeadConversionFactory
+from Stack.serverless_endpoint_stack import ServerlessEndpointStack
 
 # Configuración del logger
 logger = logging.getLogger(__name__)
@@ -17,6 +18,9 @@ logger.setLevel(logging.INFO)
 
 LOGICAL_PREFIX = "DSM"
 LOCAL_MODE = False  # Cambiar a True si deseas ejecutar en local
+
+
+
 
 def load_environment(app):
     env = app.node.try_get_context('env') or 'dev'
@@ -48,6 +52,10 @@ LOGICAL_PREFIX = app.node.try_get_context("resource_prefix")
 if not LOGICAL_PREFIX:
     raise ValueError("El prefijo lógico 'resource_prefix' no está definido en cdk.json")
 
+PIPELINE_NAME = app.node.try_get_context("pipeline_name")
+if not PIPELINE_NAME:
+    raise ValueError("El 'pipeline_name' no está definido en cdk.json")
+
 # Crear stack de SageMaker
 sagemaker_stack = SagemakerStack(
     app,
@@ -71,12 +79,26 @@ lead_conversion_pipeline = PipelineStack(
     factory=LeadConversionFactory(local_mode=LOCAL_MODE),
     env=cdk.Environment(account=account, region=region),
     local_mode=LOCAL_MODE,
-    pipeline_name="LeadConversionPipeline-v2",
+    pipeline_name=PIPELINE_NAME,
     source_bucket_name=SOURCE_BUCKET,
     sm_execution_role_arn=sm_execution_role_arn,
 )
 
+dev_env = cdk.Environment(account=account, region=region)
+
+# Stack para el endpoint serverless
+"""serverless_endpoint_stack = ServerlessEndpointStack(
+    app,
+    "ServerlessEndpointStack",
+    model_stage="multiendpoint",
+    env=dev_env,
+    sm_execution_role_arn=sagemaker_stack.sm_execution_role.role_arn,
+    pipeline_name=PIPELINE_NAME  # 💡 Aquí lo pasas de forma segura
+)"""
+
+# Declaración de dependencias explícitas
 lead_conversion_pipeline.add_dependency(sagemaker_stack)
+#serverless_endpoint_stack.add_dependency(lead_conversion_pipeline)
 logger.info("Stack del pipeline creado correctamente.")
 
 # Síntesis final

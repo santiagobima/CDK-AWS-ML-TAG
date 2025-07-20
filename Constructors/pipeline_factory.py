@@ -76,8 +76,6 @@ def create_sagemaker_session(default_bucket: str, local_mode=False) -> sagemaker
 
 
 
-
-
 def get_processor(role: str, instance_type: str, image_uri: str = None) -> ScriptProcessor:
     if not image_uri:
         image_uri = retrieve(
@@ -89,6 +87,20 @@ def get_processor(role: str, instance_type: str, image_uri: str = None) -> Scrip
             instance_type=instance_type  # ✅ Obligatorio en este contexto
         )
 
+        # 🔐 Guardar automáticamente en SSM
+        prefix = os.getenv("RESOURCE_PREFIX", "dsa")
+        region = os.getenv("CDK_DEFAULT_REGION", "eu-west-1")
+        param_name = f"/{prefix}/ProcessorImageUri"
+
+        ssm_client = boto3.client("ssm", region_name=region)
+        ssm_client.put_parameter(
+            Name=param_name,
+            Value=image_uri,
+            Type="String",
+            Overwrite=True
+        )
+        logger.info(f"✅ ProcessorImageUri registrado en SSM en: {param_name}")
+
     return ScriptProcessor(
         image_uri=image_uri,
         command=["python3"],
@@ -97,5 +109,3 @@ def get_processor(role: str, instance_type: str, image_uri: str = None) -> Scrip
         instance_count=1,
         max_runtime_in_seconds=7200
     )
-    
-    

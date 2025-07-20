@@ -86,7 +86,6 @@ class LeadConversionFactory(SagemakerPipelineFactory):
                     source=f"s3://{data_bucket_name}/code/source_code/configs/",
                     destination="/opt/ml/processing/configs/"
                 )
-
             ],
             outputs=[
                 ProcessingOutput(
@@ -101,7 +100,7 @@ class LeadConversionFactory(SagemakerPipelineFactory):
             ],
             cache_config=CacheConfig(enable_caching=True, expire_after="7d")
         )
-        
+
         # Paso 4: Model Fit
         model_fit_step = ProcessingStep(
             name='Model_Fit_Step',
@@ -121,64 +120,70 @@ class LeadConversionFactory(SagemakerPipelineFactory):
                 )
             ],
             outputs=[
-                ProcessingOutput(  # modelos entrenados
+                ProcessingOutput(
                     source="/opt/ml/processing/source_code/pipelines/lead_conversion_rate/model/pickles/models",
                     destination=f"s3://{data_bucket_name}/output-data/predict/models"
                 ),
-                ProcessingOutput(  # features seleccionadas
+                ProcessingOutput(
                     source="/opt/ml/processing/source_code/pipelines/lead_conversion_rate/model/pickles/features",
                     destination=f"s3://{data_bucket_name}/output-data/predict/features"
                 ),
-                ProcessingOutput(  # métricas y resultados
+                ProcessingOutput(
                     source="/opt/ml/processing/source_code/pipelines/lead_conversion_rate/model/results",
                     destination=f"s3://{data_bucket_name}/output-data/predict/results"
+                ),
+                ProcessingOutput(
+                    source="/opt/ml/processing/source_code/pipelines/lead_conversion_rate/model/pickles/models/tar_models",
+                    destination=f"s3://{data_bucket_name}/output-data/predict/models/tar_models"
                 )
             ],
             code="pipelines/lead_conversion_rate/steps/model_fit.py",
             cache_config=CacheConfig(enable_caching=True, expire_after="7d")
         )
-        
+
         # Definición de dependencias correcta
         retrieve_data_step.add_depends_on([simple_step])
         prep_data_step.add_depends_on([retrieve_data_step])
         model_fit_step.add_depends_on([prep_data_step])
-        
-        # ----------- REGISTRO DE MODELOS EN EL REGISTRY -------------
-        register_steps = []
-        for stage in ['init_stage', 'mid_stage', 'final_stage']:
-            model_artifact_s3 = f"s3://{data_bucket_name}/output-data/predict/models/tar_models/{stage}.tar.gz"
-            entry_point_path = "pipelines/lead_conversion_rate/steps/inference.py"
 
-            sm_model = SageMakerModel(
-                model_data=model_artifact_s3,
-                image_uri=processor.image_uri,
-                role=role,
-                entry_point=entry_point_path,
-                name=f"{pipeline_name}-{stage}-Model",
-                sagemaker_session=sm_session
-            )
-            # REGISTRA el modelo en
-            description = f"Stage:{stage} Generated on {datetime.now().strftime('%Y-%m-%d')}"
-            # el Model Registry, crea un ModelPackage (esto crea Package Group si no existe)
-            model_register = sm_model.register(
-                content_types=["application/json"],
-                response_types=["application/json"],
-                inference_instances=["ml.m5.large"],
-                transform_instances=["ml.m5.large"],
-                model_package_group_name=f"{pipeline_name}-Group",
-                approval_status="Approved",
-                description=description,
-                
-            )
-            register_step = ModelStep(
-                name=f"RegisterModelStep_{stage}",
-                step_args=model_register,
-                depends_on=[model_fit_step]
-            )
-            register_steps.append(register_step)
+        # ----------- REGISTRO ÚNICO DEL MULTI-MODELO -------------
+        model_artifact_s3 = f"s3://{data_bucket_name}/output-data/predict/models/tar_models/multiendpoint.tar.gz"
+        entry_point_path = "pipelines/lead_conversion_rate/steps/inference.py"
+
+        sm_model = SageMakerModel(
+            model_data=model_artifact_s3,
+            image_uri=processor.image_uri,
+            role=role,
+            entry_point=entry_point_path,
+            name=f"{pipeline_name}-multiendpoint-Model",
+            sagemaker_session=sm_session
+        )
+
+        description = f"Multiendpoint model with all stages. Generated on {datetime.now().strftime('%Y-%m-%d')}"
+        model_register = sm_model.register(
+            content_types=["application/json"],
+            response_types=["application/json"],
+            inference_instances=["ml.m5.large"],
+            transform_instances=["ml.m5.large"],
+            model_package_group_name=f"{pipeline_name}-Group",
+            approval_status="Approved",
+            description=description
+        )
+
+        register_step = ModelStep(
+            name="RegisterMultiendpointModel",
+            step_args=model_register,
+            depends_on=[model_fit_step]
+        )
 
         # ------------ CONSTRUCCIÓN FINAL DEL PIPELINE -------------
-        steps = [simple_step, retrieve_data_step, prep_data_step, model_fit_step] + register_steps
+        steps = [
+            simple_step,
+            retrieve_data_step,
+            prep_data_step,
+            model_fit_step,
+            register_step
+        ]
 
         logger.info(f"Pipeline '{pipeline_name}' configurado con {len(steps)} paso(s).")
         return Pipeline(name=pipeline_name, steps=steps, sagemaker_session=sm_session)
