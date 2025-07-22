@@ -1,12 +1,10 @@
 from aws_cdk import (
     Stack,
     aws_sagemaker as sagemaker,
-    aws_ssm as ssm,
-    aws_iam as iam
 )
 from constructs import Construct
 import os
-
+import boto3
 
 
 class ServerlessEndpointStack(Stack):
@@ -22,37 +20,50 @@ class ServerlessEndpointStack(Stack):
     ):
         super().__init__(scope, id, env=env, **kwargs)
 
-        prefix = self.node.try_get_context("resource_prefix")
-        bucket_name = os.getenv("DATA_BUCKET")
-        if not bucket_name:
-            raise ValueError("❌ DATA_BUCKET environment variable is not set.")
+        region = os.getenv("CDK_DEFAULT_REGION")
+        if not region:
+            raise ValueError("❌ Falta la variable CDK_DEFAULT_REGION")
 
-        image_uri = ssm.StringParameter.value_for_string_parameter(
-            self, f"/{prefix}/ProcessorImageUri"
+        model_package_group_name = f"{pipeline_name}-Group"
+        MAX_NAME_LENGTH = 63
+        base_model_name = f"{pipeline_name}-{model_stage}-Model"
+        model_name = base_model_name[:MAX_NAME_LENGTH]
+        
+
+        # 🔍 Obtener el último modelo aprobado
+        sm_client = boto3.client("sagemaker", region_name=region)
+        response = sm_client.list_model_packages(
+            ModelPackageGroupName=model_package_group_name,
+            SortBy="CreationTime",
+            SortOrder="Descending"
         )
+        approved_models = [
+            pkg for pkg in response["ModelPackageSummaryList"]
+            if pkg["ModelApprovalStatus"] == "Approved"
+        ]
+        if not approved_models:
+            raise ValueError(f"No hay modelos aprobados en el grupo '{model_package_group_name}'.")
 
-        tarball_path = f"s3://{bucket_name}/output-data/predict/models/tar_models/{model_stage}.tar.gz"
+        model_package_arn = approved_models[0]["ModelPackageArn"]
 
-        # ✅ Usamos el pipeline_name correctamente
+        # ✅ Crear CfnModel con model_package_name
         model = sagemaker.CfnModel(
             self, f"{model_stage}ServerlessModel",
             execution_role_arn=sm_execution_role_arn,
-            primary_container=sagemaker.CfnModel.ContainerDefinitionProperty(
-                image=image_uri,
-                model_data_url=tarball_path,
-                environment={
-                    "SAGEMAKER_PROGRAM": "pipelines/lead_conversion_rate/steps/inference.py",
-                    "SAGEMAKER_SUBMIT_DIRECTORY": tarball_path
-                }
-            ),
-            model_name=f"{pipeline_name}-{model_stage}-ServerlessModel"
+            containers=[
+                sagemaker.CfnModel.ContainerDefinitionProperty(
+                    model_package_name=model_package_arn
+                )
+            ],
+            model_name=model_name
         )
 
+        # ✅ Crear EndpointConfig que depende de ese modelo
         endpoint_config = sagemaker.CfnEndpointConfig(
             self, f"{model_stage}ServerlessConfig",
             production_variants=[
                 sagemaker.CfnEndpointConfig.ProductionVariantProperty(
-                    model_name=model.model_name,
+                    model_name=model.model_name,  # <-- ⚠️ IMPORTANTE: usar .ref para obtener el logical ID
                     variant_name="AllTraffic",
                     serverless_config=sagemaker.CfnEndpointConfig.ServerlessConfigProperty(
                         memory_size_in_mb=4096,
@@ -62,9 +73,12 @@ class ServerlessEndpointStack(Stack):
             ],
             endpoint_config_name=f"{pipeline_name}-{model_stage}-ServerlessConfig"
         )
+        endpoint_config.add_dependency(model)  # 🔒 asegúrate de que se cree luego del modelo
 
-        sagemaker.CfnEndpoint(
+        # ✅ Crear endpoint
+        endpoint = sagemaker.CfnEndpoint(
             self, f"{model_stage}ServerlessEndpoint",
             endpoint_config_name=endpoint_config.endpoint_config_name,
             endpoint_name=f"{pipeline_name}-{model_stage}-Endpoint"
         )
+        endpoint.add_dependency(endpoint_config)

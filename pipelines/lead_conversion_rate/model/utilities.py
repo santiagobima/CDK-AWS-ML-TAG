@@ -228,9 +228,19 @@ import tarfile
 import shutil
 
 
-def create_multi_model_bundle(stages, model_dir, features_dir, output_dir, bundle_name="multiendpoint.tar.gz"):
+import os
+import shutil
+import tarfile
+
+def create_multi_model_bundle(
+    stages,
+    model_dir,
+    features_dir,
+    output_dir,
+    bundle_name="multiendpoint.tar.gz"
+):
     """
-    Crea un único archivo .tar.gz que contiene los modelos y features de todos los stages.
+    Crea un archivo .tar.gz con múltiples modelos por stage y el script de inferencia.
 
     Args:
         stages (list): Lista de nombres de los stages (ej: ['init_stage', 'mid_stage', 'final_stage']).
@@ -243,6 +253,7 @@ def create_multi_model_bundle(stages, model_dir, features_dir, output_dir, bundl
     temp_dir = os.path.join(output_dir, "multi_bundle_temp")
     os.makedirs(temp_dir, exist_ok=True)
 
+    # Copiar modelos y features por cada stage
     for stage in stages:
         stage_dir = os.path.join(temp_dir, stage)
         os.makedirs(stage_dir, exist_ok=True)
@@ -256,6 +267,21 @@ def create_multi_model_bundle(stages, model_dir, features_dir, output_dir, bundl
         shutil.copy(model_path, os.path.join(stage_dir, "Model.joblib"))
         shutil.copy(features_path, os.path.join(stage_dir, "Model.json"))
 
+    # Detectar entorno: local vs SageMaker
+    if os.path.exists("/opt/ml/processing/source_code"):
+        inference_script_path = "/opt/ml/processing/source_code/pipelines/lead_conversion_rate/steps/inference.py"
+    else:
+        inference_script_path = "pipelines/lead_conversion_rate/steps/inference.py"
+
+    # Copiar el script de inferencia dentro de la carpeta code/
+    code_dir = os.path.join(temp_dir, "code")
+    os.makedirs(code_dir, exist_ok=True)
+
+    if not os.path.exists(inference_script_path):
+        raise FileNotFoundError(f"❌ inference.py no encontrado en: {inference_script_path}")
+    shutil.copy(inference_script_path, os.path.join(code_dir, "inference.py"))
+
+    # Crear el archivo .tar.gz
     tar_path = os.path.join(output_dir, bundle_name)
     with tarfile.open(tar_path, "w:gz") as tar:
         tar.add(temp_dir, arcname=".")

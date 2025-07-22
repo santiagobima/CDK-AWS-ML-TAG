@@ -7,8 +7,10 @@ from sagemaker.session import Session
 from sagemaker.workflow.parameters import ParameterString
 from Constructors.pipeline_factory import SagemakerPipelineFactory, get_processor
 from sagemaker.model import Model as SageMakerModel
+from sagemaker.sklearn.model import SKLearnModel
 from sagemaker.workflow.model_step import ModelStep
 from datetime import datetime
+from sagemaker.image_uris import retrieve as retrieve_image_uri
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -149,15 +151,17 @@ class LeadConversionFactory(SagemakerPipelineFactory):
         # ----------- REGISTRO ÚNICO DEL MULTI-MODELO -------------
         model_artifact_s3 = f"s3://{data_bucket_name}/output-data/predict/models/tar_models/multiendpoint.tar.gz"
         entry_point_path = "pipelines/lead_conversion_rate/steps/inference.py"
+# ...
 
-        sm_model = SageMakerModel(
+        sm_model = SKLearnModel(
             model_data=model_artifact_s3,
-            image_uri=processor.image_uri,
             role=role,
-            entry_point=entry_point_path,
-            name=f"{pipeline_name}-multiendpoint-Model",
+            entry_point="inference.py",
+            source_dir="pipelines/lead_conversion_rate/steps",
+            framework_version="1.2-1",
             sagemaker_session=sm_session
         )
+             
 
         description = f"Multiendpoint model with all stages. Generated on {datetime.now().strftime('%Y-%m-%d')}"
         model_register = sm_model.register(

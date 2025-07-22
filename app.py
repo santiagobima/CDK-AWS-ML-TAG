@@ -87,18 +87,18 @@ lead_conversion_pipeline = PipelineStack(
 dev_env = cdk.Environment(account=account, region=region)
 
 # Stack para el endpoint serverless
-"""serverless_endpoint_stack = ServerlessEndpointStack(
+serverless_endpoint_stack = ServerlessEndpointStack(
     app,
     "ServerlessEndpointStack",
     model_stage="multiendpoint",
     env=dev_env,
     sm_execution_role_arn=sagemaker_stack.sm_execution_role.role_arn,
-    pipeline_name=PIPELINE_NAME  # 💡 Aquí lo pasas de forma segura
-)"""
+    pipeline_name=PIPELINE_NAME
+)
 
 # Declaración de dependencias explícitas
 lead_conversion_pipeline.add_dependency(sagemaker_stack)
-#serverless_endpoint_stack.add_dependency(lead_conversion_pipeline)
+serverless_endpoint_stack.add_dependency(lead_conversion_pipeline)
 logger.info("Stack del pipeline creado correctamente.")
 
 # Síntesis final
