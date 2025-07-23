@@ -1,3 +1,6 @@
+import subprocess, sys
+subprocess.check_call([sys.executable, "-m", "pip", "install", "pandas==1.1.3", "numpy==1.19.2", "scikit-learn==0.23.2", "python-dateutil==2.8.1"])
+
 import joblib
 import numpy as np
 import json

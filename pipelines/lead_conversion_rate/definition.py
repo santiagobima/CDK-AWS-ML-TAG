@@ -158,16 +158,15 @@ class LeadConversionFactory(SagemakerPipelineFactory):
 
         
 
-        sm_model = PyTorchModel(
+        sm_model = SageMakerModel(
+            
             model_data=model_artifact_s3,
+            image_uri=processor.image_uri,
             role=role,
-            entry_point="inference.py",
-            source_dir="pipelines/lead_conversion_rate/steps",
-            framework_version="2.2.0",
-            py_version="py310",
+            entry_point=entry_point_path,
+            name=f"{pipeline_name}-multiendpoint-Model",
             sagemaker_session=sm_session
         )
-
         description = f"Multiendpoint model with all stages. Generated on {datetime.now().strftime('%Y-%m-%d')}"
         model_register = sm_model.register(
             content_types=["application/json"],
