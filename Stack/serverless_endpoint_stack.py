@@ -5,6 +5,7 @@ from aws_cdk import (
 from constructs import Construct
 import os
 import boto3
+from datetime import datetime,timezone
 
 
 class ServerlessEndpointStack(Stack):
@@ -26,8 +27,9 @@ class ServerlessEndpointStack(Stack):
 
         model_package_group_name = f"{pipeline_name}-Group"
         MAX_NAME_LENGTH = 63
+        unique_suffix = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
         base_model_name = f"{pipeline_name}-{model_stage}-Model"
-        model_name = base_model_name[:MAX_NAME_LENGTH]
+        model_name = f"{base_model_name}-{unique_suffix}"[:MAX_NAME_LENGTH]
         
 
         # 🔍 Obtener el último modelo aprobado

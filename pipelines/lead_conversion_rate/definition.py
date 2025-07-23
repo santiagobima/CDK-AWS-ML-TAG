@@ -11,6 +11,9 @@ from sagemaker.sklearn.model import SKLearnModel
 from sagemaker.workflow.model_step import ModelStep
 from datetime import datetime
 from sagemaker.image_uris import retrieve as retrieve_image_uri
+from sagemaker.model import Model
+from sagemaker.pytorch.model import PyTorchModel
+
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -153,15 +156,17 @@ class LeadConversionFactory(SagemakerPipelineFactory):
         entry_point_path = "pipelines/lead_conversion_rate/steps/inference.py"
 # ...
 
-        sm_model = SKLearnModel(
+        
+
+        sm_model = PyTorchModel(
             model_data=model_artifact_s3,
             role=role,
             entry_point="inference.py",
             source_dir="pipelines/lead_conversion_rate/steps",
-            framework_version="1.2-1",
+            framework_version="2.2.0",
+            py_version="py310",
             sagemaker_session=sm_session
         )
-             
 
         description = f"Multiendpoint model with all stages. Generated on {datetime.now().strftime('%Y-%m-%d')}"
         model_register = sm_model.register(

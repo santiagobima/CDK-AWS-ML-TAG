@@ -1,8 +1,11 @@
 import joblib
-import pandas as pd
 import numpy as np
 import json
 import os
+import subprocess
+import sys
+import pandas as pd
+
 
 def model_fn(model_dir):
     # No cargamos modelos aquí, lo hacemos en predict_fn dinámicamente
