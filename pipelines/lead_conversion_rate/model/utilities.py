@@ -280,6 +280,14 @@ def create_multi_model_bundle(
     if not os.path.exists(inference_script_path):
         raise FileNotFoundError(f"❌ inference.py no encontrado en: {inference_script_path}")
     shutil.copy(inference_script_path, os.path.join(code_dir, "inference.py"))
+    
+    requirements_path = os.path.join(os.path.dirname(inference_script_path), "requirements.txt")
+    if os.path.exists(requirements_path):
+        shutil.copy(requirements_path, os.path.join(code_dir, "requirements.txt"))
+    else:
+        print("⚠️  No se encontró 'requirements.txt' junto a 'inference.py'. No se incluirá en el bundle.")
+    
+    
 
     # Crear el archivo .tar.gz
     tar_path = os.path.join(output_dir, bundle_name)
